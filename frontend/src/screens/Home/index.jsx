@@ -1,33 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, Image, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
 import update from 'immutability-helper';
 import { globalStyles } from '../../utils/globalStyles';
-import { localhost } from '../../utils/utilities';
+import { localhost, ticketPrice } from '../../utils/utilities';
 
 const HomeScreen = () => {
     const [movies, setMovies] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
-    const [screening, setScreening] = useState({
-        hall: "1",
-        seats: {
-            "1": [
-                { number: 0, available: true },
-                { number: 1, available: true },
-                { number: 2, available: true },
-                { number: 3, available: true },
-                { number: 4, available: true },
-                { number: 5, available: true }
-            ],
-            "2": [
-                { number: 0, available: true },
-                { number: 1, available: true },
-                { number: 2, available: false },
-                { number: 3, available: false },
-                { number: 4, available: true },
-                { number: 5, available: true }
-            ]
-        }
-    });
+    const [price, setPrice] = useState(0);
+    const [screening, setScreening] = useState({});
+    // const [screening, setScreening] = useState({
+    //     hall: "1",
+    //     seats: {
+    //         "1": [
+    //             { number: 0, available: true },
+    //             { number: 1, available: true },
+    //             { number: 2, available: true },
+    //             { number: 3, available: true },
+    //             { number: 4, available: true },
+    //             { number: 5, available: true }
+    //         ],
+    //         "2": [
+    //             { number: 0, available: true },
+    //             { number: 1, available: true },
+    //             { number: 2, available: false },
+    //             { number: 3, available: false },
+    //             { number: 4, available: true },
+    //             { number: 5, available: true }
+    //         ]
+    //     }
+    // });
 
     const hall = {
         number: "1",
@@ -53,10 +55,27 @@ const HomeScreen = () => {
         // const newData = update(screening.seats, { [line]: { $set: newArray } });
         // setScreening(update(screening, { ["seats"]: { $set: newData } }));
         const j = selectedSeats.findIndex((seat) => seat.line === line && seat.number === index);
-        if (j !== -1)
+        if (j !== -1) {
+            setPrice(prevState => prevState - ticketPrice);
             setSelectedSeats(update(selectedSeats, { $splice: [[j, 1]] }));
-        else
+        }
+        else {
+            setPrice(prevState => prevState + ticketPrice);
             setSelectedSeats(update(selectedSeats, { $push: [{ line: line, number: index }] }));
+        }
+    }
+
+    const generateScreening = () => {
+        const newScreening = { hall: hall.number, seats: {} };
+        Object.keys(hall.seats).forEach((line) => {
+            const size = hall.seats[line].numberOfSeats;
+            var seats = [];
+            [...Array(size).keys()].forEach((_, index) => {
+                seats.push({ number: index, available: true });
+            });
+            newScreening.seats[line] = seats;
+        });
+        setScreening(newScreening);
     }
 
     useEffect(() => {
@@ -66,7 +85,7 @@ const HomeScreen = () => {
             .catch((error) => console.log(error));
     }, []);
 
-    return (
+    return Object.keys(screening).length > 0 ? (
         <SafeAreaView style={globalStyles.container}>
             {movies.length > 0 && <Text>{movies[0].title}</Text>}
             <Text>Hall {screening.hall}</Text>
@@ -97,6 +116,11 @@ const HomeScreen = () => {
                     )
                 })}
             </View>
+            <Text>{price}₪</Text>
+        </SafeAreaView>
+    ) : (
+        <SafeAreaView style={globalStyles.container}>
+            <Button title='generate screening' onPress={generateScreening} />
         </SafeAreaView>
     )
 }
