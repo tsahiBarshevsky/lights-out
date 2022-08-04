@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const HallSchema = new mongoose.Schema({
     number: { type: String },
-    seats: { type: Object }
+    seats: { type: Map }
 });
 
 const Hall = mongoose.model("halls", HallSchema);

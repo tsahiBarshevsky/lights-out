@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-const orderid = require('order-id')('key');
+// const orderid = require('order-id')('key');
 
 const port = process.env.PORT || 5000;
 var router = express.Router();
@@ -13,6 +13,7 @@ app.use(express.json());
 // Models
 const Movie = require('./Models/Movie');
 const Hall = require('./Models/Hall');
+const Screening = require('./Models/Screening');
 
 // Connect to database
 mongoose.connect('mongodb://localhost:27017/lights-out', {
@@ -23,18 +24,9 @@ mongoose.connect('mongodb://localhost:27017/lights-out', {
 /* ====== Movies ======= */
 
 app.get('/get-all-movies', async (req, res) => {
-    Movie.find({},
-        function (err, result) {
-            if (err) {
-                console.log("Error: " + err)
-                res.send(err);
-            }
-            else {
-                console.log(`${result.length} movies found`);
-                res.json(result);
-            }
-        }
-    );
+    const movies = await Movie.find({}).sort({ title: 1 }).exec();
+    console.log(`${movies.length} movies found`);
+    res.json(movies);
 });
 
 app.post('/add-new-movie', async (req, res) => {
@@ -76,6 +68,23 @@ app.post('/add-new-hall', async (req, res) => {
     });
     await newHall.save();
     res.json(newHall._id);
+});
+
+/* ====== Screenings ======= */
+
+app.get('/get-all-screenings', async (req, res) => {
+    Screening.find({},
+        function (err, result) {
+            if (err) {
+                console.log("Error: " + err)
+                res.send(err);
+            }
+            else {
+                console.log(`${result.length} screenings found`);
+                res.json(result);
+            }
+        }
+    );
 });
 
 app.listen(port, () => {

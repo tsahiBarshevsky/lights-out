@@ -4,7 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 // App screens
 import {
-    HomeScreen
+    HomeScreen,
+    SplashScreen
 } from '../../screens';
 
 const Stack = createStackNavigator();
@@ -17,13 +18,13 @@ const navigatorTheme = {
 }
 
 const AppNavigator = () => {
-
     return (
         <NavigationContainer theme={navigatorTheme}>
             <Stack.Navigator
-                initialRouteName='Home'
+                initialRouteName='Splash'
                 screenOptions={{ headerShown: false }}
             >
+                <Stack.Screen name='Splash' component={SplashScreen} />
                 <Stack.Screen name='Home' component={HomeScreen} />
             </Stack.Navigator>
         </NavigationContainer>

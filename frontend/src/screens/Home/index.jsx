@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Image, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
 import update from 'immutability-helper';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
 import { localhost, ticketPrice } from '../../utils/utilities';
+import { bookSeats } from '../../redux/actions/screenings';
 
 const HomeScreen = () => {
-    const [movies, setMovies] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [price, setPrice] = useState(0);
-    const [screening, setScreening] = useState({});
+    // const [screening, setScreening] = useState({});
+    const movies = useSelector(state => state.movies);
+    const halls = useSelector(state => state.halls);
+    const screenings = useSelector(state => state.screenings);
+    const dispatch = useDispatch();
     // const [screening, setScreening] = useState({
     //     hall: "1",
     //     seats: {
@@ -31,29 +37,35 @@ const HomeScreen = () => {
     //     }
     // });
 
-    const hall = {
-        number: "1",
-        seats: {
-            "1": { numberOfSeats: 6 },
-            "2": { numberOfSeats: 8 },
-            "3": { numberOfSeats: 8 },
-            "4": { numberOfSeats: 8 },
-            "5": { numberOfSeats: 8 },
-            "6": { numberOfSeats: 6 },
-        }
-    };
+    // const hall = {
+    //     number: "1",
+    //     seats: {
+    //         "1": { numberOfSeats: 6 },
+    //         "2": { numberOfSeats: 8 },
+    //         "3": { numberOfSeats: 8 },
+    //         "4": { numberOfSeats: 8 },
+    //         "5": { numberOfSeats: 8 },
+    //         "6": { numberOfSeats: 6 },
+    //     }
+    // };
+
+    const onBookSeats = () => {
+        var seats = screenings[0].seats;
+        selectedSeats.forEach((seat) => {
+            const newArray = update(seats[seat.line], {
+                [seat.number]: {
+                    $merge: {
+                        available: false
+                    }
+                }
+            });
+            seats = update(seats, { [seat.line]: { $set: newArray } });
+        });
+        dispatch(bookSeats(seats, 0));
+        setPrice(0);
+    }
 
     const onSelectSeat = (line, index) => {
-        // Update seats in screening
-        // const newArray = update(screening.seats[line], {
-        //     [index]: {
-        //         $merge: {
-        //             available: false
-        //         }
-        //     }
-        // });
-        // const newData = update(screening.seats, { [line]: { $set: newArray } });
-        // setScreening(update(screening, { ["seats"]: { $set: newData } }));
         const j = selectedSeats.findIndex((seat) => seat.line === line && seat.number === index);
         if (j !== -1) {
             setPrice(prevState => prevState - ticketPrice);
@@ -66,36 +78,34 @@ const HomeScreen = () => {
     }
 
     const generateScreening = () => {
-        const newScreening = { hall: hall.number, seats: {} };
-        Object.keys(hall.seats).forEach((line) => {
-            const size = hall.seats[line].numberOfSeats;
+        const newScreening = { hall: halls[0].number, seats: {} };
+        Object.keys(halls[0].seats).forEach((line) => {
+            const size = halls[0].seats[line].numberOfSeats;
             var seats = [];
             [...Array(size).keys()].forEach((_, index) => {
                 seats.push({ number: index, available: true });
             });
             newScreening.seats[line] = seats;
         });
-        setScreening(newScreening);
+        //setScreening(newScreening);
     }
 
     useEffect(() => {
-        fetch(`http://${localhost}/get-all-movies`)
-            .then((res) => res.json())
-            .then((res) => setMovies(res))
-            .catch((error) => console.log(error));
+        // generateScreening();
     }, []);
 
-    return Object.keys(screening).length > 0 ? (
+    return Object.keys(screenings[0]).length > 0 && (
         <SafeAreaView style={globalStyles.container}>
-            {movies.length > 0 && <Text>{movies[0].title}</Text>}
-            <Text>Hall {screening.hall}</Text>
+            <Text>{screenings[0].movie.title}</Text>
+            <Text>Hall {screenings[0].hall}</Text>
+            <Text>{moment(screenings[0].date).format('DD/MM/YYYY HH:mm')}</Text>
             <View style={{ marginVertical: 10 }}>
-                {Object.keys(screening.seats).map((line) => {
+                {Object.keys(screenings[0].seats).map((line) => {
                     return (
                         <View style={styles.line} key={line}>
                             <Text>{line}</Text>
                             <View style={styles.seats}>
-                                {screening.seats[line].map((e, i) => {
+                                {screenings[0].seats[line].map((e, i) => {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => onSelectSeat(line, i)}
@@ -117,10 +127,7 @@ const HomeScreen = () => {
                 })}
             </View>
             <Text>{price}₪</Text>
-        </SafeAreaView>
-    ) : (
-        <SafeAreaView style={globalStyles.container}>
-            <Button title='generate screening' onPress={generateScreening} />
+            <Button title='Book now' onPress={onBookSeats} />
         </SafeAreaView>
     )
 }
