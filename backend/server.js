@@ -73,18 +73,9 @@ app.post('/add-new-hall', async (req, res) => {
 /* ====== Screenings ======= */
 
 app.get('/get-all-screenings', async (req, res) => {
-    Screening.find({},
-        function (err, result) {
-            if (err) {
-                console.log("Error: " + err)
-                res.send(err);
-            }
-            else {
-                console.log(`${result.length} screenings found`);
-                res.json(result);
-            }
-        }
-    );
+    const screenings = await Screening.find({}).sort({ date: 1 }).exec();
+    console.log(`${screenings.length} movies found`);
+    res.json(screenings);
 });
 
 app.listen(port, () => {

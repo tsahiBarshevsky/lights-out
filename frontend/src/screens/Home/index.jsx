@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Image, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
+import { SafeAreaView, Image, StyleSheet, Text, TouchableOpacity, View, Button, FlatList } from 'react-native';
 import update from 'immutability-helper';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
 import { localhost, ticketPrice } from '../../utils/utilities';
 import { bookSeats } from '../../redux/actions/screenings';
+import { MovieCard } from '../../components';
 
 const HomeScreen = () => {
     const [selectedSeats, setSelectedSeats] = useState([]);
@@ -94,9 +95,19 @@ const HomeScreen = () => {
         // generateScreening();
     }, []);
 
-    return Object.keys(screenings[0]).length > 0 && (
+    return (
         <SafeAreaView style={globalStyles.container}>
-            <Text>{screenings[0].movie.title}</Text>
+            <FlatList
+                data={movies}
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => {
+                    return (
+                        <MovieCard movie={item} />
+                    )
+                }}
+                ItemSeparatorComponent={() => <View style={{ marginVertical: 5 }} />}
+            />
+            {/* <Text>{screenings[0].movie.title}</Text>
             <Text>Hall {screenings[0].hall}</Text>
             <Text>{moment(screenings[0].date).format('DD/MM/YYYY HH:mm')}</Text>
             <View style={{ marginVertical: 10 }}>
@@ -127,7 +138,7 @@ const HomeScreen = () => {
                 })}
             </View>
             <Text>{price}₪</Text>
-            <Button title='Book now' onPress={onBookSeats} />
+            <Button title='Book now' onPress={onBookSeats} /> */}
         </SafeAreaView>
     )
 }
