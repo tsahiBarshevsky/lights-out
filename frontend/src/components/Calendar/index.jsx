@@ -1,16 +1,42 @@
-import React from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import moment from 'moment';
 
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
 
 const Calendar = ({ week, date, setDate }) => {
+    const [months, setMonths] = useState([]);
+    const uniqueMonths = [...new Set(months)];
+
     const Separator = () => (
         <View style={styles.separator} />
     );
+
+    useEffect(() => {
+        const res = [];
+        week.forEach((day) => res.push(moment(day).format('MMMM')));
+        setMonths(res);
+    }, []);
+
     return (
         <View style={styles.wrapper}>
+            <View style={styles.month}>
+                {uniqueMonths.length > 1 ?
+                    uniqueMonths.map((month, index) => {
+                        return (
+                            <View key={index}>
+                                <Text>{month}</Text>
+                            </View>
+                        )
+                    }).reduce((acc, elem) => {
+                        return acc === null ? [elem] : [...acc, <Text key={elem}>/</Text>, elem]
+                    }, null)
+                    :
+                    <Text>{uniqueMonths[0]}</Text>
+                }
+                <Text> {new Date().getFullYear()}</Text>
+            </View>
             <FlatList
                 data={week}
                 keyExtractor={(item) => item.toString()}
@@ -58,6 +84,11 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'black'
+    },
+    month: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        marginBottom: 5
     },
     separator: {
         paddingHorizontal: 3
