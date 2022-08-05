@@ -7,6 +7,7 @@ const MovieSchema = new mongoose.Schema({
     overview: { type: String },
     duration: { type: Number },
     posterPath: { type: String },
+    backdropPath: { type: String },
     releaseDate: { type: Date },
     rating: { type: Number }
 });
