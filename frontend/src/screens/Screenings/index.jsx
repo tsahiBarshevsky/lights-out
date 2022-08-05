@@ -13,9 +13,9 @@ const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
 
 const ScreeningsScreen = ({ route }) => {
     const { movie } = route.params;
+    const [originalScreenings, setOriginalScreenings] = useState([]);
     const [date, setDate] = useState(moment());
     const [movieScreenings, setMovieScreenings] = useState([]);
-    const [movieScreenings2, setMovieScreenings2] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [price, setPrice] = useState(0);
     const [selectedScreening, setSelectedScreening] = useState(0);
@@ -62,28 +62,26 @@ const ScreeningsScreen = ({ route }) => {
         setSelectedSeats([]);
     }
 
-    const filterByDay = (item) => {
-        return moment(item.date).set(initial).format(format) === date.set(initial).format(format);
-    }
-
     useEffect(() => {
-        setMovieScreenings(screenings.filter((item => item.movie.id === movie.tmdbID)));
+        setOriginalScreenings(screenings.filter((item => item.movie.id === movie.tmdbID)));
     }, []);
 
     useEffect(() => {
         const filter = screenings.filter((item) => {
             return (
                 moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
+                moment(item.date).isAfter(moment(new Date())) &&
                 item.movie.id === movie.tmdbID
             );
         });
-        setMovieScreenings2(filter)
+        setMovieScreenings(filter);
+        setSelectedScreening(0);
     }, [date]);
 
-    return movieScreenings.length > 0 && (
+    return originalScreenings.length > 0 && (
         <SafeAreaView style={globalStyles.container}>
             <Text>{movie.title}'s screenings</Text>
-            <Text>Hall {movieScreenings[selectedScreening].hall}</Text>
+            <Text>Hall {originalScreenings[selectedScreening].hall}</Text>
             <CalendarStrip
                 scrollable
                 style={{ height: 100 }}
@@ -94,18 +92,17 @@ const ScreeningsScreen = ({ route }) => {
                 iconContainer={{ flex: 0.1 }}
                 selectedDate={date}
                 onDateSelected={(date) => setDate(moment(date))}
-                minDate={new Date()}
+                minDate={moment()}
+                startingDate={moment()}
             />
             <FlatList
                 horizontal
-                // data={movieScreenings}
-                data={movieScreenings.filter(filterByDay)}
+                data={movieScreenings}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item, index }) => {
-                    // return moment(item.date).isAfter(moment(new Date())) && (
                     return (
                         <TouchableOpacity onPress={() => onSelectScreening(item, index)}>
-                            <Text style={movieScreenings2.findIndex((e) => e._id === item._id) === selectedScreening && { color: 'red' }}>
+                            <Text style={movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && { color: 'red' }}>
                                 {moment(item.date).format('DD/MM HH:mm')}
                             </Text>
                         </TouchableOpacity>
@@ -114,37 +111,36 @@ const ScreeningsScreen = ({ route }) => {
                 ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
                 style={{ flexGrow: 0, marginVertical: 10 }}
             />
-            {Object.keys(movieScreenings2).length > 0 ?
-                Object.keys(movieScreenings2[selectedScreening].seats).map((line) => {
-                    return (
-                        <View style={styles.line} key={line}>
-                            <Text>{line}</Text>
-                            <View style={styles.seats}>
-                                {movieScreenings2[selectedScreening].seats[line].map((e, i) => {
-                                    return (
-                                        <TouchableOpacity
-                                            onPress={() => onSelectSeat(line, i)}
-                                            key={e.number}
-                                            disabled={!e.available}
-                                            style={[
-                                                styles.seat,
-                                                e.available ? (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ? styles.selected : styles.available) : styles.unavailable
-                                            ]}
-                                        >
-                                            <Text>{e.number + 1}</Text>
-                                        </TouchableOpacity>
-                                    )
-                                })}
-                            </View>
-                            <Text>{line}</Text>
-                        </View>
-                    )
-                })
-                :
-                <Text>No screenings found on {date.format('DD/MM/YY')}</Text>
-            }
-            {movieScreenings.filter(filterByDay).length > 0 &&
+            {movieScreenings.length > 0 &&
                 <View>
+                    {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
+                        return (
+                            <View style={styles.line} key={line}>
+                                <Text>{line}</Text>
+                                <View style={styles.seats}>
+                                    {movieScreenings[selectedScreening].seats[line].map((e, i) => {
+                                        return (
+                                            <TouchableOpacity
+                                                onPress={() => onSelectSeat(line, i)}
+                                                key={e.number}
+                                                disabled={!e.available}
+                                                style={[
+                                                    styles.seat,
+                                                    e.available ?
+                                                        (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
+                                                            styles.selected : styles.available)
+                                                        : styles.unavailable
+                                                ]}
+                                            >
+                                                <Text>{e.number + 1}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    })}
+                                </View>
+                                <Text>{line}</Text>
+                            </View>
+                        )
+                    })}
                     <Text>{price}₪</Text>
                     <Button
                         title='Book now'
