@@ -3,6 +3,7 @@ import React from 'react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { I18nManager } from 'react-native';
+import { WeekProvider } from './src/utils/context';
 import { AppNavigator } from './src/components';
 import rootReducer from './src/redux/reducers';
 
@@ -13,7 +14,9 @@ const store = createStore(rootReducer);
 export default function App() {
     return (
         <Provider store={store}>
-            <AppNavigator />
+            <WeekProvider>
+                <AppNavigator />
+            </WeekProvider>
         </Provider>
     )
 }

@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Button } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import update from 'immutability-helper';
-import CalendarStrip from 'react-native-calendar-strip';
 import { bookSeats } from '../../redux/actions/screenings';
 import { globalStyles } from '../../utils/globalStyles';
 import { ticketPrice } from '../../utils/utilities';
+import { Calendar } from '../../components';
+import { WeekContext } from '../../utils/context';
 
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
 
 const ScreeningsScreen = ({ route }) => {
     const { movie } = route.params;
+    const { week } = useContext(WeekContext);
     const [originalScreenings, setOriginalScreenings] = useState([]);
     const [date, setDate] = useState(moment());
     const [movieScreenings, setMovieScreenings] = useState([]);
@@ -82,18 +84,10 @@ const ScreeningsScreen = ({ route }) => {
         <SafeAreaView style={globalStyles.container}>
             <Text>{movie.title}'s screenings</Text>
             <Text>Hall {originalScreenings[selectedScreening].hall}</Text>
-            <CalendarStrip
-                scrollable
-                style={{ height: 100 }}
-                calendarColor={'#3343CE'}
-                calendarHeaderStyle={{ color: 'white' }}
-                dateNumberStyle={{ color: 'white' }}
-                dateNameStyle={{ color: 'white' }}
-                iconContainer={{ flex: 0.1 }}
-                selectedDate={date}
-                onDateSelected={(date) => setDate(moment(date))}
-                minDate={moment()}
-                startingDate={moment()}
+            <Calendar
+                week={week}
+                date={date}
+                setDate={setDate}
             />
             <FlatList
                 horizontal
