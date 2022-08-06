@@ -3,6 +3,7 @@ import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Butto
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import update from 'immutability-helper';
+import { useNavigation } from '@react-navigation/native';
 import { bookSeats } from '../../redux/actions/screenings';
 import { globalStyles } from '../../utils/globalStyles';
 import { ticketPrice } from '../../utils/utilities';
@@ -23,6 +24,7 @@ const ScreeningsScreen = ({ route }) => {
     const [selectedScreening, setSelectedScreening] = useState(0);
     const screenings = useSelector(state => state.screenings);
     const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const onSelectScreening = (item) => {
         const index = movieScreenings.findIndex((e) => e._id === item._id);
@@ -46,22 +48,23 @@ const ScreeningsScreen = ({ route }) => {
     }
 
     const onBookSeats = () => {
-        var seats = movieScreenings[selectedScreening].seats;
-        selectedSeats.forEach((seat) => {
-            const newArray = update(seats[seat.line], {
-                [seat.number]: {
-                    $merge: {
-                        available: false
-                    }
-                }
-            });
-            seats = update(seats, { [seat.line]: { $set: newArray } });
-        });
-        const index = screenings.findIndex((item) => item._id === movieScreenings[selectedScreening]._id);
-        dispatch(bookSeats(seats, index));
-        setMovieScreenings(update(movieScreenings, { [selectedScreening]: { $merge: { seats: seats } } }));
-        setPrice(0);
-        setSelectedSeats([]);
+        navigation.navigate('Checkout', { movieScreenings, selectedScreening, selectedSeats });
+        // var seats = movieScreenings[selectedScreening].seats;
+        // selectedSeats.forEach((seat) => {
+        //     const newArray = update(seats[seat.line], {
+        //         [seat.number]: {
+        //             $merge: {
+        //                 available: false
+        //             }
+        //         }
+        //     });
+        //     seats = update(seats, { [seat.line]: { $set: newArray } });
+        // });
+        // const index = screenings.findIndex((item) => item._id === movieScreenings[selectedScreening]._id);
+        // dispatch(bookSeats(seats, index));
+        // setMovieScreenings(update(movieScreenings, { [selectedScreening]: { $merge: { seats: seats } } }));
+        // setPrice(0);
+        // setSelectedSeats([]);
     }
 
     useEffect(() => {
@@ -71,8 +74,8 @@ const ScreeningsScreen = ({ route }) => {
     useEffect(() => {
         const filter = screenings.filter((item) => {
             return (
-                moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
-                moment(item.date).isAfter(moment(new Date())) &&
+                // moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
+                // moment(item.date).isAfter(moment(new Date())) &&
                 item.movie.id === movie.tmdbID
             );
         });

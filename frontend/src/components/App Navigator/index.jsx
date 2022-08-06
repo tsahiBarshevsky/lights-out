@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 // App screens
 import {
+    ChockoutScreen,
     HomeScreen,
     MovieScreen,
     ScreeningsScreen,
@@ -30,6 +31,7 @@ const AppNavigator = () => {
                 <Stack.Screen name='Home' component={HomeScreen} />
                 <Stack.Screen name='Movie' component={MovieScreen} />
                 <Stack.Screen name='Screenings' component={ScreeningsScreen} />
+                <Stack.Screen name='Checkout' component={ChockoutScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     )

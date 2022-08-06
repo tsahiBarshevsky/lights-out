@@ -78,6 +78,22 @@ app.get('/get-all-screenings', async (req, res) => {
     res.json(screenings);
 });
 
+app.post('/book-seats', async (req, res) => {
+    const id = req.query.id;
+    const filter = { _id: id };
+    const update = { seats: req.body.seats };
+    Screening.findOneAndUpdate(filter, update,
+        function (err) {
+            if (err) {
+                console.log(err);
+                res.status(500).send(err);
+            }
+            else
+                res.json(`Seats booked successfully on id ${id}`);
+        }
+    );
+})
+
 app.listen(port, () => {
     console.log(`Listening at port ${port}`);
 });
