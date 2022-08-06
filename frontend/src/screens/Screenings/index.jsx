@@ -48,7 +48,20 @@ const ScreeningsScreen = ({ route }) => {
     }
 
     const onBookSeats = () => {
-        navigation.navigate('Checkout', { movieScreenings, selectedScreening, selectedSeats });
+        const groups = selectedSeats.sort((a, b) => { return a.number - b.number }).reduce((group, seat) => {
+            const { line } = seat;
+            group[line] = group[line] ?? [];
+            group[line].push(seat);
+            return group;
+        }, {});
+        navigation.navigate('Checkout', {
+            movie,
+            movieScreenings,
+            selectedScreening,
+            selectedSeats,
+            price,
+            groups
+        });
         // var seats = movieScreenings[selectedScreening].seats;
         // selectedSeats.forEach((seat) => {
         //     const newArray = update(seats[seat.line], {

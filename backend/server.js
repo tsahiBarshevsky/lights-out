@@ -2,7 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-// const orderid = require('order-id')('key');
+const { Stripe } = require('stripe');
+const stripe = Stripe(process.env.SECRET_KEY, { apiVersion: "2020-08-27" });
+const orderID = require('order-id')('key');
 
 const port = process.env.PORT || 5000;
 var router = express.Router();
@@ -14,6 +16,7 @@ app.use(express.json());
 const Movie = require('./Models/Movie');
 const Hall = require('./Models/Hall');
 const Screening = require('./Models/Screening');
+const Reservation = require('./Models/Reservation');
 
 // Connect to database
 mongoose.connect('mongodb://localhost:27017/lights-out', {
@@ -78,6 +81,7 @@ app.get('/get-all-screenings', async (req, res) => {
     res.json(screenings);
 });
 
+// Book seats and add new reservation
 app.post('/book-seats', async (req, res) => {
     const id = req.query.id;
     const filter = { _id: id };
@@ -88,11 +92,37 @@ app.post('/book-seats', async (req, res) => {
                 console.log(err);
                 res.status(500).send(err);
             }
-            else
-                res.json(`Seats booked successfully on id ${id}`);
         }
     );
-})
+    const newReservation = new Reservation({
+        orderID: orderID.generate(),
+        screeningID: req.body.newReservation.id,
+        movie: req.body.newReservation.movie,
+        contact: req.body.newReservation.contact,
+        seats: req.body.newReservation.seats,
+        sum: req.body.newReservation.sum,
+        date: req.body.newReservation.date
+    });
+    await newReservation.save();
+    res.json(newReservation._id);
+});
+
+app.post('/create-payment-intent', async (req, res) => {
+    const amount = req.query.amount;
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: 'usd',
+            payment_method_types: ["card"]
+        });
+        const clientSecret = paymentIntent.client_secret;
+        res.json({ clientSecret: clientSecret });
+    }
+    catch (e) {
+        console.log(e.message);
+        res.json({ error: e.message });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Listening at port ${port}`);
