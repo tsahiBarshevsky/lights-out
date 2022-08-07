@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import { SafeAreaView, StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import React, { useState, useCallback, useRef } from 'react';
+import { SafeAreaView, StyleSheet, Dimensions, View, Text, RefreshControl, ScrollView } from 'react-native';
+import Carousel from 'react-native-snap-carousel-v4';
 import { useDispatch, useSelector } from 'react-redux';
 import { globalStyles } from '../../utils/globalStyles';
-import { MovieCard, SearchPanel } from '../../components';
+import { MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
 
 const wait = (timeout) => {
@@ -11,6 +12,7 @@ const wait = (timeout) => {
 
 const HomeScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
+    const sortPanelRef = useRef(null);
     const movies = useSelector(state => state.movies);
     const dispatch = useDispatch();
 
@@ -19,7 +21,7 @@ const HomeScreen = () => {
         wait(2000).then(() => {
             setRefreshing(false);
             Promise.all([
-                fetch(`http://${localhost}/get-all-movies`),
+                fetch(`http://${localhost}/get-all-movies?field=title`),
                 fetch(`http://${localhost}/get-all-halls`),
                 fetch(`http://${localhost}/get-all-screenings`)
             ])
@@ -71,28 +73,45 @@ const HomeScreen = () => {
     // };
 
     return (
-        <SafeAreaView style={globalStyles.container}>
-            <SearchPanel />
-            <FlatList
-                data={movies}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item }) => {
-                    return (
-                        <MovieCard movie={item} />
-                    )
-                }}
-                ItemSeparatorComponent={() => <View style={{ marginVertical: 5 }} />}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                }
-            />
-        </SafeAreaView>
+        <>
+            <SafeAreaView style={globalStyles.container}>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
+                >
+                    <SearchBar sortPanelRef={sortPanelRef} />
+                    <Text style={styles.title}>Now Showing</Text>
+                    <View style={styles.carousel}>
+                        <Carousel
+                            data={movies}
+                            renderItem={(props) => <MovieCard {...props} />}
+                            sliderWidth={Dimensions.get('window').width}
+                            itemWidth={270}
+                            layout="default"
+                            snapToAlignment="start"
+                            enableSnap
+                            decelerationRate="fast"
+                            inactiveSlideOpacity={0.45}
+                        />
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+            <SortPanel sortPanelRef={sortPanelRef} />
+        </>
     )
 }
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    title: {
+        fontSize: 20
+    },
+    carousel: {
+        marginBottom: 15
+    }
+});

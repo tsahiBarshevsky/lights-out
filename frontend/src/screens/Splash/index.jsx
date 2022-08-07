@@ -10,7 +10,7 @@ const SplashScreen = () => {
 
     useEffect(() => {
         Promise.all([
-            fetch(`http://${localhost}/get-all-movies`),
+            fetch(`http://${localhost}/get-all-movies?field=title`),
             fetch(`http://${localhost}/get-all-halls`),
             fetch(`http://${localhost}/get-all-screenings`)
         ])

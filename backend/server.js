@@ -26,7 +26,23 @@ mongoose.connect('mongodb://localhost:27017/lights-out', {
 
 // Get all movies
 app.get('/get-all-movies', async (req, res) => {
-    const movies = await Movie.find({}).sort({ title: 1 }).exec();
+    const field = req.query.field;
+    var sort = {};
+    switch (field) {
+        case 'title':
+            sort = { title: 1 };
+            break;
+        case 'duration':
+            sort = { duration: 1 };
+            break;
+        case 'release date':
+            sort = { releaseDate: 1 };
+            break;
+        case 'rating':
+            sort = { rating: 1 };
+            break;
+    }
+    const movies = await Movie.find({}).sort(sort).exec();
     console.log(`${movies.length} movies found`);
     res.json(movies);
 });
@@ -94,7 +110,7 @@ app.post('/add-new-hall', async (req, res) => {
 
 app.get('/get-all-screenings', async (req, res) => {
     const screenings = await Screening.find({}).sort({ date: 1 }).exec();
-    console.log(`${screenings.length} movies found`);
+    console.log(`${screenings.length} screenings found`);
     res.json(screenings);
 });
 

@@ -53,7 +53,11 @@ const MovieScreen = ({ route }) => {
                         <Text>{moment(movie.releaseDate).format('DD/MM/YY')}</Text>
                     </View>
                 </View>
-                <Button title='get reservation' onPress={() => navigation.navigate('Screenings', { movie })} />
+                <Button
+                    title='get reservation'
+                    onPress={() => navigation.navigate('Screenings', { movie })}
+                    disabled={moment(movie.releaseDate).isoWeek() - moment().isoWeek() > 1}
+                />
                 <Text>Rating: {movie.rating}</Text>
                 <Text>Overview</Text>
                 <Text>{movie.overview}</Text>

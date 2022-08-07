@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet, TextInput, View, TouchableOpacity, ToastAndroid, Keyboard } from 'react-native';
-import { EvilIcons, Ionicons } from '@expo/vector-icons';
+import { EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { localhost } from '../../utils/utilities';
 
-const SearchPanel = () => {
+const SearchBar = ({ sortPanelRef }) => {
     const [term, setTerm] = useState('');
     const navigation = useNavigation();
 
@@ -19,10 +19,6 @@ const SearchPanel = () => {
                 navigation.navigate('Search', { results });
             setTerm('');
         }, 200);
-    }
-
-    const onResetSearch = () => {
-        setTerm('');
     }
 
     return (
@@ -40,20 +36,18 @@ const SearchPanel = () => {
                 style={styles.textInput}
                 returnKeyType='search'
             />
-            {term.length > 0 &&
-                <TouchableOpacity
-                    onPress={onResetSearch}
-                    style={styles.button}
-                    activeOpacity={0.8}
-                >
-                    <Ionicons name="close" size={18} color="white" />
-                </TouchableOpacity>
-            }
+            <TouchableOpacity
+                onPress={() => sortPanelRef.current?.open()}
+                style={styles.button}
+                activeOpacity={0.8}
+            >
+                <FontAwesome name="sliders" size={20} color="black" />
+            </TouchableOpacity>
         </View>
     )
 }
 
-export default SearchPanel
+export default SearchBar;
 
 const styles = StyleSheet.create({
     container: {
@@ -65,20 +59,17 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         paddingHorizontal: 10,
         borderRadius: 15,
-        height: 40,
+        height: 40
     },
     textInput: {
         flex: 1,
         textAlign: 'left',
-        borderRadius: 15,
         marginHorizontal: 10
     },
     button: {
         width: 25,
         height: 25,
-        borderRadius: 12.5,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#696969',
     }
 });
