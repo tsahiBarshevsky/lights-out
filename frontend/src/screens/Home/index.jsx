@@ -1,11 +1,41 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, View, FlatList } from 'react-native';
-import { useSelector } from 'react-redux';
+import React, { useState, useCallback } from 'react';
+import { SafeAreaView, StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { globalStyles } from '../../utils/globalStyles';
 import { MovieCard } from '../../components';
+import { localhost } from '../../utils/utilities';
+
+const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
 const HomeScreen = () => {
+    const [refreshing, setRefreshing] = useState(false);
     const movies = useSelector(state => state.movies);
+    const dispatch = useDispatch();
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => {
+            setRefreshing(false);
+            Promise.all([
+                fetch(`http://${localhost}/get-all-movies`),
+                fetch(`http://${localhost}/get-all-halls`),
+                fetch(`http://${localhost}/get-all-screenings`)
+            ])
+                .then(([movies, halls, screenings]) => Promise.all([
+                    movies.json(),
+                    halls.json(),
+                    screenings.json()
+                ]))
+                .then(([movies, halls, screenings]) => {
+                    dispatch({ type: 'SET_MOVIES', movies: movies });
+                    dispatch({ type: 'SET_HALLS', halls: halls });
+                    dispatch({ type: 'SET_SCREENINGS', screenings: screenings });
+                })
+        });
+    }, []);
+
     // const [screening, setScreening] = useState({
     //     hall: "1",
     //     seats: {
@@ -51,6 +81,12 @@ const HomeScreen = () => {
                     )
                 }}
                 ItemSeparatorComponent={() => <View style={{ marginVertical: 5 }} />}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
             />
         </SafeAreaView>
     )
