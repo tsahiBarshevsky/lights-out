@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import update from 'immutability-helper';
@@ -17,7 +17,8 @@ import {
     View,
     ScrollView,
     KeyboardAvoidingView,
-    TextInput
+    TextInput,
+    Button,
 } from 'react-native';
 
 const ChockoutScreen = ({ route }) => {
@@ -33,23 +34,66 @@ const ChockoutScreen = ({ route }) => {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
-    // Textinpus refs
+    // Refs
+    const formRef = useRef(null);
     const lastNameRef = useRef(null);
     const emailRef = useRef(null);
     const phoneRef = useRef(null);
+    const creditRef = useRef(null);
+    const expiryRef = useRef(null);
+    const cvcRef = useRef(null);
 
-    const onCheckout = () => {
+    const formatCreditCard = (input) => {
+        const inputValue = input.replace(/ /g, "");
+        let inputNumbersOnly = inputValue.replace(/\D/g, "");
+        if (inputNumbersOnly.length > 16)
+            inputNumbersOnly = inputNumbersOnly.substr(0, 16);
+        const splits = inputNumbersOnly.match(/.{1,4}/g);
+        let spacedNumber = "";
+        if (splits)
+            spacedNumber = splits.join(" ");
+        formRef.current?.setFieldValue('creditNumber', spacedNumber);
+    }
+
+    const formatExpiryDate = (input) => {
+        let textTemp = input;
+        if (textTemp[0] !== '1' && textTemp[0] !== '0')
+            textTemp = '';
+        if (textTemp.length === 2) {
+            if (parseInt(textTemp.substring(0, 2)) > 12 || parseInt(textTemp.substring(0, 2)) == 0)
+                textTemp = textTemp[0];
+            else {
+                if (input.length === 2)
+                    textTemp += '/';
+                else
+                    textTemp = textTemp[0];
+            }
+        }
+        formRef.current?.setFieldValue('expiryDate', textTemp);
+    }
+
+    const onCheckout = (values) => {
         const id = movieScreenings[selectedScreening]._id;
         const newReservation = {
             screeningID: id,
+            movie: {
+                id: movie._id,
+                title: movie.title
+            },
             contact: {
-                fullName: 'full name',
-                phone: '05251515151',
-                email: 'user1@gmail.com'
+                fullName: `${values.firstName.trim()} ${values.lastName.trim()}`,
+                phone: values.phone.trim(),
+                email: values.email.trim()
             },
             seats: selectedSeats.sort((a, b) => { return a.number - b.number }),
             sum: price,
-            date: movieScreenings[selectedScreening].date
+            payment: {
+                creditNumber: values.creditNumber.slice(15),
+                expiryDate: values.expiryDate,
+                cvc: values.cvc
+            },
+            date: movieScreenings[selectedScreening].date,
+            reservationDate: new Date()
         };
         var seats = movieScreenings[selectedScreening].seats;
         selectedSeats.forEach((seat) => {
@@ -86,9 +130,8 @@ const ChockoutScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            {/* <Button title='checkout' onPress={onCheckout} /> */}
-            <ScrollView>
-                <Text style={styles.title}>Selected movie</Text>
+            <ScrollView keyboardShouldPersistTaps="never">
+                <Text style={styles.title}>Selected Movie</Text>
                 <Text>{movie.title} at {moment(movieScreenings[selectedScreening].date).format('dddd DD/MM/YYYY HH:mm')}</Text>
                 <View>
                     <Text style={styles.subtitle}>Ticket type</Text>
@@ -121,7 +164,6 @@ const ChockoutScreen = ({ route }) => {
                         );
                     })}
                 </View>
-                <Text style={styles.title}>Personal details</Text>
                 <KeyboardAvoidingView
                     enabled
                     behavior={Platform.OS === 'ios' ? 'padding' : null}
@@ -129,11 +171,13 @@ const ChockoutScreen = ({ route }) => {
                     <Formik
                         initialValues={initialValues}
                         enableReinitialize
-                        onSubmit={(values) => console.log(values)}
+                        onSubmit={(values) => onCheckout(values)}
+                        innerRef={formRef}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values, errors, setErrors, touched }) => {
+                        {({ handleChange, handleBlur, handleSubmit, values, setFieldValue, errors, setErrors, touched }) => {
                             return (
-                                <View style={{ paddingHorizontal: 15 }}>
+                                <View>
+                                    <Text style={styles.title}>Personal Details</Text>
                                     <View style={styles.textInputWrapper}>
                                         <TextInput
                                             placeholder='First name...'
@@ -169,6 +213,7 @@ const ChockoutScreen = ({ route }) => {
                                         <TextInput
                                             placeholder='Email...'
                                             value={values.email}
+                                            ref={emailRef}
                                             onChangeText={handleChange('email')}
                                             underlineColorAndroid="transparent"
                                             placeholderTextColor='black'
@@ -189,17 +234,73 @@ const ChockoutScreen = ({ route }) => {
                                             underlineColorAndroid="transparent"
                                             placeholderTextColor='black'
                                             selectionColor='black'
+                                            blurOnSubmit={false}
                                             onBlur={handleBlur('phone')}
-                                            onSubmitEditing={handleSubmit}
+                                            onSubmitEditing={() => creditRef.current?.focus()}
                                             style={styles.textInput}
                                             keyboardType='number-pad'
                                             maxLength={10}
+                                            returnKeyType='next'
+                                        />
+                                    </View>
+                                    <Text style={styles.title}>Payment Details</Text>
+                                    <View style={styles.textInputWrapper}>
+                                        <TextInput
+                                            placeholder='Credit card number...'
+                                            value={values.creditNumber}
+                                            ref={creditRef}
+                                            underlineColorAndroid="transparent"
+                                            placeholderTextColor='black'
+                                            selectionColor='black'
+                                            blurOnSubmit={false}
+                                            onBlur={handleBlur('creditNumber')}
+                                            onSubmitEditing={() => expiryRef.current?.focus()}
+                                            style={styles.textInput}
+                                            keyboardType='number-pad'
+                                            onChangeText={(text) => formatCreditCard(text)}
+                                            maxLength={19}
+                                            returnKeyType='next'
+                                        />
+                                    </View>
+                                    <View style={styles.textInputWrapper}>
+                                        <TextInput
+                                            placeholder='Expiry date...'
+                                            value={values.expiryDate}
+                                            ref={expiryRef}
+                                            underlineColorAndroid="transparent"
+                                            placeholderTextColor='black'
+                                            selectionColor='black'
+                                            blurOnSubmit={false}
+                                            onBlur={handleBlur('expiryDate')}
+                                            style={styles.textInput}
+                                            keyboardType='number-pad'
+                                            onSubmitEditing={() => cvcRef.current?.focus()}
+                                            onChangeText={(text) => formatExpiryDate(text)}
+                                            maxLength={5}
+                                            returnKeyType='next'
+                                        />
+                                    </View>
+                                    <View style={styles.textInputWrapper}>
+                                        <TextInput
+                                            placeholder='CVC...'
+                                            value={values.cvc}
+                                            ref={cvcRef}
+                                            underlineColorAndroid="transparent"
+                                            placeholderTextColor='black'
+                                            selectionColor='black'
+                                            onBlur={handleBlur('cvc')}
+                                            style={styles.textInput}
+                                            keyboardType='number-pad'
+                                            onSubmitEditing={handleSubmit}
+                                            onChangeText={handleChange('cvc')}
+                                            maxLength={3}
                                         />
                                     </View>
                                 </View>
                             )
                         }}
                     </Formik>
+                    <Button title='checkout' onPress={() => formRef.current?.handleSubmit()} />
                 </KeyboardAvoidingView>
             </ScrollView>
         </SafeAreaView>
@@ -210,7 +311,10 @@ const initialValues = {
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    phone: '',
+    creditNumber: '',
+    expiryDate: '',
+    cvc: ''
 };
 
 export default ChockoutScreen;

@@ -2,8 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-const { Stripe } = require('stripe');
-const stripe = Stripe(process.env.SECRET_KEY, { apiVersion: "2020-08-27" });
 const orderID = require('order-id')('key');
 
 const port = process.env.PORT || 5000;
@@ -96,32 +94,17 @@ app.post('/book-seats', async (req, res) => {
     );
     const newReservation = new Reservation({
         orderID: orderID.generate(),
-        screeningID: req.body.newReservation.id,
+        screeningID: req.body.newReservation.screeningID,
         movie: req.body.newReservation.movie,
         contact: req.body.newReservation.contact,
         seats: req.body.newReservation.seats,
         sum: req.body.newReservation.sum,
-        date: req.body.newReservation.date
+        payment: req.body.newReservation.payment,
+        date: req.body.newReservation.date,
+        reservationDate: req.body.newReservation.reservationDate
     });
     await newReservation.save();
     res.json(newReservation._id);
-});
-
-app.post('/create-payment-intent', async (req, res) => {
-    const amount = req.query.amount;
-    try {
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: amount,
-            currency: 'usd',
-            payment_method_types: ["card"]
-        });
-        const clientSecret = paymentIntent.client_secret;
-        res.json({ clientSecret: clientSecret });
-    }
-    catch (e) {
-        console.log(e.message);
-        res.json({ error: e.message });
-    }
 });
 
 app.listen(port, () => {
