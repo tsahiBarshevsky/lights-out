@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { globalStyles } from '../../utils/globalStyles';
 import { MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
+import moment from 'moment';
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -37,6 +38,14 @@ const HomeScreen = () => {
                 })
         });
     }, []);
+
+    const nowShowingFilter = (movie) => {
+        return moment().isAfter(moment(movie.releaseDate));
+    }
+
+    const showingNextWeekFilter = (movie) => {
+        return moment(movie.releaseDate).isoWeek() - moment().isoWeek() === 1;
+    }
 
     // const [screening, setScreening] = useState({
     //     hall: "1",
@@ -87,7 +96,21 @@ const HomeScreen = () => {
                     <Text style={styles.title}>Now Showing</Text>
                     <View style={styles.carousel}>
                         <Carousel
-                            data={movies}
+                            data={movies.filter(nowShowingFilter)}
+                            renderItem={(props) => <MovieCard {...props} />}
+                            sliderWidth={Dimensions.get('window').width}
+                            itemWidth={270}
+                            layout="default"
+                            snapToAlignment="start"
+                            enableSnap
+                            decelerationRate="fast"
+                            inactiveSlideOpacity={0.45}
+                        />
+                    </View>
+                    <Text style={styles.title}>Coming Next Week</Text>
+                    <View style={styles.carousel}>
+                        <Carousel
+                            data={movies.filter(showingNextWeekFilter)}
                             renderItem={(props) => <MovieCard {...props} />}
                             sliderWidth={Dimensions.get('window').width}
                             itemWidth={270}
@@ -109,9 +132,10 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
     title: {
-        fontSize: 20
+        fontSize: 20,
+        marginBottom: 5
     },
     carousel: {
-        marginBottom: 15
+        marginBottom: 45
     }
 });
