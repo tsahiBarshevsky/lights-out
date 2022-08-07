@@ -8,6 +8,7 @@ import {
     HomeScreen,
     MovieScreen,
     ScreeningsScreen,
+    SearchScreen,
     SplashScreen
 } from '../../screens';
 
@@ -32,6 +33,7 @@ const AppNavigator = () => {
                 <Stack.Screen name='Movie' component={MovieScreen} />
                 <Stack.Screen name='Screenings' component={ScreeningsScreen} />
                 <Stack.Screen name='Checkout' component={ChockoutScreen} />
+                <Stack.Screen name='Search' component={SearchScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     )

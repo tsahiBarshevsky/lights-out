@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { SafeAreaView, StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { globalStyles } from '../../utils/globalStyles';
-import { MovieCard } from '../../components';
+import { MovieCard, SearchPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
 
 const wait = (timeout) => {
@@ -72,6 +72,7 @@ const HomeScreen = () => {
 
     return (
         <SafeAreaView style={globalStyles.container}>
+            <SearchPanel />
             <FlatList
                 data={movies}
                 keyExtractor={(item) => item._id}

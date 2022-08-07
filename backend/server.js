@@ -24,12 +24,31 @@ mongoose.connect('mongodb://localhost:27017/lights-out', {
 
 /* ====== Movies ======= */
 
+// Get all movies
 app.get('/get-all-movies', async (req, res) => {
     const movies = await Movie.find({}).sort({ title: 1 }).exec();
     console.log(`${movies.length} movies found`);
     res.json(movies);
 });
 
+// Get movie by name
+app.get('/search-movie-by-name', async (req, res) => {
+    const name = req.query.name;
+    Movie.find({ "title": { $regex: new RegExp(name, "i") } },
+        function (err, result) {
+            if (err) {
+                console.log("Error: " + err)
+                res.send(err);
+            }
+            else {
+                console.log(`${result.length} movies found`);
+                res.json(result);
+            }
+        }
+    );
+});
+
+// Add new movie
 app.post('/add-new-movie', async (req, res) => {
     const newMovie = new Movie({
         title: req.body.title,

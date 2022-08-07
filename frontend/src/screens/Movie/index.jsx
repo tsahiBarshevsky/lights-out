@@ -13,7 +13,7 @@ const MovieScreen = ({ route }) => {
     const converMinutesToHours = (minutes) => {
         const m = minutes % 60;
         const h = (minutes - m) / 60;
-        return `${h.toString()}h ${(m < 10 ? "0" : "")} ${m.toString()}m`;
+        return `${h.toString()}h ${(m < 10 ? "0" : "")}${m.toString()}m`;
     }
 
     return (
@@ -26,7 +26,11 @@ const MovieScreen = ({ route }) => {
                         blurRadius={5}
                     />
                     <Text>{movie.title}</Text>
-                    <Star score={movie.rating} totalScore={10} style={starStyle} />
+                    {movie.rating > 0 ?
+                        <Star score={movie.rating} totalScore={10} style={starStyle} />
+                        :
+                        <Text>No rating yet</Text>
+                    }
                 </View>
                 <View style={styles.aboutContainer}>
                     <View style={styles.about}>
@@ -37,7 +41,11 @@ const MovieScreen = ({ route }) => {
                     <View style={styles.about}>
                         <AntDesign name="clockcircle" size={18} color="black" />
                         <Text>Duration</Text>
-                        <Text>{converMinutesToHours(movie.duration)}</Text>
+                        {movie.duration > 0 ?
+                            <Text>{converMinutesToHours(movie.duration)}</Text>
+                            :
+                            <Text>N/A</Text>
+                        }
                     </View>
                     <View style={styles.about}>
                         <FontAwesome5 name="calendar-week" size={18} color="black" />
