@@ -5,3 +5,4 @@ export { default as ScreeningsScreen } from './Screenings';
 export { default as ChockoutScreen } from './Checkout';
 export { default as SearchScreen } from './Search';
 export { default as PersonalAreaScreen } from './Personal Area';
+export { default as TicketScreen } from './Ticket';

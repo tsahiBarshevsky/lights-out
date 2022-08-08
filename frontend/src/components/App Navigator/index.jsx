@@ -10,7 +10,8 @@ import {
     PersonalAreaScreen,
     ScreeningsScreen,
     SearchScreen,
-    SplashScreen
+    SplashScreen,
+    TicketScreen
 } from '../../screens';
 
 const Stack = createStackNavigator();
@@ -49,6 +50,7 @@ const AppNavigator = () => {
                 <Stack.Screen name='Checkout' component={ChockoutScreen} options={options} />
                 <Stack.Screen name='Search' component={SearchScreen} options={options} />
                 <Stack.Screen name='Personal area' component={PersonalAreaScreen} options={options} />
+                <Stack.Screen name='Ticket' component={TicketScreen} options={options} />
             </Stack.Navigator>
         </NavigationContainer>
     )
