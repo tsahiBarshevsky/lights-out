@@ -62,7 +62,9 @@ const TicketScreen = ({ route }) => {
                                         <Text style={styles.value}>{item.number + 1}</Text>
                                     </View>
                                 </View>
-                                <View style={styles.divider} />
+                                <View style={styles.dividerWrapper}>
+                                    <View style={styles.divider} />
+                                </View>
                                 <View style={styles.order}>
                                     <View>
                                         <Text style={styles.title}>Order ID</Text>
@@ -146,11 +148,16 @@ const styles = StyleSheet.create({
     value: {
         fontSize: 17
     },
-    divider: {
-        width: '100%',
+    dividerWrapper: {
         height: 1,
-        backgroundColor: '#9c9c9c',
-        marginVertical: 25
+        overflow: 'hidden',
+        marginVertical: 15
+    },
+    divider: {
+        height: 2,
+        borderWidth: 1,
+        borderColor: '#a19bb7',
+        borderStyle: 'dashed'
     },
     order: {
         flexDirection: 'row',
