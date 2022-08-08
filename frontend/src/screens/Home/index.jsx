@@ -2,10 +2,10 @@ import React, { useState, useCallback, useRef } from 'react';
 import { SafeAreaView, StyleSheet, Dimensions, View, Text, RefreshControl, ScrollView } from 'react-native';
 import Carousel from 'react-native-snap-carousel-v4';
 import { useDispatch, useSelector } from 'react-redux';
-import { globalStyles } from '../../utils/globalStyles';
-import { MovieCard, SearchBar, SortPanel } from '../../components';
-import { localhost } from '../../utils/utilities';
 import moment from 'moment';
+import { globalStyles } from '../../utils/globalStyles';
+import { Header, MovieCard, SearchBar, SortPanel } from '../../components';
+import { localhost } from '../../utils/utilities';
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -92,6 +92,7 @@ const HomeScreen = () => {
                         />
                     }
                 >
+                    <Header />
                     <SearchBar sortPanelRef={sortPanelRef} />
                     <Text style={styles.title}>Now Showing</Text>
                     <View style={styles.carousel}>
@@ -108,19 +109,17 @@ const HomeScreen = () => {
                         />
                     </View>
                     <Text style={styles.title}>Coming Next Week</Text>
-                    <View style={styles.carousel}>
-                        <Carousel
-                            data={movies.filter(showingNextWeekFilter)}
-                            renderItem={(props) => <MovieCard {...props} />}
-                            sliderWidth={Dimensions.get('window').width}
-                            itemWidth={270}
-                            layout="default"
-                            snapToAlignment="start"
-                            enableSnap
-                            decelerationRate="fast"
-                            inactiveSlideOpacity={0.45}
-                        />
-                    </View>
+                    <Carousel
+                        data={movies.filter(showingNextWeekFilter)}
+                        renderItem={(props) => <MovieCard {...props} />}
+                        sliderWidth={Dimensions.get('window').width}
+                        itemWidth={270}
+                        layout="default"
+                        snapToAlignment="start"
+                        enableSnap
+                        decelerationRate="fast"
+                        inactiveSlideOpacity={0.45}
+                    />
                 </ScrollView>
             </SafeAreaView>
             <SortPanel sortPanelRef={sortPanelRef} />
