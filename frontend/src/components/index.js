@@ -4,3 +4,5 @@ export { default as Calendar } from './Calendar';
 export { default as SearchBar } from './Search Bar';
 export { default as SortPanel } from './Sort Panel';
 export { default as Header } from './Header';
+export { default as SignUpTab } from './Sign Up';
+export { default as SignInTab } from './Sign In';

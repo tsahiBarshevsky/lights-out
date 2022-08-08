@@ -1,12 +1,13 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 // App screens
 import {
     ChockoutScreen,
     HomeScreen,
     MovieScreen,
+    PersonalAreaScreen,
     ScreeningsScreen,
     SearchScreen,
     SplashScreen
@@ -19,7 +20,10 @@ const navigatorTheme = {
         ...DefaultTheme.colors,
         background: '#f1f2f6'
     }
-}
+};
+const options = {
+    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
+};
 
 const AppNavigator = () => {
     return (
@@ -28,12 +32,23 @@ const AppNavigator = () => {
                 initialRouteName='Splash'
                 screenOptions={{ headerShown: false }}
             >
-                <Stack.Screen name='Splash' component={SplashScreen} />
-                <Stack.Screen name='Home' component={HomeScreen} />
-                <Stack.Screen name='Movie' component={MovieScreen} />
-                <Stack.Screen name='Screenings' component={ScreeningsScreen} />
-                <Stack.Screen name='Checkout' component={ChockoutScreen} />
-                <Stack.Screen name='Search' component={SearchScreen} />
+                <Stack.Screen name='Splash' component={SplashScreen}
+                    options={{
+                        headerShown: false,
+                        animationEnabled: false
+                    }}
+                />
+                <Stack.Screen name='Home' component={HomeScreen}
+                    options={{
+                        headerShown: false,
+                        animationEnabled: false
+                    }}
+                />
+                <Stack.Screen name='Movie' component={MovieScreen} options={options} />
+                <Stack.Screen name='Screenings' component={ScreeningsScreen} options={options} />
+                <Stack.Screen name='Checkout' component={ChockoutScreen} options={options} />
+                <Stack.Screen name='Search' component={SearchScreen} options={options} />
+                <Stack.Screen name='Personal area' component={PersonalAreaScreen} options={options} />
             </Stack.Navigator>
         </NavigationContainer>
     )

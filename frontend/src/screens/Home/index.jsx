@@ -1,11 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Dimensions, View, Text, RefreshControl, ScrollView } from 'react-native';
 import Carousel from 'react-native-snap-carousel-v4';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
 import { Header, MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
+import { authentication } from '../../utils/firebase';
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -16,6 +18,7 @@ const HomeScreen = () => {
     const sortPanelRef = useRef(null);
     const movies = useSelector(state => state.movies);
     const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -46,6 +49,22 @@ const HomeScreen = () => {
     const showingNextWeekFilter = (movie) => {
         return moment(movie.releaseDate).isoWeek() - moment().isoWeek() === 1;
     }
+
+    useEffect(() => {
+        const unsubscribe = authentication.onAuthStateChanged((user) => {
+            if (user) {
+                fetch(`http://${localhost}/get-user-info?uid=${user.uid}`)
+                    .then((res) => res.json())
+                    .then((res) => dispatch({ type: 'SET_USER', user: res }))
+                    .finally(() => navigation.canGoBack() && navigation.goBack());
+            }
+            else {
+                if (navigation.canGoBack())
+                    navigation.goBack();
+            }
+        });
+        return unsubscribe;
+    }, []);
 
     // const [screening, setScreening] = useState({
     //     hall: "1",

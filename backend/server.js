@@ -15,6 +15,7 @@ const Movie = require('./Models/Movie');
 const Hall = require('./Models/Hall');
 const Screening = require('./Models/Screening');
 const Reservation = require('./Models/Reservation');
+const User = require('./Models/User');
 
 // Connect to database
 mongoose.connect('mongodb://localhost:27017/lights-out', {
@@ -140,6 +141,36 @@ app.post('/book-seats', async (req, res) => {
     });
     await newReservation.save();
     res.json(newReservation._id);
+});
+
+/* ======= Users ======= */
+
+// Add new user
+app.post('/add-new-user', async (req, res) => {
+    const newUser = new User({
+        uid: req.body.uid,
+        email: req.body.email,
+        phone: req.body.phone,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+    });
+    await newUser.save();
+    res.json(newUser._id);
+});
+
+// Get user information
+app.get('/get-user-info', async (req, res) => {
+    const uid = req.query.uid;
+    User.findOne({ "uid": uid },
+        function (err, result) {
+            if (err) {
+                console.log("Error: " + err)
+                res.send(err);
+            }
+            else
+                res.json(result);
+        }
+    );
 });
 
 app.listen(port, () => {

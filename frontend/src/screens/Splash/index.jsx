@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { localhost } from '../../utils/utilities';
+import { authentication } from '../../utils/firebase';
 
 const SplashScreen = () => {
+    const [dataLoaded, setDataLoaded] = useState(false);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -24,8 +26,22 @@ const SplashScreen = () => {
                 dispatch({ type: 'SET_HALLS', halls: halls });
                 dispatch({ type: 'SET_SCREENINGS', screenings: screenings });
             })
-            .finally(() => navigation.replace('Home'));
+            .finally(() => setDataLoaded(true));
     }, []);
+
+    useEffect(() => {
+        const unsubscribe = authentication.onAuthStateChanged((user) => {
+            if (user) {
+                fetch(`http://${localhost}/get-user-info?uid=${user.uid}`)
+                    .then((res) => res.json())
+                    .then((res) => dispatch({ type: 'SET_USER', user: res }))
+                    .finally(() => navigation.replace('Home'));
+            }
+            else
+                navigation.replace('Home');
+        });
+        return unsubscribe;
+    }, [dataLoaded]);
 
     return (
         <View style={styles.container}>

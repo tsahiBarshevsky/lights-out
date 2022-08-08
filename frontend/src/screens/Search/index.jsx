@@ -14,7 +14,7 @@ const SearchScreen = ({ route }) => {
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => {
                     return (
-                        <MovieCard movie={item} />
+                        <MovieCard item={item} />
                     )
                 }}
                 ItemSeparatorComponent={() => <View style={{ marginVertical: 5 }} />}
