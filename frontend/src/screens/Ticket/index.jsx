@@ -1,9 +1,12 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, FlatList } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
+import Barcode from '@kichiyaki/react-native-barcode-generator';
 import { globalStyles } from '../../utils/globalStyles';
 import { ticketPrice } from '../../utils/utilities';
+
+const { width } = Dimensions.get('window');
 
 const TicketScreen = ({ route }) => {
     const { ticket } = route.params;
@@ -14,7 +17,6 @@ const TicketScreen = ({ route }) => {
     const findMoviePoster = (id) => {
         return movies.find((movie) => movie._id === id).backdropPath;
     }
-
 
     const Separator = () => (
         <View style={styles.separator} />
@@ -71,6 +73,14 @@ const TicketScreen = ({ route }) => {
                                         <Text style={styles.value}>{ticketPrice}₪</Text>
                                     </View>
                                 </View>
+                                <Barcode
+                                    value={item.code}
+                                    format='CODE39'
+                                    lineColor='black'
+                                    height={50}
+                                    maxWidth={width - 65}
+                                    style={styles.barcode}
+                                />
                             </View>
                         </View>
                     )
@@ -146,5 +156,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'
+    },
+    barcode: {
+        marginTop: 10
     }
 });
