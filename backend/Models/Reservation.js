@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const ReservationSchema = new mongoose.Schema({
     orderID: { type: String },
     screeningID: { type: String },
+    uid: { type: String },
     movie: { type: Map },
     contact: { type: Map },
     seats: { type: Array },

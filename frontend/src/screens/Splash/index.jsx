@@ -32,9 +32,18 @@ const SplashScreen = () => {
     useEffect(() => {
         const unsubscribe = authentication.onAuthStateChanged((user) => {
             if (user) {
-                fetch(`http://${localhost}/get-user-info?uid=${user.uid}`)
-                    .then((res) => res.json())
-                    .then((res) => dispatch({ type: 'SET_USER', user: res }))
+                Promise.all([
+                    fetch(`http://${localhost}/get-user-info?uid=${user.uid}`),
+                    fetch(`http://${localhost}/get-all-reservations?uid=${user.uid}`)
+                ])
+                    .then(([userInfo, reservations]) => Promise.all([
+                        userInfo.json(),
+                        reservations.json()
+                    ]))
+                    .then(([userInfo, reservations]) => {
+                        dispatch({ type: 'SET_USER', user: userInfo });
+                        dispatch({ type: 'SET_RESERVATIONS', reservations: reservations });
+                    })
                     .finally(() => navigation.replace('Home'));
             }
             else

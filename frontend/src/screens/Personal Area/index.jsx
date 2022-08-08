@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, SafeAreaView, useWindowDimensions, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, SafeAreaView, useWindowDimensions, Text, TouchableOpacity, ScrollView, View, FlatList } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useNavigation } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
 import { SignUpTab, SignInTab } from '../../components';
 import { authentication } from '../../utils/firebase';
@@ -11,6 +12,8 @@ import { signOut } from 'firebase/auth';
 
 const PersonalAreaScreen = () => {
     const [index, setIndex] = useState(0);
+    const user = useSelector(state => state.user);
+    const reservations = useSelector(state => state.reservations);
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const layout = useWindowDimensions();
@@ -38,6 +41,10 @@ const PersonalAreaScreen = () => {
         }, 200);
     }
 
+    const Separator = () => (
+        <View style={styles.separator} />
+    );
+
     return !authentication.currentUser ? (
         <SafeAreaView style={globalStyles.container}>
             <TabView
@@ -63,9 +70,30 @@ const PersonalAreaScreen = () => {
         </SafeAreaView>
     ) : (
         <SafeAreaView style={globalStyles.container}>
-            <TouchableOpacity onPress={onSignOut}>
-                <Text>Sign Out</Text>
-            </TouchableOpacity>
+            <FlatList
+                data={reservations}
+                keyExtractor={(item) => item._id}
+                ListHeaderComponent={
+                    <View>
+                        <Text>{user.firstName} {user.lastName}</Text>
+                        <Text>{authentication.currentUser.email}</Text>
+                        <TouchableOpacity onPress={onSignOut}>
+                            <Text>Sign Out</Text>
+                        </TouchableOpacity>
+                        <Text>My reservations</Text>
+                    </View>
+                }
+                renderItem={({ item }) => {
+                    return (
+                        <View>
+                            <Text>#{item.orderID}</Text>
+                            <Text>{item.movie.title}</Text>
+                            <Text>{moment(item.reservationDate).format('DD/MM/YY HH:MM')}</Text>
+                        </View>
+                    )
+                }}
+                ItemSeparatorComponent={Separator}
+            />
         </SafeAreaView>
     )
 }
@@ -83,5 +111,8 @@ const styles = StyleSheet.create({
     },
     labelStyle: {
         fontSize: 15
+    },
+    separator: {
+        marginVertical: 5
     }
 });

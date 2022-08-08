@@ -130,6 +130,7 @@ app.post('/book-seats', async (req, res) => {
     );
     const newReservation = new Reservation({
         orderID: orderID.generate(),
+        uid: req.body.newReservation.uid,
         screeningID: req.body.newReservation.screeningID,
         movie: req.body.newReservation.movie,
         contact: req.body.newReservation.contact,
@@ -140,7 +141,26 @@ app.post('/book-seats', async (req, res) => {
         reservationDate: req.body.newReservation.reservationDate
     });
     await newReservation.save();
-    res.json(newReservation._id);
+    res.json({
+        _id: newReservation._id,
+        orderID: newReservation.orderID
+    });
+});
+
+// Get all user's reservations
+app.get('/get-all-reservations', async (req, res) => {
+    const uid = req.query.uid;
+    Reservation.find({ "uid": uid },
+        function (err, result) {
+            if (err) {
+                console.log("Error: " + err)
+                res.send(err);
+            }
+            else {
+                console.log(`${result.length} reservations found`);
+                res.json(result);
+            }
+        });
 });
 
 /* ======= Users ======= */

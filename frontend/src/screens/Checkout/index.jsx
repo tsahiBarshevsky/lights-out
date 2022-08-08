@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import update from 'immutability-helper';
@@ -6,7 +6,9 @@ import moment from 'moment';
 import { Formik } from 'formik';
 import { globalStyles } from '../../utils/globalStyles';
 import { bookSeats } from '../../redux/actions/screenings';
+import { addNewReservation } from '../../redux/actions/reservations';
 import { localhost, ticketPrice } from '../../utils/utilities';
+import { authentication } from '../../utils/firebase';
 
 // React Native Components
 import {
@@ -31,6 +33,7 @@ const ChockoutScreen = ({ route }) => {
         groups
     } = route.params;
     const screenings = useSelector(state => state.screenings);
+    const user = useSelector(state => state.user);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -42,6 +45,16 @@ const ChockoutScreen = ({ route }) => {
     const creditRef = useRef(null);
     const expiryRef = useRef(null);
     const cvcRef = useRef(null);
+
+    const initialValues = {
+        firstName: user ? user.firstName : '',
+        lastName: user ? user.lastName : '',
+        email: user ? user.email : '',
+        phone: user ? user.phone : '',
+        creditNumber: '',
+        expiryDate: '',
+        cvc: ''
+    };
 
     const formatCreditCard = (input) => {
         const inputValue = input.replace(/ /g, "");
@@ -76,6 +89,7 @@ const ChockoutScreen = ({ route }) => {
         const id = movieScreenings[selectedScreening]._id;
         const newReservation = {
             screeningID: id,
+            uid: authentication.currentUser.uid,
             movie: {
                 id: movie._id,
                 title: movie.title
@@ -119,10 +133,14 @@ const ChockoutScreen = ({ route }) => {
                 })
             })
             .then((res) => res.json())
-            .then((res) => console.log(res))
+            .then((res) => {
+                newReservation._id = res._id,
+                    newReservation.orderID = res.orderID
+            })
             .then(() => {
                 const index = screenings.findIndex((item) => item._id === movieScreenings[selectedScreening]._id);
                 dispatch(bookSeats(seats, index));
+                dispatch(addNewReservation(newReservation));
                 navigation.popToTop();
             })
             .catch((error) => console.log(error.message));
@@ -205,7 +223,12 @@ const ChockoutScreen = ({ route }) => {
                                             blurOnSubmit={false}
                                             onBlur={handleBlur('lastName')}
                                             returnKeyType='next'
-                                            onSubmitEditing={() => emailRef.current?.focus()}
+                                            onSubmitEditing={() => {
+                                                if (user)
+                                                    phoneRef.current.focus();
+                                                else
+                                                    emailRef.current?.focus();
+                                            }}
                                             style={styles.textInput}
                                         />
                                     </View>
@@ -223,6 +246,7 @@ const ChockoutScreen = ({ route }) => {
                                             returnKeyType='next'
                                             onSubmitEditing={() => phoneRef.current?.focus()}
                                             style={styles.textInput}
+                                            editable={user ? false : true}
                                         />
                                     </View>
                                     <View style={styles.textInputWrapper}>
@@ -306,16 +330,6 @@ const ChockoutScreen = ({ route }) => {
         </SafeAreaView>
     )
 }
-
-const initialValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    creditNumber: '',
-    expiryDate: '',
-    cvc: ''
-};
 
 export default ChockoutScreen;
 

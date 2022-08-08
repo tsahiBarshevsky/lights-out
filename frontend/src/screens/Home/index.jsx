@@ -104,6 +104,7 @@ const HomeScreen = () => {
         <>
             <SafeAreaView style={globalStyles.container}>
                 <ScrollView
+                    contentContainerStyle={styles.scrollView}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
@@ -151,9 +152,12 @@ export default HomeScreen;
 const styles = StyleSheet.create({
     title: {
         fontSize: 20,
-        marginBottom: 5
+        marginBottom: 10
     },
     carousel: {
-        marginBottom: 45
+        marginBottom: 35
+    },
+    scrollView: {
+        paddingBottom: 20
     }
 });
