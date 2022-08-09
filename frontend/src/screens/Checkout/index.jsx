@@ -87,6 +87,9 @@ const ChockoutScreen = ({ route }) => {
 
     const onCheckout = (values) => {
         const id = movieScreenings[selectedScreening]._id;
+        selectedSeats.forEach((seat) => {
+            seat.code = 'ABC-' + Math.floor(Math.random() * (9999 - 1000 + 1) + 1000);
+        });
         const newReservation = {
             screeningID: id,
             uid: authentication.currentUser.uid,
