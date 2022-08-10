@@ -1,21 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Button } from 'react-native';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Button, BackHandler, Dimensions } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import update from 'immutability-helper';
-import { useNavigation } from '@react-navigation/native';
+import Modal from "react-native-modal";
 import { bookSeats } from '../../redux/actions/screenings';
 import { globalStyles } from '../../utils/globalStyles';
 import { ticketPrice } from '../../utils/utilities';
 import { Calendar } from '../../components';
 import { WeekContext } from '../../utils/context';
 
-const format = 'DD/MM/YY HH:mm';
-const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
+const { width } = Dimensions.get('window');
 
 const ScreeningsScreen = ({ route }) => {
     const { movie } = route.params;
     const { week } = useContext(WeekContext);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const [originalScreenings, setOriginalScreenings] = useState([]);
     const [date, setDate] = useState(moment());
     const [movieScreenings, setMovieScreenings] = useState([]);
@@ -62,22 +63,13 @@ const ScreeningsScreen = ({ route }) => {
             price,
             groups
         });
-        // var seats = movieScreenings[selectedScreening].seats;
-        // selectedSeats.forEach((seat) => {
-        //     const newArray = update(seats[seat.line], {
-        //         [seat.number]: {
-        //             $merge: {
-        //                 available: false
-        //             }
-        //         }
-        //     });
-        //     seats = update(seats, { [seat.line]: { $set: newArray } });
-        // });
-        // const index = screenings.findIndex((item) => item._id === movieScreenings[selectedScreening]._id);
-        // dispatch(bookSeats(seats, index));
-        // setMovieScreenings(update(movieScreenings, { [selectedScreening]: { $merge: { seats: seats } } }));
-        // setPrice(0);
-        // setSelectedSeats([]);
+    }
+
+    const onCancelReservation = () => {
+        setIsModalVisible(false);
+        setTimeout(() => {
+            navigation.goBack();
+        }, 500);
     }
 
     useEffect(() => {
@@ -96,70 +88,110 @@ const ScreeningsScreen = ({ route }) => {
         setSelectedScreening(0);
     }, [date]);
 
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPressed = () => {
+                if (selectedSeats.length > 0)
+                    setIsModalVisible(true);
+                else
+                    navigation.goBack();
+                return true;
+            };
+            BackHandler.addEventListener('hardwareBackPress', onBackPressed);
+            return () =>
+                BackHandler.removeEventListener('hardwareBackPress', onBackPressed);
+        }, [selectedSeats, isModalVisible])
+    );
+
     return originalScreenings.length > 0 && (
-        <SafeAreaView style={globalStyles.container}>
-            <Text>{movie.title}'s screenings</Text>
-            <Text>Hall {originalScreenings[selectedScreening].hall}</Text>
-            <Calendar
-                week={week}
-                date={date}
-                setDate={setDate}
-            />
-            <FlatList
-                horizontal
-                data={movieScreenings}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item, index }) => {
-                    return (
-                        <TouchableOpacity onPress={() => onSelectScreening(item, index)}>
-                            <Text style={movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && { color: 'red' }}>
-                                {moment(item.date).format('DD/MM HH:mm')}
-                            </Text>
-                        </TouchableOpacity>
-                    )
-                }}
-                ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
-                style={{ flexGrow: 0, marginVertical: 10 }}
-            />
-            {movieScreenings.length > 0 &&
-                <View>
-                    {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
+        <>
+            <SafeAreaView style={globalStyles.container}>
+                <Text>{movie.title}'s screenings</Text>
+                <Text>Hall {originalScreenings[selectedScreening].hall}</Text>
+                <Calendar
+                    week={week}
+                    date={date}
+                    setDate={setDate}
+                />
+                <FlatList
+                    horizontal
+                    data={movieScreenings}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item, index }) => {
                         return (
-                            <View style={styles.line} key={line}>
-                                <Text>{line}</Text>
-                                <View style={styles.seats}>
-                                    {movieScreenings[selectedScreening].seats[line].map((e, i) => {
-                                        return (
-                                            <TouchableOpacity
-                                                onPress={() => onSelectSeat(line, i)}
-                                                key={e.number}
-                                                disabled={!e.available}
-                                                style={[
-                                                    styles.seat,
-                                                    e.available ?
-                                                        (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
-                                                            styles.selected : styles.available)
-                                                        : styles.unavailable
-                                                ]}
-                                            >
-                                                <Text>{e.number + 1}</Text>
-                                            </TouchableOpacity>
-                                        )
-                                    })}
-                                </View>
-                                <Text>{line}</Text>
-                            </View>
+                            <TouchableOpacity onPress={() => onSelectScreening(item, index)}>
+                                <Text style={movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && { color: 'red' }}>
+                                    {moment(item.date).format('DD/MM HH:mm')}
+                                </Text>
+                            </TouchableOpacity>
                         )
-                    })}
-                    <Text>{price}₪</Text>
-                    <Button
-                        title='Book now'
-                        onPress={onBookSeats}
-                        disabled={selectedSeats.length === 0}
-                    />
+                    }}
+                    ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
+                    style={{ flexGrow: 0, marginVertical: 10 }}
+                />
+                {movieScreenings.length > 0 &&
+                    <View>
+                        {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
+                            return (
+                                <View style={styles.line} key={line}>
+                                    <Text>{line}</Text>
+                                    <View style={styles.seats}>
+                                        {movieScreenings[selectedScreening].seats[line].map((e, i) => {
+                                            return (
+                                                <TouchableOpacity
+                                                    onPress={() => onSelectSeat(line, i)}
+                                                    key={e.number}
+                                                    disabled={!e.available}
+                                                    style={[
+                                                        styles.seat,
+                                                        e.available ?
+                                                            (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
+                                                                styles.selected : styles.available)
+                                                            : styles.unavailable
+                                                    ]}
+                                                >
+                                                    <Text>{e.number + 1}</Text>
+                                                </TouchableOpacity>
+                                            )
+                                        })}
+                                    </View>
+                                    <Text>{line}</Text>
+                                </View>
+                            )
+                        })}
+                        <Text>{price}₪</Text>
+                        <Button
+                            title='Book now'
+                            onPress={onBookSeats}
+                            disabled={selectedSeats.length === 0}
+                        />
+                    </View>
+                }
+            </SafeAreaView>
+            <Modal
+                isVisible={isModalVisible}
+                onBackdropPress={() => setIsModalVisible(false)}
+                animationIn={"fadeIn"}
+                animationOut={"fadeOut"}
+                animationInTiming={500}
+                animationOutTiming={250}
+                useNativeDriver
+            >
+                <View style={styles.modalContainer}>
+                    <Text>Cancel reservation, are you sure?</Text>
+                    <TouchableOpacity
+                        onPress={onCancelReservation}
+                    >
+                        <Text>Yes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setIsModalVisible(false)}
+                    >
+                        <Text>No</Text>
+                    </TouchableOpacity>
                 </View>
-            }
-        </SafeAreaView>
+            </Modal>
+        </>
     )
 }
 
@@ -197,5 +229,15 @@ const styles = StyleSheet.create({
     },
     selected: {
         backgroundColor: 'lightblue'
+    },
+    modalContainer: {
+        width: width * 0.7,
+        alignSelf: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        elevation: 1
     }
 });
