@@ -237,7 +237,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 15,
         paddingVertical: 10,
-        paddingHorizontal: 15,
-        elevation: 1
+        paddingHorizontal: 15
     }
 });

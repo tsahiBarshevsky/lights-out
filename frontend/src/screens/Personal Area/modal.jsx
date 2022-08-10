@@ -180,8 +180,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
         borderRadius: 15,
-        paddingVertical: 10,
-        elevation: 1
+        paddingVertical: 10
     },
     textInputWrapper: {
         justifyContent: 'flex-start',

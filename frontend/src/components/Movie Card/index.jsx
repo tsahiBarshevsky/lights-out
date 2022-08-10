@@ -25,12 +25,12 @@ const styles = StyleSheet.create({
     container: {
         width: 270,
         height: 400,
-        backgroundColor: 'lightblue',
         borderRadius: 15,
         overflow: 'hidden'
     },
     image: {
         width: 270,
-        height: 400
+        height: 400,
+        borderRadius: 15
     }
 });

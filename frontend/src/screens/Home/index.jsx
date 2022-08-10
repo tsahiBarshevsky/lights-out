@@ -17,6 +17,7 @@ const HomeScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const sortPanelRef = useRef(null);
     const movies = useSelector(state => state.movies);
+    const screenings = useSelector(state => state.screenings);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -46,8 +47,12 @@ const HomeScreen = () => {
         return moment().isAfter(moment(movie.releaseDate));
     }
 
-    const showingNextWeekFilter = (movie) => {
-        return moment(movie.releaseDate).isoWeek() - moment().isoWeek() === 1;
+    const comingSoonFilter = (movie) => {
+        // return moment(movie.releaseDate).isoWeek() - moment().isoWeek() === 1;
+        const res = screenings.find((screening) => screening.movie.id === movie.tmdbID);
+        if (res === undefined)
+            return true;
+        return false;
     }
 
     useEffect(() => {
@@ -128,9 +133,9 @@ const HomeScreen = () => {
                             inactiveSlideOpacity={0.45}
                         />
                     </View>
-                    <Text style={styles.title}>Coming Next Week</Text>
+                    <Text style={styles.title}>Coming Soon</Text>
                     <Carousel
-                        data={movies.filter(showingNextWeekFilter)}
+                        data={movies.filter(comingSoonFilter)}
                         renderItem={(props) => <MovieCard {...props} />}
                         sliderWidth={Dimensions.get('window').width}
                         itemWidth={270}
