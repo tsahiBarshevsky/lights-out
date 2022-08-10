@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Dimensions, View, Text, RefreshControl, ScrollView } from 'react-native';
+import { SafeAreaView, StyleSheet, Dimensions, View, Text, RefreshControl, ScrollView, Animated, StatusBar } from 'react-native';
 import Carousel from 'react-native-snap-carousel-v4';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { Header, MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
 
+const headerHeight = 104;
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
@@ -20,6 +21,32 @@ const HomeScreen = () => {
     const screenings = useSelector(state => state.screenings);
     const dispatch = useDispatch();
     const navigation = useNavigation();
+
+    // Header animation handler
+    const ref = useRef(null);
+    const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+    const scrollY = useRef(new Animated.Value(0))
+    const handleScroll = Animated.event(
+        [
+            {
+                nativeEvent: {
+                    contentOffset: { y: scrollY.current },
+                },
+            },
+        ],
+        {
+            useNativeDriver: true,
+        },
+    );
+    const scrollYClamped = Animated.diffClamp(scrollY.current, 0, headerHeight);
+    const translateY = scrollYClamped.interpolate({
+        inputRange: [0, headerHeight],
+        outputRange: [0, -(headerHeight)],
+    });
+    const translateYNumber = useRef();
+    translateY.addListener(({ value }) => {
+        translateYNumber.current = value;
+    });
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -107,9 +134,16 @@ const HomeScreen = () => {
 
     return (
         <>
+            <StatusBar backgroundColor="#f1f2f6" barStyle='dark-content' />
             <SafeAreaView style={globalStyles.container}>
-                <ScrollView
+                <Animated.View style={[styles.header, { transform: [{ translateY }] }]}>
+                    <Header />
+                    <SearchBar sortPanelRef={sortPanelRef} />
+                </Animated.View>
+                <AnimatedScrollView
                     contentContainerStyle={styles.scrollView}
+                    ref={ref}
+                    onScroll={handleScroll}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
@@ -117,8 +151,6 @@ const HomeScreen = () => {
                         />
                     }
                 >
-                    <Header />
-                    <SearchBar sortPanelRef={sortPanelRef} />
                     <Text style={styles.title}>Now Showing</Text>
                     <View style={styles.carousel}>
                         <Carousel
@@ -145,7 +177,7 @@ const HomeScreen = () => {
                         decelerationRate="fast"
                         inactiveSlideOpacity={0.45}
                     />
-                </ScrollView>
+                </AnimatedScrollView>
             </SafeAreaView>
             <SortPanel sortPanelRef={sortPanelRef} />
         </>
@@ -155,6 +187,15 @@ const HomeScreen = () => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+    header: {
+        position: 'absolute',
+        backgroundColor: '#f1f2f6',
+        left: 0,
+        right: 0,
+        width: '100%',
+        zIndex: 1,
+        height: headerHeight
+    },
     title: {
         fontSize: 20,
         marginBottom: 10
@@ -163,6 +204,77 @@ const styles = StyleSheet.create({
         marginBottom: 35
     },
     scrollView: {
+        paddingTop: headerHeight,
         paddingBottom: 20
     }
 });
+
+// import React, { useRef } from 'react';
+// import { SafeAreaView, StyleSheet, StatusBar, Animated, View, Text, RefreshControl, ScrollView } from 'react-native';
+// import { globalStyles } from '../../utils/globalStyles';
+
+// const headerHeight = 58;
+
+// const HomeScreen = () => {
+//     const ref = useRef(null);
+//     const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+//     const scrollY = useRef(new Animated.Value(0))
+//     const handleScroll = Animated.event(
+//         [
+//             {
+//                 nativeEvent: {
+//                     contentOffset: { y: scrollY.current },
+//                 },
+//             },
+//         ],
+//         {
+//             useNativeDriver: true,
+//         },
+//     );
+//     const scrollYClamped = Animated.diffClamp(scrollY.current, 0, headerHeight);
+//     const translateY = scrollYClamped.interpolate({
+//         inputRange: [0, headerHeight],
+//         outputRange: [0, -(headerHeight)],
+//     });
+//     const translateYNumber = useRef();
+//     translateY.addListener(({ value }) => {
+//         translateYNumber.current = value;
+//     });
+
+//     return (
+//         <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
+//             <StatusBar backgroundColor="#1c1c1c" barStyle='dark-content' />
+//             <Animated.View style={[styles.header, { transform: [{ translateY }] }]}>
+//                 <Text style={{ color: 'white' }}>Header</Text>
+//             </Animated.View>
+//             <AnimatedScrollView
+//                 scrollEventThrottle={50}
+//                 ref={ref}
+//                 onScroll={handleScroll}
+//                 contentContainerStyle={{ paddingTop: headerHeight, backgroundColor: '#1c1c1c' }}
+//             >
+//                 {[...Array(50).keys()].map((item) => {
+//                     return (
+//                         <View key={item}>
+//                             <Text style={{ color: 'white' }}>{item}</Text>
+//                         </View>
+//                     )
+//                 })}
+//             </AnimatedScrollView>
+//         </SafeAreaView>
+//     )
+// }
+
+// export default HomeScreen;
+
+// const styles = StyleSheet.create({
+//     header: {
+//         position: 'absolute',
+//         backgroundColor: '#1c1c1c',
+//         left: 0,
+//         right: 0,
+//         width: '100%',
+//         zIndex: 1,
+//         height: headerHeight
+//     }
+// });
