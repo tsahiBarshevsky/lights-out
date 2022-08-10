@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, useWindowDimensions, Text, TouchableOpacity, ScrollView, View, FlatList } from 'react-native';
+import { StyleSheet, SafeAreaView, useWindowDimensions, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,9 +9,12 @@ import { SignUpTab, SignInTab } from '../../components';
 import { authentication } from '../../utils/firebase';
 import { signOutUser } from '../../redux/actions/user';
 import { signOut } from 'firebase/auth';
+import EditingModal from './modal';
 
 const PersonalAreaScreen = () => {
     const [index, setIndex] = useState(0);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [type, setType] = useState('');
     const user = useSelector(state => state.user);
     const reservations = useSelector(state => state.reservations);
     const navigation = useNavigation();
@@ -33,13 +36,52 @@ const PersonalAreaScreen = () => {
         }
     }
 
+    const onOpenModal = (type) => {
+        setType(type);
+        setIsModalVisible(true);
+    }
+
     const onSignOut = () => {
-        signOut(authentication);
-        dispatch(signOutUser());
+        // signOut(authentication);
+        // dispatch(signOutUser());
         setTimeout(() => {
             navigation.goBack();
         }, 200);
     }
+
+    const Header = () => (
+        <>
+            <View>
+                <Text>{user.firstName}</Text>
+                <TouchableOpacity
+                    onPress={() => onOpenModal('firstName')}
+                >
+                    <Text>Edit</Text>
+                </TouchableOpacity>
+            </View>
+            <View>
+                <Text>{user.lastName}</Text>
+                <TouchableOpacity
+                    onPress={() => onOpenModal('lastName')}
+                >
+                    <Text>Edit</Text>
+                </TouchableOpacity>
+            </View>
+            <Text>{authentication.currentUser.email}</Text>
+            <View>
+                <Text>{user.phone}</Text>
+                <TouchableOpacity
+                    onPress={() => onOpenModal('phone')}
+                >
+                    <Text>Edit</Text>
+                </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={onSignOut}>
+                <Text>Sign Out</Text>
+            </TouchableOpacity>
+            <Text>My reservations</Text>
+        </>
+    );
 
     const Separator = () => (
         <View style={styles.separator} />
@@ -69,45 +111,46 @@ const PersonalAreaScreen = () => {
             />
         </SafeAreaView>
     ) : (
-        <SafeAreaView style={globalStyles.container}>
-            <FlatList
-                data={reservations}
-                keyExtractor={(item) => item._id}
-                ListHeaderComponent={
-                    <View>
-                        <Text>{user.firstName} {user.lastName}</Text>
-                        <Text>{authentication.currentUser.email}</Text>
-                        <TouchableOpacity onPress={onSignOut}>
-                            <Text>Sign Out</Text>
-                        </TouchableOpacity>
-                        <Text>My reservations</Text>
-                    </View>
-                }
-                renderItem={({ item, index }) => {
-                    return (
-                        <View>
-                            <Text>#{item.orderID}</Text>
-                            <Text>{item.movie.title}</Text>
-                            <Text>Reservation date {moment(item.reservationDate).format('DD/MM/YY HH:mm')}</Text>
-                            <Text>Screening date {moment(item.date).format('DD/MM/YY HH:mm')}</Text>
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('Ticket', { ticket: item })}
-                            >
-                                <Text>View tickets</Text>
-                            </TouchableOpacity>
-                            {item.active && moment(new Date()).isBefore(moment(item.date)) &&
-                                <TouchableOpacity
-                                    onPress={() => navigation.navigate('Cancelation', { reservation: item, location: index })}
-                                >
-                                    <Text>Cancel reservation</Text>
-                                </TouchableOpacity>
-                            }
-                        </View>
-                    )
-                }}
-                ItemSeparatorComponent={Separator}
+        <>
+            <SafeAreaView style={globalStyles.container}>
+                <FlatList
+                    data={reservations}
+                    keyExtractor={(item) => item._id}
+                    ListHeaderComponent={Header}
+                    renderItem={({ item, index }) => {
+                        return (
+                            <View>
+                                <Text>#{item.orderID}</Text>
+                                <Text>{item.movie.title}</Text>
+                                <Text>Reservation date {moment(item.reservationDate).format('DD/MM/YY HH:mm')}</Text>
+                                <Text>Screening date {moment(item.date).format('DD/MM/YY HH:mm')}</Text>
+                                {item.active &&
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('Ticket', { ticket: item })}
+                                    >
+                                        <Text>View tickets</Text>
+                                    </TouchableOpacity>
+                                }
+                                {item.active && moment(new Date()).isBefore(moment(item.date)) &&
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('Cancelation', { reservation: item, location: index })}
+                                    >
+                                        <Text>Cancel reservation</Text>
+                                    </TouchableOpacity>
+                                }
+                            </View>
+                        )
+                    }}
+                    ItemSeparatorComponent={Separator}
+                />
+            </SafeAreaView>
+            <EditingModal
+                isModalVisible={isModalVisible}
+                setIsModalVisible={setIsModalVisible}
+                user={user}
+                field={type}
             />
-        </SafeAreaView>
+        </>
     )
 }
 

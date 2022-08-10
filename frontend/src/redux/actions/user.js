@@ -4,4 +4,14 @@ const signOutUser = () => {
     }
 };
 
-export { signOutUser };
+const updatePersonalDeatil = (field, value) => {
+    return {
+        type: 'UPDATE_PERSONAL_DETAIL',
+        payload: {
+            field: field,
+            value: value
+        }
+    }
+};
+
+export { signOutUser, updatePersonalDeatil };

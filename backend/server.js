@@ -203,6 +203,24 @@ app.post('/add-new-user', async (req, res) => {
     res.json(newUser._id);
 });
 
+app.post('/update-user-detail', async (req, res) => {
+    const userID = req.query.userID;
+    const value = req.body.value;
+    const field = req.body.field;
+    const filter = { _id: userID };
+    const update = { [`${field}`]: value };
+    User.findOneAndUpdate(filter, update,
+        function (err) {
+            if (err) {
+                console.log(err);
+                res.status(500).send(err);
+            }
+            else
+                res.json('Detail updated successfully')
+        }
+    );
+});
+
 // Get user information
 app.get('/get-user-info', async (req, res) => {
     const uid = req.query.uid;
