@@ -4,6 +4,7 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 
 // App screens
 import {
+    CancelationScreen,
     ChockoutScreen,
     HomeScreen,
     MovieScreen,
@@ -51,6 +52,7 @@ const AppNavigator = () => {
                 <Stack.Screen name='Search' component={SearchScreen} options={options} />
                 <Stack.Screen name='Personal area' component={PersonalAreaScreen} options={options} />
                 <Stack.Screen name='Ticket' component={TicketScreen} options={options} />
+                <Stack.Screen name='Cancelation' component={CancelationScreen} options={options} />
             </Stack.Navigator>
         </NavigationContainer>
     )

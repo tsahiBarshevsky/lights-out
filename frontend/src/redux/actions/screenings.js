@@ -8,4 +8,14 @@ const bookSeats = (seats, index) => {
     }
 };
 
-export { bookSeats };
+const unbookSeats = (seats, index) => {
+    return {
+        type: 'UNBOOK_SEATS',
+        payload: {
+            seats: seats,
+            index: index
+        }
+    }
+};
+
+export { bookSeats, unbookSeats };

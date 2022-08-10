@@ -10,7 +10,8 @@ const ReservationSchema = new mongoose.Schema({
     sum: { type: Number },
     payment: { type: Map },
     date: { type: Date },
-    reservationDate: { type: Date }
+    reservationDate: { type: Date },
+    active: { type: Boolean }
 });
 
 const Reservation = mongoose.model("reservations", ReservationSchema);

@@ -10,6 +10,12 @@ const reservationsReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 $push: [action.payload]
             });
+        case 'CANCEL_RESERVATION':
+            return update(state, {
+                [action.payload]: {
+                    $merge: { active: false }
+                }
+            });
         default:
             return state;
     }

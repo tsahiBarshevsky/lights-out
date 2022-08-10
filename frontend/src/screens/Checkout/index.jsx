@@ -137,8 +137,8 @@ const ChockoutScreen = ({ route }) => {
             })
             .then((res) => res.json())
             .then((res) => {
-                newReservation._id = res._id,
-                    newReservation.orderID = res.orderID
+                newReservation._id = res._id;
+                newReservation.orderID = res.orderID;
             })
             .then(() => {
                 const index = screenings.findIndex((item) => item._id === movieScreenings[selectedScreening]._id);

@@ -7,6 +7,7 @@ const screeningsReducer = (state = INITIAL_STATE, action) => {
         case 'SET_SCREENINGS':
             return action.screenings;
         case 'BOOK_SEATS':
+        case 'UNBOOK_SEATS':
             return update(state, {
                 [action.payload.index]: {
                     $merge: {

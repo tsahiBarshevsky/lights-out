@@ -5,4 +5,11 @@ const addNewReservation = (reservation) => {
     }
 };
 
-export { addNewReservation };
+const cancelReservation = (index) => {
+    return {
+        type: 'CANCEL_RESERVATION',
+        payload: index
+    }
+};
+
+export { addNewReservation, cancelReservation };

@@ -138,13 +138,38 @@ app.post('/book-seats', async (req, res) => {
         sum: req.body.newReservation.sum,
         payment: req.body.newReservation.payment,
         date: req.body.newReservation.date,
-        reservationDate: req.body.newReservation.reservationDate
+        reservationDate: req.body.newReservation.reservationDate,
+        active: true
     });
     await newReservation.save();
     res.json({
         _id: newReservation._id,
         orderID: newReservation.orderID
     });
+});
+
+// Unbook seats and deactivate reservation
+app.post('/cancel-reservation', async (req, res) => {
+    const screeningID = req.query.screeningID;
+    const filter = { _id: screeningID };
+    const update = { seats: req.body.seats };
+    Screening.findOneAndUpdate(filter, update,
+        function (err) {
+            if (err) {
+                console.log(err);
+                res.status(500).send(err);
+            }
+        }
+    );
+    const reservationID = req.query.reservationID;
+    Reservation.findOneAndUpdate({ "_id": reservationID }, { "active": false },
+        function (err) {
+            if (err) {
+                console.log(err);
+                res.status(500).send(err);
+            }
+        });
+    res.json('Reservation has been canceled successfully');
 });
 
 // Get all user's reservations

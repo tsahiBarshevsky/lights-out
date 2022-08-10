@@ -83,15 +83,26 @@ const PersonalAreaScreen = () => {
                         <Text>My reservations</Text>
                     </View>
                 }
-                renderItem={({ item }) => {
+                renderItem={({ item, index }) => {
                     return (
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('Ticket', { ticket: item })}
-                        >
+                        <View>
                             <Text>#{item.orderID}</Text>
                             <Text>{item.movie.title}</Text>
-                            <Text>{moment(item.reservationDate).format('DD/MM/YY HH:mm')}</Text>
-                        </TouchableOpacity>
+                            <Text>Reservation date {moment(item.reservationDate).format('DD/MM/YY HH:mm')}</Text>
+                            <Text>Screening date {moment(item.date).format('DD/MM/YY HH:mm')}</Text>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('Ticket', { ticket: item })}
+                            >
+                                <Text>View tickets</Text>
+                            </TouchableOpacity>
+                            {item.active && moment(new Date()).isBefore(moment(item.date)) &&
+                                <TouchableOpacity
+                                    onPress={() => navigation.navigate('Cancelation', { reservation: item, location: index })}
+                                >
+                                    <Text>Cancel reservation</Text>
+                                </TouchableOpacity>
+                            }
+                        </View>
                     )
                 }}
                 ItemSeparatorComponent={Separator}
