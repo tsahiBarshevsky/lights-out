@@ -67,16 +67,7 @@ app.get('/search-movie-by-name', async (req, res) => {
 
 // Add new movie
 app.post('/add-new-movie', async (req, res) => {
-    const newMovie = new Movie({
-        title: req.body.title,
-        tmdbID: req.body.tmdbID,
-        genre: req.body.genre,
-        overview: req.body.overview,
-        duration: req.body.duration,
-        posterPath: req.body.posterPath,
-        releaseDate: req.body.releaseDate,
-        rating: req.body.rating
-    });
+    const newMovie = new Movie(req.body.newMovie);
     await newMovie.save();
     res.json(newMovie._id);
 });
