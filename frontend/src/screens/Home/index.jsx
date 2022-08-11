@@ -144,12 +144,12 @@ const HomeScreen = () => {
                     contentContainerStyle={styles.scrollView}
                     ref={ref}
                     onScroll={handleScroll}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                        />
-                    }
+                // refreshControl={
+                //     <RefreshControl
+                //         refreshing={refreshing}
+                //         onRefresh={onRefresh}
+                //     />
+                // }
                 >
                     <Text style={styles.title}>Now Showing</Text>
                     <View style={styles.carousel}>

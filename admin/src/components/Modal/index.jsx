@@ -4,6 +4,7 @@ import { Button, Input, Typography } from '@mui/material';
 import moment from 'moment';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import { addNewMovie } from '../../redux/actions/movies';
 import './styles.sass';
 
@@ -66,6 +67,9 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
                 newMovie._id = res;
                 dispatch(addNewMovie(newMovie));
                 handleClose();
+                setTimeout(() => {
+                    toast('The movie has been added successfully');
+                }, 200);
             })
     }
 

@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { AuthContext } from '../../services/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 import { Movies, Sidebar } from '../../components';
 import './styles.sass';
 
@@ -38,20 +39,34 @@ const Dashboard = () => {
     }, [user, navigate, fetchData]);
 
     return (
-        <div className="dashboard-container">
-            <Sidebar
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
+        <>
+            <div className="dashboard-container">
+                <Sidebar
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                />
+                {(() => {
+                    switch (activeTab) {
+                        case 'movies':
+                            return <Movies />;
+                        default:
+                            return null;
+                    }
+                })()}
+            </div>
+            <ToastContainer
+                position="bottom-center"
+                theme='dark'
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
             />
-            {(() => {
-                switch (activeTab) {
-                    case 'movies':
-                        return <Movies />;
-                    default:
-                        return null;
-                }
-            })()}
-        </div>
+        </>
     )
 }
 

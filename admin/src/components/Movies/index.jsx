@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import SearchModal from '../Modal';
+import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
 
 const Movies = () => {
