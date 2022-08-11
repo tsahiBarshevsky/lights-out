@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useCallback } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { AuthContext } from '../../services/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Movies, Sidebar } from '../../components';
 import './styles.sass';
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
-    const movies = useSelector(state => state.movies);
+    const [activeTab, setActiveTab] = useState('movies');
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -38,18 +39,18 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            {movies.map((movie) => {
-                return (
-                    <div key={movie._id}>
-                        <h3>{movie.title}</h3>
-                        <img
-                            src={`https://image.tmdb.org/t/p/original/${movie.posterPath}`}
-                            style={{ width: 270, height: 400, borderRadius: 15 }}
-                            alt={movie.title}
-                        />
-                    </div>
-                )
-            })}
+            <Sidebar
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+            />
+            {(() => {
+                switch (activeTab) {
+                    case 'movies':
+                        return <Movies />;
+                    default:
+                        return null;
+                }
+            })()}
         </div>
     )
 }
