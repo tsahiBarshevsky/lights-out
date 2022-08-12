@@ -1,21 +1,8 @@
-const bookSeats = (seats, index) => {
+const addNewScreening = (newScreening) => {
     return {
-        type: 'BOOK_SEATS',
-        payload: {
-            seats: seats,
-            index: index
-        }
+        type: 'ADD_NEW_SCREENING',
+        payload: newScreening
     }
 };
 
-const unbookSeats = (seats, index) => {
-    return {
-        type: 'UNBOOK_SEATS',
-        payload: {
-            seats: seats,
-            index: index
-        }
-    }
-};
-
-export { bookSeats, unbookSeats };
+export { addNewScreening };

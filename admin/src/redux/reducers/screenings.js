@@ -6,14 +6,9 @@ const screeningsReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case 'SET_SCREENINGS':
             return action.screenings;
-        case 'BOOK_SEATS':
-        case 'UNBOOK_SEATS':
+        case 'ADD_NEW_SCREENING':
             return update(state, {
-                [action.payload.index]: {
-                    $merge: {
-                        seats: action.payload.seats
-                    }
-                }
+                $push: [action.payload]
             });
         default:
             return state;

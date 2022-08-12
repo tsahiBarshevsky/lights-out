@@ -110,11 +110,19 @@ app.post('/add-new-hall', async (req, res) => {
 
 /* ====== Screenings ======= */
 
+// Get all screenings
 app.get('/get-all-screenings', async (req, res) => {
     const screenings = await Screening.find({}).sort({ date: 1 }).exec();
     console.log(`${screenings.length} screenings found`);
     res.json(screenings);
 });
+
+// Add new screening
+app.post('/add-new-screening', async (req, res) => {
+    const newScreening = new Screening(req.body.newScreening);
+    await newScreening.save();
+    res.json(newScreening._id);
+})
 
 // Book seats and add new reservation
 app.post('/book-seats', async (req, res) => {

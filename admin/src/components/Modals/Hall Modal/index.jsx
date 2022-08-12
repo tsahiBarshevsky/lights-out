@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Modal from 'styled-react-modal';
-import { Button, Input, Typography } from '@mui/material';
+import { Button, Input } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import update from 'immutability-helper';
@@ -107,8 +107,10 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                     value={numberOfLines}
                     onChange={handleChangeNumberOfLines}
                     type="number"
-                    inputProps={{ min: 1, max: 10 }}
+                    inputProps={{ min: 1, max: 20 }}
                 />
+            </form>
+            <div className="seats">
                 {Object.keys(seats).map((line) => {
                     return (
                         <div>
@@ -126,13 +128,13 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                         </div>
                     )
                 })}
-                <Button
-                    variant="contained"
-                    onClick={onAddNewHall}
-                >
-                    Add
-                </Button>
-            </form>
+            </div>
+            <Button
+                variant="contained"
+                onClick={onAddNewHall}
+            >
+                Add
+            </Button>
         </StyledModal>
     )
 }
