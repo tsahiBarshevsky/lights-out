@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import SearchModal from '../Modal';
+import SearchModal from '../Modals/Search Modal';
 import { deleteMovie } from '../../redux/actions/movies';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';

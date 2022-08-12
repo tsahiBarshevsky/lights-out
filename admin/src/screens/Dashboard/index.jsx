@@ -3,7 +3,7 @@ import { AuthContext } from '../../services/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import { Movies, Sidebar } from '../../components';
+import { Halls, Movies, Sidebar } from '../../components';
 import './styles.sass';
 
 const Dashboard = () => {
@@ -49,6 +49,8 @@ const Dashboard = () => {
                     switch (activeTab) {
                         case 'movies':
                             return <Movies />;
+                        case 'halls':
+                            return <Halls />;
                         default:
                             return null;
                     }

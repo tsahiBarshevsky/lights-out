@@ -103,10 +103,7 @@ app.get('/get-all-halls', async (req, res) => {
 });
 
 app.post('/add-new-hall', async (req, res) => {
-    const newHall = new Hall({
-        number: req.body.number,
-        seats: req.body.seats
-    });
+    const newHall = new Hall(req.body.newHall);
     await newHall.save();
     res.json(newHall._id);
 });
