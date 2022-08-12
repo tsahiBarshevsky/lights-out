@@ -72,6 +72,19 @@ app.post('/add-new-movie', async (req, res) => {
     res.json(newMovie._id);
 });
 
+app.post('/delete-movie', async (req, res) => {
+    const id = req.query.id;
+    Movie.findByIdAndDelete(id,
+        function (err) {
+            if (err) {
+                console.log("Error: " + err)
+                res.send(err);
+            }
+        }
+    );
+    res.json('The movie has been added successfully');
+});
+
 /* ====== Halls ======= */
 
 app.get('/get-all-halls', async (req, res) => {

@@ -5,4 +5,11 @@ const addNewMovie = (newMovie) => {
     }
 };
 
-export { addNewMovie };
+const deleteMovie = (index) => {
+    return {
+        type: 'DELETE_MOVIE',
+        payload: index
+    }
+};
+
+export { addNewMovie, deleteMovie };

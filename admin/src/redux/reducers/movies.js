@@ -10,6 +10,8 @@ const moviesReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 $push: [action.payload]
             });
+        case 'DELETE_MOVIE':
+            return update(state, { $splice: [[action.payload, 1]] });
         default:
             return state;
     }
