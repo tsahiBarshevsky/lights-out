@@ -68,7 +68,17 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
                 dispatch(addNewMovie(newMovie));
                 handleClose();
                 setTimeout(() => {
-                    toast('The movie has been added successfully');
+                    toast('The movie has been added successfully', {
+                        position: "bottom-center",
+                        type: 'success',
+                        autoClose: 5000,
+                        theme: 'dark',
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined
+                    });
                 }, 200);
             })
     }

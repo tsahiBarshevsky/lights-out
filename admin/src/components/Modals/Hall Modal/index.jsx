@@ -74,7 +74,17 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                 newHall._id = res;
                 dispatch(addNewHall(newHall));
                 handleClose();
-                toast('The hall has been added successfully');
+                toast('The hall has been added successfully', {
+                    position: "bottom-center",
+                    type: 'success',
+                    autoClose: 5000,
+                    theme: 'dark',
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined
+                });
             });
     }
 

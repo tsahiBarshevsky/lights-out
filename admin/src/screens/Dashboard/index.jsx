@@ -58,18 +58,7 @@ const Dashboard = () => {
                     }
                 })()}
             </div>
-            <ToastContainer
-                position="bottom-center"
-                theme='dark'
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
+            <ToastContainer />
         </>
     )
 }

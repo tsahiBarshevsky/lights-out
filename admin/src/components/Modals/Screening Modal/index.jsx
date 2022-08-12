@@ -58,8 +58,18 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
             .then((res) => {
                 newScreening._id = res;
                 dispatch(addNewScreening(newScreening));
-                toast('The screening has been added successfully');
                 handleClose();
+                toast('The screening has been added successfully', {
+                    position: "bottom-center",
+                    type: 'success',
+                    autoClose: 5000,
+                    theme: 'dark',
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined
+                });
             });
     }
 

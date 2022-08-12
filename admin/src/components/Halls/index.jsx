@@ -31,8 +31,18 @@ const Halls = () => {
             })
             .then((res) => res.json())
             .then((res) => {
-                toast(res);
                 dispatch(deleteHall(index));
+                toast(res, {
+                    position: "bottom-center",
+                    type: 'success',
+                    autoClose: 5000,
+                    theme: 'dark',
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined
+                });
             })
             .catch((error) => console.log(error));
     }
