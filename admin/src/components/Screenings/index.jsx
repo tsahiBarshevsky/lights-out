@@ -45,29 +45,33 @@ const Screenings = () => {
             <div className="screenings-container">
                 <Button onClick={() => setIsOpen(true)} variant="contained">Add New Screening</Button>
                 <table id="screenings">
-                    <tr>
-                        <th><h3>Movie</h3></th>
-                        <th><h3>Hall</h3></th>
-                        <th><h3>Date And Hour</h3></th>
-                        <th><h3>Options</h3></th>
-                    </tr>
-                    {screenings.map((screening, index) => {
-                        return (
-                            <tr key={screening._id}>
-                                <td><h3>{screening.movie.title}</h3></td>
-                                <td><h3>{screening.hall}</h3></td>
-                                <td><h3>{moment(screening.date).format('DD/MM/YYYY HH:mm')}</h3></td>
-                                <td>
-                                    <Button
-                                        variant="contained"
-                                        onClick={() => onDeleteScreening(screening._id, index)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </td>
-                            </tr>
-                        )
-                    })}
+                    <thead>
+                        <tr>
+                            <th><h3>Movie</h3></th>
+                            <th><h3>Hall</h3></th>
+                            <th><h3>Date And Hour</h3></th>
+                            <th><h3>Options</h3></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {screenings.map((screening, index) => {
+                            return (
+                                <tr key={screening._id}>
+                                    <td><h3>{screening.movie.title}</h3></td>
+                                    <td><h3>{screening.hall}</h3></td>
+                                    <td><h3>{moment(screening.date).format('DD/MM/YYYY HH:mm')}</h3></td>
+                                    <td>
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => onDeleteScreening(screening._id, index)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
                 </table>
             </div>
             <ScreeningModal

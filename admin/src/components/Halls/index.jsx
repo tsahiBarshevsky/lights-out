@@ -52,31 +52,35 @@ const Halls = () => {
             <div className="halls-container">
                 <Button onClick={() => setIsOpen(true)} variant="contained">Add New Hall</Button>
                 <table id="halls">
-                    <tr>
-                        <th><h3>Hall</h3></th>
-                        <th><h3>Type</h3></th>
-                        <th><h3>Number Of Lines</h3></th>
-                        <th><h3>Number Of Seats</h3></th>
-                        <th><h3>Options</h3></th>
-                    </tr>
-                    {halls.map((hall, index) => {
-                        return (
-                            <tr key={hall._id}>
-                                <td><h3>#{hall.number}</h3></td>
-                                <td><h3>{hall.type}</h3></td>
-                                <td><h3>{Object.keys(hall.seats).length}</h3></td>
-                                <td><h3>{calculateNumberOfSeats(hall.seats)}</h3></td>
-                                <td>
-                                    <Button
-                                        variant="contained"
-                                        onClick={() => onDeleteHall(hall._id, index)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </td>
-                            </tr>
-                        )
-                    })}
+                    <thead>
+                        <tr>
+                            <th><h3>Hall</h3></th>
+                            <th><h3>Type</h3></th>
+                            <th><h3>Number Of Lines</h3></th>
+                            <th><h3>Number Of Seats</h3></th>
+                            <th><h3>Options</h3></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {halls.map((hall, index) => {
+                            return (
+                                <tr key={hall._id}>
+                                    <td><h3>#{hall.number}</h3></td>
+                                    <td><h3>{hall.type}</h3></td>
+                                    <td><h3>{Object.keys(hall.seats).length}</h3></td>
+                                    <td><h3>{calculateNumberOfSeats(hall.seats)}</h3></td>
+                                    <td>
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => onDeleteHall(hall._id, index)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
                 </table>
             </div>
             <HallsModal

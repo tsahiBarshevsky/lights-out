@@ -45,6 +45,47 @@ const Movies = () => {
             <div className="movies-container">
                 <Button onClick={() => setIsOpen(true)} variant="contained">Add New Movie</Button>
                 <table id="movies">
+                    <thead>
+                        <tr>
+                            <th style={{ width: 130 }}>
+                                <h3>Poster</h3>
+                            </th>
+                            <th><h3>Title</h3></th>
+                            <th><h3>Genre</h3></th>
+                            <th><h3>Duration</h3></th>
+                            <th><h3>Release Date</h3></th>
+                            <th><h3>Options</h3></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {movies.map((movie, index) => {
+                            return (
+                                <tr key={movie._id}>
+                                    <td>
+                                        <img
+                                            src={`https://image.tmdb.org/t/p/original/${movie.posterPath}`}
+                                            alt={movie.title}
+                                            style={{ width: 90, height: '100%', borderRadius: 10 }}
+                                        />
+                                    </td>
+                                    <td><h3>{movie.title}</h3></td>
+                                    <td><h3>{movie.genre}</h3></td>
+                                    <td><h3>{movie.duration}</h3></td>
+                                    <td><h3>{moment(movie.releaseDate).format('DD/MM/YY')}</h3></td>
+                                    <td>
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => onDeleteMovie(movie._id, index)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+                {/* <table id="movies">
                     <tr>
                         <th style={{ width: 130 }}>
                             <h3>Poster</h3>
@@ -57,7 +98,7 @@ const Movies = () => {
                     </tr>
                     {movies.map((movie, index) => {
                         return (
-                            <tr key={movie.id}>
+                            <tr key={movie._id}>
                                 <td>
                                     <img
                                         src={`https://image.tmdb.org/t/p/original/${movie.posterPath}`}
@@ -80,7 +121,7 @@ const Movies = () => {
                             </tr>
                         )
                     })}
-                </table>
+                </table> */}
             </div>
             <SearchModal
                 isOpen={isOpen}
