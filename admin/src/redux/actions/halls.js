@@ -5,4 +5,11 @@ const addNewHall = (newHall) => {
     }
 };
 
-export { addNewHall };
+const deleteHall = (index) => {
+    return {
+        type: 'DELETE_HALL',
+        payload: index
+    }
+};
+
+export { addNewHall, deleteHall };

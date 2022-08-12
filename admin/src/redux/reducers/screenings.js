@@ -10,6 +10,8 @@ const screeningsReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 $push: [action.payload]
             });
+        case 'DELETE_SCREENING':
+            return update(state, { $splice: [[action.payload, 1]] });
         default:
             return state;
     }

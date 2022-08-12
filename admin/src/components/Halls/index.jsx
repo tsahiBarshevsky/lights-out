@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import HallsModal from '../Modals/Hall Modal';
+import { deleteHall } from '../../redux/actions/halls';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
 
@@ -19,6 +20,23 @@ const Halls = () => {
         return sum;
     }
 
+    const onDeleteHall = (id, index) => {
+        fetch(`/delete-screening?id=${id}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                toast(res);
+                dispatch(deleteHall(index));
+            })
+            .catch((error) => console.log(error));
+    }
+
     return (
         <>
             <div className="halls-container">
@@ -31,9 +49,9 @@ const Halls = () => {
                         <th><h3>Number Of Seats</h3></th>
                         <th><h3>Options</h3></th>
                     </tr>
-                    {halls.map((hall) => {
+                    {halls.map((hall, index) => {
                         return (
-                            <tr key={hall.id}>
+                            <tr key={hall._id}>
                                 <td><h3>#{hall.number}</h3></td>
                                 <td><h3>{hall.type}</h3></td>
                                 <td><h3>{Object.keys(hall.seats).length}</h3></td>
@@ -41,6 +59,7 @@ const Halls = () => {
                                 <td>
                                     <Button
                                         variant="contained"
+                                        onClick={() => onDeleteHall(hall._id, index)}
                                     >
                                         Delete
                                     </Button>

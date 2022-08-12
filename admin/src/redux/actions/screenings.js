@@ -5,4 +5,11 @@ const addNewScreening = (newScreening) => {
     }
 };
 
-export { addNewScreening };
+const deleteScreening = (index) => {
+    return {
+        type: 'DELETE_SCREENING',
+        payload: index
+    }
+};
+
+export { addNewScreening, deleteScreening };

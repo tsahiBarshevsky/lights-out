@@ -122,7 +122,20 @@ app.post('/add-new-screening', async (req, res) => {
     const newScreening = new Screening(req.body.newScreening);
     await newScreening.save();
     res.json(newScreening._id);
-})
+});
+
+app.post('/delete-screening', async (req, res) => {
+    const id = req.query.id;
+    Screening.findByIdAndDelete(id,
+        function (err) {
+            if (err) {
+                console.log("Error: " + err)
+                res.send(err);
+            }
+        }
+    );
+    res.json('The screening has been added successfully');
+});
 
 // Book seats and add new reservation
 app.post('/book-seats', async (req, res) => {

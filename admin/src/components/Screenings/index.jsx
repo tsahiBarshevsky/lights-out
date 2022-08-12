@@ -3,14 +3,32 @@ import { Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import ScreeningModal from '../Modals/Screening Modal';
+import { deleteScreening } from '../../redux/actions/screenings';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
-import ScreeningModal from '../Modals/Screening Modal';
 
 const Screenings = () => {
     const [isOpen, setIsOpen] = useState(false);
     const screenings = useSelector(state => state.screenings);
     const dispatch = useDispatch();
+
+    const onDeleteScreening = (id, index) => {
+        fetch(`/delete-screening?id=${id}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                toast(res);
+                dispatch(deleteScreening(index));
+            })
+            .catch((error) => console.log(error));
+    }
 
     return (
         <>
@@ -23,15 +41,16 @@ const Screenings = () => {
                         <th><h3>Date And Hour</h3></th>
                         <th><h3>Options</h3></th>
                     </tr>
-                    {screenings.map((screening) => {
+                    {screenings.map((screening, index) => {
                         return (
-                            <tr key={screening.id}>
+                            <tr key={screening._id}>
                                 <td><h3>{screening.movie.title}</h3></td>
                                 <td><h3>{screening.hall}</h3></td>
                                 <td><h3>{moment(screening.date).format('DD/MM/YYYY HH:mm')}</h3></td>
                                 <td>
                                     <Button
                                         variant="contained"
+                                        onClick={() => onDeleteScreening(screening._id, index)}
                                     >
                                         Delete
                                     </Button>
