@@ -7,11 +7,24 @@ import ScreeningModal from '../Modals/Screening Modal';
 import { deleteScreening } from '../../redux/actions/screenings';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
+import MovieScreeningModal from '../Modals/Movie Screening Modal';
 
 const Screenings = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [chosenScreening, setChosenScreening] = useState({});
+    const [showScreening, setShowScreening] = useState(false);
     const screenings = useSelector(state => state.screenings);
     const dispatch = useDispatch();
+
+    const handleClose = () => {
+        setShowScreening(false);
+        setChosenScreening({});
+    }
+
+    const onOpenScreening = (screening) => {
+        setShowScreening(true);
+        setChosenScreening(screening);
+    }
 
     const onDeleteScreening = (id, index) => {
         fetch(`/delete-screening?id=${id}`,
@@ -67,6 +80,12 @@ const Screenings = () => {
                                         >
                                             Delete
                                         </Button>
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => onOpenScreening(screening)}
+                                        >
+                                            View
+                                        </Button>
                                     </td>
                                 </tr>
                             )
@@ -77,6 +96,11 @@ const Screenings = () => {
             <ScreeningModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
+            />
+            <MovieScreeningModal
+                isOpen={showScreening}
+                handleClose={handleClose}
+                selectedScreening={chosenScreening}
             />
         </>
     )
