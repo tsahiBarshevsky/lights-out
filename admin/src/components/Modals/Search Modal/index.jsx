@@ -38,49 +38,58 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
     }
 
     const onAddNewMovie = async (id) => {
-        const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${tmdbApiKey}&language=en-US`);
-        const movieFound = await response.json();
-        const newMovie = {
-            title: movieFound.title,
-            tmdbID: id,
-            genre: movieFound.genres[0].name,
-            overview: movieFound.overview,
-            duration: movieFound.runtime,
-            posterPath: movieFound.poster_path.substring(1),
-            releaseDate: movieFound.release_date,
-            rating: movieFound.vote_average,
-            backdropPath: movieFound.backdrop_path.substring(1)
-        };
-        fetch(`/add-new-movie`,
-            {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    newMovie: newMovie
-                })
-            })
-            .then((res) => res.json())
-            .then((res) => {
-                newMovie._id = res;
-                dispatch(addNewMovie(newMovie));
-                handleClose();
-                setTimeout(() => {
-                    toast('The movie has been added successfully', {
-                        position: "bottom-center",
-                        type: 'success',
-                        autoClose: 5000,
-                        theme: 'dark',
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined
+        Promise.all([
+            fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${tmdbApiKey}&language=en-US`),
+            fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${tmdbApiKey}&language=en-US`)
+        ])
+            .then(([movie, credits]) => Promise.all([
+                movie.json(),
+                credits.json()
+            ]))
+            .then(([movie, credits]) => {
+                const newMovie = {
+                    title: movie.title,
+                    tmdbID: id,
+                    genre: movie.genres[0].name,
+                    overview: movie.overview,
+                    duration: movie.runtime,
+                    posterPath: movie.poster_path.substring(1),
+                    releaseDate: movie.release_date,
+                    rating: movie.vote_average,
+                    backdropPath: movie.backdrop_path.substring(1),
+                    cast: credits.cast
+                };
+                fetch(`/add-new-movie`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            newMovie: newMovie
+                        })
+                    })
+                    .then((res) => res.json())
+                    .then((res) => {
+                        newMovie._id = res;
+                        dispatch(addNewMovie(newMovie));
+                        handleClose();
+                        setTimeout(() => {
+                            toast('The movie has been added successfully', {
+                                position: "bottom-center",
+                                type: 'success',
+                                autoClose: 5000,
+                                theme: 'dark',
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined
+                            });
+                        }, 200);
                     });
-                }, 200);
-            })
+            });
     }
 
     return (

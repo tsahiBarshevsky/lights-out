@@ -9,7 +9,8 @@ const MovieSchema = new mongoose.Schema({
     posterPath: { type: String },
     backdropPath: { type: String },
     releaseDate: { type: Date },
-    rating: { type: Number }
+    rating: { type: Number },
+    cast: { type: Array }
 });
 
 const Movie = mongoose.model("movies", MovieSchema);
