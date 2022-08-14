@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import moment from 'moment';
+import { primary } from '../../utils/theme';
 
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
@@ -33,9 +34,9 @@ const Calendar = ({ week, date, setDate }) => {
                         return acc === null ? [elem] : [...acc, <Text key={elem}>/</Text>, elem]
                     }, null)
                     :
-                    <Text>{uniqueMonths[0]}</Text>
+                    <Text style={styles.text}>{uniqueMonths[0]}</Text>
                 }
-                <Text> {new Date().getFullYear()}</Text>
+                <Text style={styles.text}> {new Date().getFullYear()}</Text>
             </View>
             <FlatList
                 data={week}
@@ -50,6 +51,7 @@ const Calendar = ({ week, date, setDate }) => {
                         <TouchableOpacity
                             onPress={() => setDate(moment(item))}
                             key={index}
+                            activeOpacity={1}
                             style={[
                                 styles.dayContainer,
                                 selectedDate && styles.selectedDay
@@ -57,7 +59,13 @@ const Calendar = ({ week, date, setDate }) => {
                         >
                             <Text style={[styles.text, styles.day]}>{d.format('ddd')}</Text>
                             <View style={[styles.dateContainer, selectedDate ? styles.selectedDate : styles.otherDate]}>
-                                <Text style={selectedDate ? styles.date : { color: '#b8b9bb' }}>
+                                <Text
+                                    style={[
+                                        styles.text,
+                                        { transform: [{ translateY: 1 }] },
+                                        selectedDate ? { color: 'black' } : { color: 'white' }
+                                    ]}
+                                >
                                     {d.format('DD')}
                                 </Text>
                             </View>
@@ -75,15 +83,15 @@ const Calendar = ({ week, date, setDate }) => {
 export default Calendar;
 
 const styles = StyleSheet.create({
+    text: {
+        fontFamily: 'Poppins',
+        color: 'white'
+    },
     container: {
-        flexGrow: 0,
+        flexGrow: 0
     },
     wrapper: {
-        paddingHorizontal: 15,
-        marginVertical: 10
-    },
-    text: {
-        color: 'black'
+        // paddingHorizontal: 15
     },
     month: {
         flexDirection: 'row',
@@ -91,7 +99,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     separator: {
-        paddingHorizontal: 3
+        paddingHorizontal: 5
     },
     dayContainer: {
         flexDirection: 'column',
@@ -99,29 +107,29 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 7,
         paddingVertical: 5,
-        borderRadius: 50
+        borderRadius: 50,
+        backgroundColor: '#33333b',
+        width: 42
     },
     selectedDay: {
-        backgroundColor: 'lightgreen'
+        backgroundColor: primary
     },
     day: {
-        marginBottom: 10
+        marginTop: 2,
+        marginBottom: 10,
+        fontSize: 12
     },
     dateContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: 25,
-        height: 25,
-        borderRadius: 25 / 2
+        width: 30,
+        height: 30,
+        borderRadius: 15
     },
     selectedDate: {
         backgroundColor: 'white'
     },
     otherDate: {
-        backgroundColor: '#f1f2f6'
-    },
-    date: {
-        color: 'lightgreen',
-        fontWeight: 'bold'
+        backgroundColor: 'transparent'
     }
 });

@@ -20,7 +20,7 @@ const MovieScreen = ({ route }) => {
     return (
         <View style={globalStyles.container}>
             <ScrollView>
-                <Header screen={"Movie Detail"} />
+                <Header caption={"Movie Detail"} />
                 <View style={styles.poster}>
                     <Image
                         source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}

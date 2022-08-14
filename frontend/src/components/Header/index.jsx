@@ -4,7 +4,7 @@ import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { background } from '../../utils/theme';
 
-const Hedaer = ({ screen }) => {
+const Hedaer = ({ caption }) => {
     const navigation = useNavigation();
 
     return (
@@ -17,7 +17,7 @@ const Hedaer = ({ screen }) => {
                 <Entypo name="chevron-small-left" size={30} color="white" />
             </TouchableOpacity>
             <View style={styles.caption}>
-                <Text style={styles.text}>{screen}</Text>
+                <Text style={styles.text}>{caption}</Text>
             </View>
         </View>
     )

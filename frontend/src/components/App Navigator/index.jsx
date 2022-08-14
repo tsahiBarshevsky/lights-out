@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { background } from '../../utils/theme';
 
 // App screens
 import {
@@ -20,7 +21,7 @@ const navigatorTheme = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        background: '#f1f2f6'
+        background: background
     }
 };
 const options = {
