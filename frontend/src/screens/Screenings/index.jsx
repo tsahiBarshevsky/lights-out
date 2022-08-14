@@ -1,18 +1,16 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Button, BackHandler, Dimensions } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, BackHandler } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import update from 'immutability-helper';
-import Modal from "react-native-modal";
-import { bookSeats } from '../../redux/actions/screenings';
 import { globalStyles } from '../../utils/globalStyles';
 import { ticketPrice } from '../../utils/utilities';
 import { Calendar, Header } from '../../components';
 import { WeekContext } from '../../utils/context';
 import { primary, secondary } from '../../utils/theme';
+import WarningModal from './modal';
 
-const { width } = Dimensions.get('window');
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
 
@@ -112,11 +110,15 @@ const ScreeningsScreen = ({ route }) => {
                 <Header caption={"Select Seats"} />
                 {movieScreenings.length > 0 &&
                     <>
+                        <View style={styles.screen}>
+                            <View style={styles.screenLine} />
+                            <Text style={[styles.text, styles.screenText]}>Screen</Text>
+                        </View>
                         <View>
                             {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
                                 return (
                                     <View style={styles.line} key={line}>
-                                        <Text style={styles.text}>{line}</Text>
+                                        <Text style={[styles.text, styles.lineText]}>{line}</Text>
                                         <View style={styles.seats}>
                                             {movieScreenings[selectedScreening].seats[line].map((e, i) => {
                                                 return (
@@ -133,15 +135,25 @@ const ScreeningsScreen = ({ route }) => {
                                                                 : styles.unavailable
                                                         ]}
                                                     >
-                                                        <Text style={styles.text}>{e.number + 1}</Text>
+                                                        <Text style={[styles.seatNumber, !e.available && { color: 'white' }]}>
+                                                            {e.number + 1}
+                                                        </Text>
                                                     </TouchableOpacity>
                                                 )
                                             })}
                                         </View>
-                                        <Text style={styles.text}>{line}</Text>
+                                        <Text style={[styles.text, styles.lineText]}>{line}</Text>
                                     </View>
                                 )
                             })}
+                        </View>
+                        <View style={styles.legend}>
+                            <View style={[styles.circle, styles.availableSeat]} />
+                            <Text style={[styles.text, styles.legendCaption]}>Available</Text>
+                            <View style={[styles.circle, styles.selectedSeat]} />
+                            <Text style={[styles.text, styles.legendCaption]}>Selected</Text>
+                            <View style={[styles.circle, styles.reservedSeat]} />
+                            <Text style={[styles.text, styles.legendCaption]}>Reserved</Text>
                         </View>
                         <View style={styles.dates}>
                             <Text style={[styles.text, { alignSelf: 'center' }]}>
@@ -161,6 +173,7 @@ const ScreeningsScreen = ({ route }) => {
                                     return (
                                         <TouchableOpacity
                                             onPress={() => onSelectScreening(item, index)}
+                                            activeOpacity={1}
                                             style={[
                                                 styles.hourButton,
                                                 movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && styles.selectedHour
@@ -181,101 +194,30 @@ const ScreeningsScreen = ({ route }) => {
                                 ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
                                 style={styles.hours}
                             />
-                            <Text style={styles.text}>{price}₪</Text>
-                            <Text style={styles.text}>{selectedSeats.length} Seats</Text>
-                            <Button
-                                title='Book now'
-                                onPress={onBookSeats}
-                                disabled={selectedSeats.length === 0}
-                            />
+                            <View style={styles.book}>
+                                <View style={styles.priceAndSeats}>
+                                    <Text style={[styles.text, styles.seatsCaption]}>
+                                        {selectedSeats.length} Seats
+                                    </Text>
+                                    <Text style={[styles.text, styles.price]}>{price}₪</Text>
+                                </View>
+                                <TouchableOpacity
+                                    onPress={onBookSeats}
+                                    disabled={selectedSeats.length === 0}
+                                    style={[styles.button, selectedSeats.length === 0 && styles.disabled]}
+                                >
+                                    <Text style={styles.buttonCaption}>Book Tickets</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </>
                 }
-                {/* <Text>{movie.title}'s screenings</Text>
-                <Text>Hall {originalScreenings[selectedScreening].hall}</Text>
-                <Calendar
-                    week={week}
-                    date={date}
-                    setDate={setDate}
-                />
-                <FlatList
-                    horizontal
-                    data={movieScreenings}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item, index }) => {
-                        return (
-                            <TouchableOpacity onPress={() => onSelectScreening(item, index)}>
-                                <Text style={movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && { color: 'red' }}>
-                                    {moment(item.date).format('DD/MM HH:mm')}
-                                </Text>
-                            </TouchableOpacity>
-                        )
-                    }}
-                    ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
-                    style={{ flexGrow: 0, marginVertical: 10 }}
-                />
-                {movieScreenings.length > 0 &&
-                    <View>
-                        {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
-                            return (
-                                <View style={styles.line} key={line}>
-                                    <Text>{line}</Text>
-                                    <View style={styles.seats}>
-                                        {movieScreenings[selectedScreening].seats[line].map((e, i) => {
-                                            return (
-                                                <TouchableOpacity
-                                                    onPress={() => onSelectSeat(line, i)}
-                                                    key={e.number}
-                                                    disabled={!e.available}
-                                                    style={[
-                                                        styles.seat,
-                                                        e.available ?
-                                                            (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
-                                                                styles.selected : styles.available)
-                                                            : styles.unavailable
-                                                    ]}
-                                                >
-                                                    <Text>{e.number + 1}</Text>
-                                                </TouchableOpacity>
-                                            )
-                                        })}
-                                    </View>
-                                    <Text>{line}</Text>
-                                </View>
-                            )
-                        })}
-                        <Text>{price}₪</Text>
-                        <Button
-                            title='Book now'
-                            onPress={onBookSeats}
-                            disabled={selectedSeats.length === 0}
-                        />
-                    </View>
-                } */}
             </SafeAreaView>
-            <Modal
-                isVisible={isModalVisible}
-                onBackdropPress={() => setIsModalVisible(false)}
-                animationIn={"fadeIn"}
-                animationOut={"fadeOut"}
-                animationInTiming={500}
-                animationOutTiming={250}
-                useNativeDriver
-            >
-                <View style={styles.modalContainer}>
-                    <Text>Cancel reservation, are you sure?</Text>
-                    <TouchableOpacity
-                        onPress={onCancelReservation}
-                    >
-                        <Text>Yes</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setIsModalVisible(false)}
-                    >
-                        <Text>No</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
+            <WarningModal
+                isModalVisible={isModalVisible}
+                setIsModalVisible={setIsModalVisible}
+                onCancelReservation={onCancelReservation}
+            />
         </>
     )
 }
@@ -287,20 +229,37 @@ const styles = StyleSheet.create({
         color: 'white',
         fontFamily: 'Poppins'
     },
+    screen: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 5,
+        marginBottom: 10
+    },
+    screenLine: {
+        height: 3,
+        width: '85%',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        borderRadius: 3 / 2,
+    },
+    screenText: {
+        fontSize: 8
+    },
     line: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        // backgroundColor: 'lightblue',
         marginBottom: 5,
         paddingHorizontal: 10
+    },
+    lineText: {
+        fontSize: 10
     },
     seats: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        // backgroundColor: 'pink'
     },
     seat: {
         alignItems: 'center',
@@ -319,26 +278,62 @@ const styles = StyleSheet.create({
     selected: {
         backgroundColor: primary
     },
+    seatNumber: {
+        fontFamily: 'Poppins',
+        transform: [{ translateY: 2 }]
+    },
+    legend: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 10,
+        paddingBottom: 15
+    },
+    legendCaption: {
+        fontSize: 13,
+        transform: [{ translateY: 1 }],
+        marginRight: 10
+    },
+    circle: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginRight: 5
+    },
+    availableSeat: {
+        backgroundColor: 'white'
+    },
+    selectedSeat: {
+        backgroundColor: primary
+    },
+    reservedSeat: {
+        backgroundColor: '#373741'
+    },
     dates: {
-        height: '100%',
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        justifyContent: 'center',
         alignItems: 'flex-start',
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
         backgroundColor: '#2c2c35',
         paddingHorizontal: 15,
-        paddingVertical: 10
+        paddingTop: 15,
+        paddingBottom: 10
     },
     hours: {
         flexGrow: 0,
-        marginTop: 20
+        marginTop: 20,
+        marginBottom: 15
     },
     hourButton: {
         paddingHorizontal: 13,
         paddingVertical: 5,
         borderRadius: 10,
         borderWidth: 1.5,
-        borderColor: '#33333b',
-        backgroundColor: '#33333b',
+        borderColor: '#4d4c4c',
+        backgroundColor: '#4d4c4c',
         elevation: 1
     },
     selectedHour: {
@@ -347,13 +342,33 @@ const styles = StyleSheet.create({
     selectedHourText: {
         color: primary
     },
-    modalContainer: {
-        width: width * 0.7,
-        alignSelf: 'center',
+    book: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 15,
-        paddingVertical: 10,
-        paddingHorizontal: 15
+        paddingVertical: 5
+    },
+    seatsCaption: {
+        fontSize: 10
+    },
+    price: {
+        fontSize: 20,
+        lineHeight: 24
+    },
+    button: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: primary,
+        width: '70%',
+        height: 38,
+        borderRadius: 12
+    },
+    buttonCaption: {
+        fontFamily: 'Poppins',
+        transform: [{ translateY: 2 }]
+    },
+    disabled: {
+        backgroundColor: 'grey'
     }
 });

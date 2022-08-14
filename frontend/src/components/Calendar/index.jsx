@@ -21,7 +21,7 @@ const Calendar = ({ week, date, setDate }) => {
     }, []);
 
     return (
-        <View style={styles.wrapper}>
+        <View>
             <View style={styles.month}>
                 {uniqueMonths.length > 1 ?
                     uniqueMonths.map((month, index) => {
@@ -90,9 +90,6 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 0
     },
-    wrapper: {
-        // paddingHorizontal: 15
-    },
     month: {
         flexDirection: 'row',
         alignSelf: 'center',
@@ -108,7 +105,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 7,
         paddingVertical: 5,
         borderRadius: 50,
-        backgroundColor: '#33333b',
+        backgroundColor: '#4d4c4c',
         width: 42
     },
     selectedDay: {
