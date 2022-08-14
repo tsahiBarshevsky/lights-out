@@ -1,48 +1,58 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
-import { AntDesign } from '@expo/vector-icons';
+import { background } from '../../utils/theme';
 
-const Header = () => {
-    const user = useSelector(state => state.user);
+const Hedaer = ({ screen }) => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.header}>
-            <View>
-                {Object.keys(user).length === 0 ?
-                    <Text>Welcome, guest!</Text>
-                    :
-                    <Text>Welcome, {user.firstName}!</Text>
-                }
-                <Text>Which movie do you want to watch?</Text>
-            </View>
+        <View style={styles.container}>
             <TouchableOpacity
-                onPress={() => navigation.navigate('Personal area')}
-                style={styles.avatar}
+                onPress={() => navigation.goBack()}
+                activeOpacity={1}
+                style={styles.button}
             >
-                <AntDesign name="user" size={24} color="black" />
+                <Entypo name="chevron-small-left" size={30} color="white" />
             </TouchableOpacity>
+            <View style={styles.caption}>
+                <Text style={styles.text}>{screen}</Text>
+            </View>
         </View>
     )
 }
 
-export default Header;
+export default Hedaer;
 
 const styles = StyleSheet.create({
-    header: {
+    container: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        marginBottom: 10
+        position: 'relative',
+        backgroundColor: background,
+        paddingHorizontal: 15,
+        paddingVertical: 5
     },
-    avatar: {
+    button: {
+        position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
-        width: 40,
-        height: 40,
-        borderRadius: 15,
-        backgroundColor: 'green'
+        zIndex: 1,
+        left: 15,
+        height: 30,
+        width: 30
+    },
+    caption: {
+        flex: 1,
+        height: 30,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    text: {
+        color: 'white',
+        fontFamily: 'Poppins',
+        fontSize: 15
     }
 });

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
-import { Header, MovieCard, SearchBar, SortPanel } from '../../components';
+import { UserBar, MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
 
@@ -137,7 +137,7 @@ const HomeScreen = () => {
             <StatusBar backgroundColor="#f1f2f6" barStyle='dark-content' />
             <SafeAreaView style={globalStyles.container}>
                 <Animated.View style={[styles.header, { transform: [{ translateY }] }]}>
-                    <Header />
+                    <UserBar />
                     <SearchBar sortPanelRef={sortPanelRef} />
                 </Animated.View>
                 <AnimatedScrollView

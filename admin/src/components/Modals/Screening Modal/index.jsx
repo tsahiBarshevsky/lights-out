@@ -119,7 +119,7 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                                 <MenuItem
                                     key={movie._id}
                                     value={JSON.stringify({
-                                        id: movie.tmdbID,
+                                        id: movie.tmdbID.toString(),
                                         title: movie.title
                                     })}
                                 >
@@ -145,7 +145,7 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                                     key={hall._id}
                                     value={hall.number}
                                 >
-                                    {hall.number}
+                                    {hall.number} ({hall.type})
                                 </MenuItem>
                             )
                         })}

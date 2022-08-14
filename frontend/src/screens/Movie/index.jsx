@@ -4,6 +4,7 @@ import { FontAwesome, AntDesign, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import Star from 'react-native-star-view';
+import { Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
 
 const MovieScreen = ({ route }) => {
@@ -19,6 +20,7 @@ const MovieScreen = ({ route }) => {
     return (
         <View style={globalStyles.container}>
             <ScrollView>
+                <Header screen={"Movie Detail"} />
                 <View style={styles.poster}>
                     <Image
                         source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}
