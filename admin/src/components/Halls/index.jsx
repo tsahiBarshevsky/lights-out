@@ -56,6 +56,7 @@ const Halls = () => {
                         <tr>
                             <th><h3>Hall</h3></th>
                             <th><h3>Type</h3></th>
+                            <th><h3>Ticket Price</h3></th>
                             <th><h3>Number Of Lines</h3></th>
                             <th><h3>Number Of Seats</h3></th>
                             <th><h3>Options</h3></th>
@@ -67,6 +68,7 @@ const Halls = () => {
                                 <tr key={hall._id}>
                                     <td><h3>#{hall.number}</h3></td>
                                     <td><h3>{hall.type}</h3></td>
+                                    <td><h3>{hall.ticketPrice}₪</h3></td>
                                     <td><h3>{Object.keys(hall.seats).length}</h3></td>
                                     <td><h3>{calculateNumberOfSeats(hall.seats)}</h3></td>
                                     <td>

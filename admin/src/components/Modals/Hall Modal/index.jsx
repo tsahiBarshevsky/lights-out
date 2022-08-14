@@ -10,6 +10,7 @@ import './styles.sass';
 const HallModal = ({ isOpen, setIsOpen }) => {
     const [number, setNumber] = useState('');
     const [type, setType] = useState('');
+    const [price, setPrice] = useState(1);
     const [numberOfLines, setNumberOfLines] = useState(1);
     const [seats, setSeats] = useState({
         "1": { numberOfSeats: 1 }
@@ -20,6 +21,7 @@ const HallModal = ({ isOpen, setIsOpen }) => {
         setIsOpen(false);
         setNumber('');
         setType('');
+        setPrice(1);
         setNumberOfLines(1);
         setSeats({ "1": { numberOfSeats: 1 } });
     }
@@ -56,6 +58,7 @@ const HallModal = ({ isOpen, setIsOpen }) => {
         const newHall = {
             number: number,
             type: type,
+            ticketPrice: price,
             seats: seats
         };
         fetch('add-new-hall',
@@ -109,6 +112,15 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                     placeholder="Type..."
                     value={type}
                     onChange={(e) => setType(e.target.value)}
+                />
+                <Input
+                    required
+                    disableUnderline
+                    placeholder="Ticket price..."
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    type="number"
+                    inputProps={{ min: 1 }}
                 />
                 <Input
                     required
