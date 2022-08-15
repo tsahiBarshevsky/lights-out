@@ -21,7 +21,7 @@ const Halls = () => {
     }
 
     const onDeleteHall = (id, index) => {
-        fetch(`/delete-screening?id=${id}`,
+        fetch(`/delete-hall?id=${id}`,
             {
                 method: 'POST',
                 headers: {

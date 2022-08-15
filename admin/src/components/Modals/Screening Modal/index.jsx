@@ -97,6 +97,8 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
         }
     }
 
+    console.log('halls', halls)
+
     return (
         <StyledModal
             isOpen={isOpen}

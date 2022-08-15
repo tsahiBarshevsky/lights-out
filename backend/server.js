@@ -108,6 +108,19 @@ app.post('/add-new-hall', async (req, res) => {
     res.json(newHall._id);
 });
 
+app.post('/delete-hall', async (req, res) => {
+    const id = req.query.id;
+    Hall.findByIdAndDelete(id,
+        function (err) {
+            if (err) {
+                console.log("Error: " + err)
+                res.send(err);
+            }
+        }
+    );
+    res.json('The Hall has been added successfully');
+});
+
 /* ====== Screenings ======= */
 
 // Get all screenings
