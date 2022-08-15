@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     day: {
         marginTop: 2,
         marginBottom: 10,
-        fontSize: 12
+        fontSize: 10
     },
     dateContainer: {
         justifyContent: 'center',

@@ -12,7 +12,7 @@ const SplashScreen = () => {
 
     useEffect(() => {
         Promise.all([
-            fetch(`http://${localhost}/get-all-movies?field=title`),
+            fetch(`http://${localhost}/get-all-movies`),
             fetch(`http://${localhost}/get-all-halls`),
             fetch(`http://${localhost}/get-all-screenings`)
         ])
@@ -25,6 +25,8 @@ const SplashScreen = () => {
                 dispatch({ type: 'SET_MOVIES', movies: movies });
                 dispatch({ type: 'SET_HALLS', halls: halls });
                 dispatch({ type: 'SET_SCREENINGS', screenings: screenings });
+                const genres = [...new Set(movies.map(movie => movie.genre))];
+                dispatch({ type: 'SET_GENRES', genres: genres });
             })
             .finally(() => setDataLoaded(true));
     }, []);

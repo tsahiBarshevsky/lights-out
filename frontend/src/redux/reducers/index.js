@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import genresReducer from "./genres";
 import hallsReducer from "./halls";
 import moviesReducer from "./movies";
 import reservationsReducer from "./reservations";
@@ -10,7 +11,8 @@ const rootReducer = combineReducers({
     movies: moviesReducer,
     screenings: screeningsReducer,
     user: userReducer,
-    reservations: reservationsReducer
+    reservations: reservationsReducer,
+    genres: genresReducer
 });
 
 export default rootReducer;

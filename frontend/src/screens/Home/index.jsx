@@ -20,6 +20,7 @@ const HomeScreen = () => {
     const sortPanelRef = useRef(null);
     const movies = useSelector(state => state.movies);
     const screenings = useSelector(state => state.screenings);
+    const genres = useSelector(state => state.genres);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -54,7 +55,7 @@ const HomeScreen = () => {
         wait(2000).then(() => {
             setRefreshing(false);
             Promise.all([
-                fetch(`http://${localhost}/get-all-movies?field=title`),
+                fetch(`http://${localhost}/get-all-movies`),
                 fetch(`http://${localhost}/get-all-halls`),
                 fetch(`http://${localhost}/get-all-screenings`)
             ])
@@ -145,7 +146,10 @@ const HomeScreen = () => {
                     />
                 </AnimatedScrollView>
             </SafeAreaView>
-            <SortPanel sortPanelRef={sortPanelRef} />
+            <SortPanel
+                sortPanelRef={sortPanelRef}
+                genres={genres}
+            />
         </>
     )
 }

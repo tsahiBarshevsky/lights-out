@@ -14,7 +14,7 @@ const Dashboard = () => {
 
     const fetchData = useCallback(() => {
         Promise.all([
-            fetch(`/get-all-movies?field=title`),
+            fetch(`/get-all-movies`),
             fetch(`/get-all-halls`),
             fetch(`/get-all-screenings`)
         ])

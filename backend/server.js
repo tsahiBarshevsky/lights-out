@@ -27,7 +27,15 @@ mongoose.connect('mongodb://localhost:27017/lights-out', {
 
 // Get all movies
 app.get('/get-all-movies', async (req, res) => {
+    const movies = await Movie.find({}).sort({ title: 1 }).exec();
+    console.log(`${movies.length} movies found`);
+    res.json(movies);
+});
+
+// Sort and filter movies
+app.get('/sort-and-filter-movies', async (req, res) => {
     const field = req.query.field;
+    const genre = req.query.genre;
     var sort = {};
     switch (field) {
         case 'title':
@@ -43,12 +51,16 @@ app.get('/get-all-movies', async (req, res) => {
             sort = { rating: 1 };
             break;
     }
-    const movies = await Movie.find({}).sort(sort).exec();
+    var movies;
+    if (genre)
+        movies = await Movie.find({ "genre": genre }).sort(sort).exec();
+    else
+        movies = await Movie.find({}).sort(sort).exec();
     console.log(`${movies.length} movies found`);
     res.json(movies);
 });
 
-// Get movie by name
+// Get movie by name (for search)
 app.get('/search-movie-by-name', async (req, res) => {
     const name = req.query.name;
     Movie.find({ "title": { $regex: new RegExp(name, "i") } },

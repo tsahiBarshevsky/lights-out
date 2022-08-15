@@ -31,12 +31,14 @@ const MovieScreen = ({ route }) => {
                     blurRadius={5}
                 />
                 <Text style={[styles.text, styles.title]}>{movie.title}</Text>
-                <View style={styles.rating}>
-                    <AntDesign style={styles.star} name="star" size={20} color={primary} />
-                    <Text style={[styles.text, styles.ratingCaption]}>
-                        {movie.rating}
-                    </Text>
-                </View>
+                {movie.rating > 0 &&
+                    <View style={styles.rating}>
+                        <AntDesign style={styles.star} name="star" size={20} color={primary} />
+                        <Text style={[styles.text, styles.ratingCaption]}>
+                            {movie.rating}
+                        </Text>
+                    </View>
+                }
             </View>
             <ScrollView
                 contentContainerStyle={styles.scrollView}
