@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ScreeningSchema = new mongoose.Schema({
     movie: { type: Map },
     date: { type: Date },
-    hall: { type: String },
+    hall: { type: Map },
     seats: { type: Map }
 });
 

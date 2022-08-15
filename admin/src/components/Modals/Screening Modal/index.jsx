@@ -53,11 +53,12 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
         else {
             const seats = {};
             const newScreening = {
-                hall: hall,
+                hall: JSON.parse(hall),
                 movie: JSON.parse(movie),
                 date: date
             };
-            const index = halls.findIndex((item) => item.number === hall);
+            newScreening.hall.ticketPrice = Number(newScreening.hall.ticketPrice);
+            const index = halls.findIndex((item) => item.number === JSON.parse(hall).number);
             Object.keys(halls[index].seats).forEach((line) => {
                 const seatsArray = [];
                 [...Array(halls[index].seats[line].numberOfSeats).keys()].forEach((_, index) => {
@@ -96,8 +97,6 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                 });
         }
     }
-
-    console.log('halls', halls)
 
     return (
         <StyledModal
@@ -145,7 +144,11 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                             return (
                                 <MenuItem
                                     key={hall._id}
-                                    value={hall.number}
+                                    value={JSON.stringify({
+                                        number: hall.number,
+                                        ticketPrice: hall.ticketPrice,
+                                        type: hall.type
+                                    })}
                                 >
                                     {hall.number} ({hall.type})
                                 </MenuItem>

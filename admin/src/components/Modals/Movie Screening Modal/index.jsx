@@ -27,7 +27,7 @@ const MovieScreeningModal = ({ isOpen, handleClose, selectedScreening }) => {
             onEscapeKeydown={handleClose}
         >
             <h1>{selectedScreening.movie.title}</h1>
-            <h3>Hall {selectedScreening.hall}</h3>
+            <h3>Hall {selectedScreening.hall.number}</h3>
             <h3>{moment(selectedScreening.date).format('DD/MM/YYYY HH:mm')}</h3>
             {countAvailableSeats()}
             <div className="hall">

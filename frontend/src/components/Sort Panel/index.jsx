@@ -42,7 +42,13 @@ const SortPanel = ({ sortPanelRef, genres }) => {
             activeOpacity={1}
             style={[styles.button, genre === item && styles.selected]}
         >
-            <Text style={[styles.text, styles.buttonCaption]}>
+            <Text
+                style={[
+                    styles.text,
+                    styles.buttonCaption,
+                    genre === item && styles.selectedText
+                ]}
+            >
                 {item}
             </Text>
         </TouchableOpacity>
@@ -54,7 +60,13 @@ const SortPanel = ({ sortPanelRef, genres }) => {
             activeOpacity={1}
             style={[styles.button, sortType === item && styles.selected]}
         >
-            <Text style={[styles.text, styles.buttonCaption]}>
+            <Text
+                style={[
+                    styles.text,
+                    styles.buttonCaption,
+                    sortType === item && styles.selectedText
+                ]}
+            >
                 {item}
             </Text>
         </TouchableOpacity>
@@ -90,7 +102,7 @@ const SortPanel = ({ sortPanelRef, genres }) => {
                     showsHorizontalScrollIndicator={false}
                     style={{ marginBottom: 20 }}
                 />
-                <Text style={[styles.text, styles.subtitle]}>Sort</Text>
+                <Text style={[styles.text, styles.subtitle]}>Sort by</Text>
                 <FlatList
                     data={types}
                     horizontal
@@ -115,7 +127,7 @@ const SortPanel = ({ sortPanelRef, genres }) => {
                         style={[styles.actionButton, styles.apply]}
                         activeOpacity={1}
                     >
-                        <Text style={styles.text}>Apply</Text>
+                        <Text style={[styles.text, styles.selectedText]}>Apply</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -195,6 +207,9 @@ const styles = StyleSheet.create({
     },
     selected: {
         backgroundColor: primary
+    },
+    selectedText: {
+        color: 'black'
     },
     separator: {
         marginHorizontal: 5

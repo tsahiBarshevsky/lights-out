@@ -5,10 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import update from 'immutability-helper';
 import { globalStyles } from '../../utils/globalStyles';
-import { ticketPrice } from '../../utils/utilities';
 import { Calendar, Header } from '../../components';
 import { WeekContext } from '../../utils/context';
-import { primary, secondary } from '../../utils/theme';
+import { primary } from '../../utils/theme';
 import WarningModal from './modal';
 
 const format = 'DD/MM/YY HH:mm';
@@ -28,6 +27,13 @@ const ScreeningsScreen = ({ route }) => {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
+    const renderHallInfo = () => {
+        const hall = movieScreenings[selectedScreening].hall;
+        if (hall.type === 'regular')
+            return `Screen - Hall ${hall.number}`;
+        return `Screen - Hall ${hall.number} (${hall.type})`;
+    }
+
     const onSelectScreening = (item) => {
         const index = movieScreenings.findIndex((e) => e._id === item._id);
         setSelectedScreening(index);
@@ -40,11 +46,11 @@ const ScreeningsScreen = ({ route }) => {
     const onSelectSeat = (line, index) => {
         const j = selectedSeats.findIndex((seat) => seat.line === line && seat.number === index);
         if (j !== -1) {
-            setPrice(prevState => prevState - ticketPrice);
+            setPrice(prevState => prevState - movieScreenings[selectedScreening].hall.ticketPrice);
             setSelectedSeats(update(selectedSeats, { $splice: [[j, 1]] }));
         }
         else {
-            setPrice(prevState => prevState + ticketPrice);
+            setPrice(prevState => prevState + movieScreenings[selectedScreening].hall.ticketPrice);
             setSelectedSeats(update(selectedSeats, { $push: [{ line: line, number: index }] }));
         }
     }
@@ -112,7 +118,9 @@ const ScreeningsScreen = ({ route }) => {
                     <>
                         <View style={styles.screen}>
                             <View style={styles.screenLine} />
-                            <Text style={[styles.text, styles.screenText]}>Screen</Text>
+                            <Text style={[styles.text, styles.screenText]}>
+                                {renderHallInfo()}
+                            </Text>
                         </View>
                         <View>
                             {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
@@ -243,7 +251,7 @@ const styles = StyleSheet.create({
         borderRadius: 3 / 2,
     },
     screenText: {
-        fontSize: 8
+        fontSize: 10
     },
     line: {
         width: '100%',

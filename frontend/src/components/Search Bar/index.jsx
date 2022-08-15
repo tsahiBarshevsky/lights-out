@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 5,
         paddingHorizontal: 10,
-        borderRadius: 15,
+        borderRadius: 25,
         height: 40
     },
     textInput: {

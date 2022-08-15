@@ -71,7 +71,7 @@ const Screenings = () => {
                             return (
                                 <tr key={screening._id}>
                                     <td><h3>{screening.movie.title}</h3></td>
-                                    <td><h3>{screening.hall}</h3></td>
+                                    <td><h3>{screening.hall.number}</h3></td>
                                     <td><h3>{moment(screening.date).format('DD/MM/YYYY HH:mm')}</h3></td>
                                     <td>
                                         <Button
