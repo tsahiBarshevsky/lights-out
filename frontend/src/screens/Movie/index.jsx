@@ -1,14 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, Button, FlatList, ImageBackground, SafeAreaView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
 import { FontAwesome, AntDesign, FontAwesome5, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
-// import Star from 'react-native-star-view';
 import { Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
-import { background, primary } from '../../utils/theme';
-
-const buttonHeight = 38;
+import { primary } from '../../utils/theme';
 
 const MovieScreen = ({ route }) => {
     const { movie } = route.params;
@@ -22,7 +19,7 @@ const MovieScreen = ({ route }) => {
 
     const Separator = () => (
         <View style={{ paddingHorizontal: 5 }} />
-    )
+    );
 
     return (
         <SafeAreaView style={globalStyles.container}>
@@ -35,13 +32,16 @@ const MovieScreen = ({ route }) => {
                 />
                 <Text style={[styles.text, styles.title]}>{movie.title}</Text>
                 <View style={styles.rating}>
-                    <AntDesign style={styles.star} name="star" size={24} color={primary} />
+                    <AntDesign style={styles.star} name="star" size={20} color={primary} />
                     <Text style={[styles.text, styles.ratingCaption]}>
                         {movie.rating}
                     </Text>
                 </View>
             </View>
-            <ScrollView contentContainerStyle={styles.scrollView}>
+            <ScrollView
+                contentContainerStyle={styles.scrollView}
+                overScrollMode="never"
+            >
                 <View style={styles.aboutContainer}>
                     <View style={styles.about}>
                         <FontAwesome name="video-camera" size={17} color="white" />
@@ -115,17 +115,11 @@ const MovieScreen = ({ route }) => {
     )
 }
 
-// const starStyle = {
-//     width: 100,
-//     height: 20
-// };
-
 export default MovieScreen;
 
 const styles = StyleSheet.create({
     scrollView: {
-        paddingHorizontal: 15,
-        paddingBottom: buttonHeight + 15
+        paddingHorizontal: 15
     },
     text: {
         fontFamily: 'Poppins',
@@ -171,11 +165,11 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     about: {
-        width: 90,
+        width: '30%',
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        borderRadius: 10,
+        borderRadius: 15,
         borderColor: '#67676b',
         paddingHorizontal: 5,
         paddingTop: 5
@@ -220,15 +214,17 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     button: {
-        position: 'absolute',
-        bottom: 10,
+        // position: 'absolute',
+        // bottom: 15,
+        marginTop: 10,
+        marginBottom: 15,
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: primary,
         width: '70%',
-        height: buttonHeight,
-        borderRadius: 12,
+        height: 38,
+        borderRadius: 50,
         elevation: 2
     },
     buttonCaption: {

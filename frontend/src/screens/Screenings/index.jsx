@@ -81,7 +81,7 @@ const ScreeningsScreen = ({ route }) => {
         const filter = screenings.filter((item) => {
             return (
                 moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
-                // moment(item.date).isAfter(moment(new Date())) &&
+                moment(item.date).isAfter(moment(new Date())) &&
                 item.movie.id === movie.tmdbID
             );
         });
@@ -362,10 +362,10 @@ const styles = StyleSheet.create({
         backgroundColor: primary,
         width: '70%',
         height: 38,
-        borderRadius: 12
+        borderRadius: 50
     },
     buttonCaption: {
-        fontFamily: 'Poppins',
+        fontFamily: 'PoppinsBold',
         transform: [{ translateY: 2 }]
     },
     disabled: {

@@ -12,11 +12,11 @@ const UserBar = () => {
         <View style={styles.userBar}>
             <View>
                 {Object.keys(user).length === 0 ?
-                    <Text>Welcome, guest!</Text>
+                    <Text style={styles.welcome}>Welcome, guest!</Text>
                     :
-                    <Text>Welcome, {user.firstName}!</Text>
+                    <Text style={styles.welcome}>Welcome, {user.firstName}!</Text>
                 }
-                <Text>Which movie do you want to watch?</Text>
+                <Text style={styles.bold}>Which movie do you want to watch?</Text>
             </View>
             <TouchableOpacity
                 onPress={() => navigation.navigate('Personal area')}
@@ -35,7 +35,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10
+        marginVertical: 5
+    },
+    welcome: {
+        fontFamily: 'Poppins',
+        color: '#c0c0c3'
+    },
+    bold: {
+        fontFamily: 'PoppinsBold',
+        color: 'white',
+        fontSize: 13,
+        marginTop: -5
     },
     avatar: {
         justifyContent: 'center',

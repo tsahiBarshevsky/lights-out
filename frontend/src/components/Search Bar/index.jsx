@@ -3,6 +3,7 @@ import { StyleSheet, TextInput, View, TouchableOpacity, ToastAndroid, Keyboard }
 import { EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { localhost } from '../../utils/utilities';
+import { secondary } from '../../utils/theme';
 
 const SearchBar = ({ sortPanelRef }) => {
     const [term, setTerm] = useState('');
@@ -23,14 +24,14 @@ const SearchBar = ({ sortPanelRef }) => {
 
     return (
         <View style={styles.container}>
-            <EvilIcons name="search" size={24} color="black" />
+            <EvilIcons name="search" size={24} color="white" />
             <TextInput
                 placeholder='Search for a movie...'
                 value={term}
                 onChangeText={(text) => setTerm(text)}
                 underlineColorAndroid="transparent"
-                placeholderTextColor='black'
-                selectionColor='black'
+                placeholderTextColor='rgba(255, 255, 255, 0.25)'
+                selectionColor='rgba(255, 255, 255, 0.25)'
                 blurOnSubmit={false}
                 onSubmitEditing={onSearchMovie}
                 style={styles.textInput}
@@ -41,7 +42,7 @@ const SearchBar = ({ sortPanelRef }) => {
                 style={styles.button}
                 activeOpacity={0.8}
             >
-                <FontAwesome name="sliders" size={20} color="black" />
+                <FontAwesome name="sliders" size={20} color="white" />
             </TouchableOpacity>
         </View>
     )
@@ -52,7 +53,7 @@ export default SearchBar;
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        backgroundColor: secondary,
         justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: 5,
@@ -64,7 +65,10 @@ const styles = StyleSheet.create({
     textInput: {
         flex: 1,
         textAlign: 'left',
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        fontFamily: 'Poppins',
+        color: 'white',
+        transform: [{ translateY: 2 }]
     },
     button: {
         width: 25,

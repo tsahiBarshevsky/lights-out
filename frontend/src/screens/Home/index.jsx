@@ -76,7 +76,6 @@ const HomeScreen = () => {
     }
 
     const comingSoonFilter = (movie) => {
-        // return moment(movie.releaseDate).isoWeek() - moment().isoWeek() === 1;
         const res = screenings.find((screening) => screening.movie.id === movie.tmdbID);
         if (res === undefined)
             return true;
@@ -98,40 +97,6 @@ const HomeScreen = () => {
         });
         return unsubscribe;
     }, []);
-
-    // const [screening, setScreening] = useState({
-    //     hall: "1",
-    //     seats: {
-    //         "1": [
-    //             { number: 0, available: true },
-    //             { number: 1, available: true },
-    //             { number: 2, available: true },
-    //             { number: 3, available: true },
-    //             { number: 4, available: true },
-    //             { number: 5, available: true }
-    //         ],
-    //         "2": [
-    //             { number: 0, available: true },
-    //             { number: 1, available: true },
-    //             { number: 2, available: false },
-    //             { number: 3, available: false },
-    //             { number: 4, available: true },
-    //             { number: 5, available: true }
-    //         ]
-    //     }
-    // });
-
-    // const hall = {
-    //     number: "1",
-    //     seats: {
-    //         "1": { numberOfSeats: 6 },
-    //         "2": { numberOfSeats: 8 },
-    //         "3": { numberOfSeats: 8 },
-    //         "4": { numberOfSeats: 8 },
-    //         "5": { numberOfSeats: 8 },
-    //         "6": { numberOfSeats: 6 },
-    //     }
-    // };
 
     return (
         <>
@@ -190,16 +155,20 @@ export default HomeScreen;
 const styles = StyleSheet.create({
     header: {
         position: 'absolute',
-        backgroundColor: '#f1f2f6',
+        backgroundColor: background,
         left: 0,
         right: 0,
         width: '100%',
         zIndex: 1,
-        height: headerHeight
+        height: headerHeight,
+        paddingHorizontal: 15
     },
     title: {
-        fontSize: 20,
-        marginBottom: 10
+        fontFamily: 'PoppinsBold',
+        fontSize: 22,
+        color: 'white',
+        marginBottom: 10,
+        marginHorizontal: 15
     },
     carousel: {
         marginBottom: 35
