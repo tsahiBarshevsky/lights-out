@@ -8,6 +8,7 @@ import { globalStyles } from '../../utils/globalStyles';
 import { UserBar, MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
+import { background } from '../../utils/theme';
 
 const headerHeight = 104;
 const wait = (timeout) => {
@@ -134,7 +135,7 @@ const HomeScreen = () => {
 
     return (
         <>
-            <StatusBar backgroundColor="#f1f2f6" barStyle='dark-content' />
+            <StatusBar backgroundColor={background} barStyle="light-content" />
             <SafeAreaView style={globalStyles.container}>
                 <Animated.View style={[styles.header, { transform: [{ translateY }] }]}>
                     <UserBar />

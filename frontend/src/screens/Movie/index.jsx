@@ -1,101 +1,174 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, Button } from 'react-native';
-import { FontAwesome, AntDesign, FontAwesome5 } from '@expo/vector-icons';
+import { StyleSheet, Text, View, Image, ScrollView, Button, FlatList, ImageBackground, SafeAreaView, TouchableOpacity } from 'react-native';
+import { FontAwesome, AntDesign, FontAwesome5, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
-import Star from 'react-native-star-view';
+// import Star from 'react-native-star-view';
 import { Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
+import { background, primary } from '../../utils/theme';
+
+const buttonHeight = 38;
 
 const MovieScreen = ({ route }) => {
     const { movie } = route.params;
     const navigation = useNavigation();
 
-    const converMinutesToHours = (minutes) => {
+    const convertMinutesToHours = (minutes) => {
         const m = minutes % 60;
         const h = (minutes - m) / 60;
         return `${h.toString()}h ${(m < 10 ? "0" : "")}${m.toString()}m`;
     }
 
+    const Separator = () => (
+        <View style={{ paddingHorizontal: 5 }} />
+    )
+
     return (
-        <View style={globalStyles.container}>
-            <ScrollView>
-                <Header caption={"Movie Detail"} />
-                <View style={styles.poster}>
-                    <Image
-                        source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}
-                        style={styles.image}
-                        blurRadius={5}
-                    />
-                    <Text>{movie.title}</Text>
-                    {movie.rating > 0 ?
-                        <Star score={movie.rating} totalScore={10} style={starStyle} />
-                        :
-                        <Text>No rating yet</Text>
-                    }
+        <SafeAreaView style={globalStyles.container}>
+            <Header caption={"Movie Detail"} />
+            <View style={styles.poster}>
+                <Image
+                    source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}
+                    style={styles.image}
+                    blurRadius={5}
+                />
+                <Text style={[styles.text, styles.title]}>{movie.title}</Text>
+                <View style={styles.rating}>
+                    <AntDesign style={styles.star} name="star" size={24} color={primary} />
+                    <Text style={[styles.text, styles.ratingCaption]}>
+                        {movie.rating}
+                    </Text>
                 </View>
+            </View>
+            <ScrollView contentContainerStyle={styles.scrollView}>
                 <View style={styles.aboutContainer}>
                     <View style={styles.about}>
-                        <FontAwesome name="video-camera" size={18} color="black" />
-                        <Text>Genre</Text>
-                        <Text>{movie.genre}</Text>
+                        <FontAwesome name="video-camera" size={17} color="white" />
+                        <Text style={styles.aboutTitle}>Genre</Text>
+                        <Text style={styles.aboutCaption}>{movie.genre}</Text>
                     </View>
                     <View style={styles.about}>
-                        <AntDesign name="clockcircle" size={18} color="black" />
-                        <Text>Duration</Text>
+                        <AntDesign name="clockcircle" size={17} color="white" />
+                        <Text style={styles.aboutTitle}>Duration</Text>
                         {movie.duration > 0 ?
-                            <Text>{converMinutesToHours(movie.duration)}</Text>
+                            <Text style={styles.aboutCaption}>
+                                {convertMinutesToHours(movie.duration)}
+                            </Text>
                             :
-                            <Text>N/A</Text>
+                            <Text style={styles.aboutCaption}>N/A</Text>
                         }
                     </View>
                     <View style={styles.about}>
-                        <FontAwesome5 name="calendar-week" size={18} color="black" />
-                        <Text>Released</Text>
-                        <Text>{moment(movie.releaseDate).format('DD/MM/YY')}</Text>
+                        <FontAwesome5 name="calendar-week" size={17} color="white" />
+                        <Text style={styles.aboutTitle}>Released</Text>
+                        <Text style={styles.aboutCaption}>{moment(movie.releaseDate).format('DD/MM/YY')}</Text>
                     </View>
                 </View>
-                <Button
-                    title='get reservation'
-                    onPress={() => navigation.navigate('Screenings', { movie })}
-                    disabled={moment(movie.releaseDate).isoWeek() - moment().isoWeek() > 1}
+                <Text style={[styles.text, styles.sectionTitle]}>Cast</Text>
+                <FlatList
+                    data={movie.cast}
+                    keyExtractor={(item) => item.cast_id}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.cast}
+                    contentContainerStyle={{ alignItems: 'flex-start' }}
+                    ItemSeparatorComponent={Separator}
+                    renderItem={({ item }) => {
+                        return (
+                            <View style={styles.actorWrapper}>
+                                {item.profile_path ?
+                                    <Image
+                                        source={{ uri: `https://image.tmdb.org/t/p/original${item.profile_path}` }}
+                                        style={styles.actorImage}
+                                        resizeMode="center"
+                                    />
+                                    :
+                                    <View style={styles.actorVector}>
+                                        <Entypo name="user" size={35} color="black" />
+                                    </View>
+                                }
+                                <Text
+                                    style={[styles.text, styles.actorName]}
+                                    numberOfLines={2}
+                                    ellipsizeMode="tail"
+                                >
+                                    {item.original_name}
+                                </Text>
+                            </View>
+                        )
+                    }}
                 />
-                <Text>Rating: {movie.rating}</Text>
-                <Text>Overview</Text>
-                <Text>{movie.overview}</Text>
+                <Text style={[styles.text, styles.sectionTitle]}>Overview</Text>
+                <Text style={styles.text}>{movie.overview}</Text>
             </ScrollView>
-        </View>
+            <TouchableOpacity
+                onPress={() => navigation.navigate('Screenings', { movie })}
+                style={styles.button}
+                activeOpacity={1}
+            >
+                <Text style={styles.buttonCaption}>
+                    Get Reservation
+                </Text>
+            </TouchableOpacity>
+        </SafeAreaView>
     )
 }
 
-const starStyle = {
-    width: 100,
-    height: 20
-};
+// const starStyle = {
+//     width: 100,
+//     height: 20
+// };
 
 export default MovieScreen;
 
 const styles = StyleSheet.create({
+    scrollView: {
+        paddingHorizontal: 15,
+        paddingBottom: buttonHeight + 15
+    },
+    text: {
+        fontFamily: 'Poppins',
+        color: 'white'
+    },
+    title: {
+        fontSize: 25,
+        lineHeight: 35
+    },
+    sectionTitle: {
+        fontSize: 19
+    },
     poster: {
         width: '100%',
-        height: 250,
+        height: 220,
         justifyContent: 'flex-end',
         overflow: 'hidden',
         marginTop: 5,
-        marginBottom: 15,
-        padding: 15,
+        marginBottom: 10,
+        paddingHorizontal: 15,
+        paddingBottom: 15,
         backgroundColor: 'rgba(0, 0, 0, 0.5)'
     },
     image: {
         ...StyleSheet.absoluteFillObject,
         opacity: 0.3
     },
+    rating: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center'
+    },
+    ratingCaption: {
+        transform: [{ translateY: 2 }]
+    },
+    star: {
+        marginRight: 7
+    },
     aboutContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 15,
-        marginBottom: 14
+        marginBottom: 15
     },
     about: {
         width: 90,
@@ -103,6 +176,64 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 1,
         borderRadius: 10,
-        padding: 5
+        borderColor: '#67676b',
+        paddingHorizontal: 5,
+        paddingTop: 5
+    },
+    aboutTitle: {
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        color: '#67676b',
+        marginTop: 3
+    },
+    aboutCaption: {
+        fontFamily: 'PoppinsBold',
+        color: 'white',
+        marginTop: -5
+    },
+    cast: {
+        paddingVertical: 10
+    },
+    actorWrapper: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 55
+    },
+    actorImage: {
+        width: 55,
+        height: 55,
+        borderRadius: 55 / 2,
+        marginBottom: 5
+    },
+    actorVector: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        width: 55,
+        height: 55,
+        borderRadius: 55 / 2,
+        marginBottom: 5,
+        overflow: 'hidden'
+    },
+    actorName: {
+        fontSize: 10,
+        textAlign: 'center'
+    },
+    button: {
+        position: 'absolute',
+        bottom: 10,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: primary,
+        width: '70%',
+        height: buttonHeight,
+        borderRadius: 12,
+        elevation: 2
+    },
+    buttonCaption: {
+        fontFamily: 'PoppinsBold',
+        transform: [{ translateY: 2 }],
+        letterSpacing: 1.1
     }
 });
