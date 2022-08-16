@@ -66,12 +66,15 @@ const ScreeningsScreen = ({ route }) => {
             group[line].push(seat);
             return group;
         }, {});
+        const hall = movieScreenings[selectedScreening].hall;
         navigation.navigate('Checkout', {
             movie,
             movieScreenings,
             selectedScreening,
             selectedSeats,
             price,
+            type: hall.type,
+            ticketPrice: hall.ticketPrice,
             groups
         });
     }
@@ -220,6 +223,7 @@ const ScreeningsScreen = ({ route }) => {
                             onPress={onBookSeats}
                             disabled={selectedSeats.length === 0}
                             style={[styles.button, selectedSeats.length === 0 && styles.disabled]}
+                            activeOpacity={1}
                         >
                             <Text style={styles.buttonCaption}>Book Tickets</Text>
                         </TouchableOpacity>
