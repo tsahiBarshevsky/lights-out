@@ -3,12 +3,17 @@ import { StyleSheet, Text, View, Image, ScrollView, FlatList, SafeAreaView, Touc
 import { FontAwesome, AntDesign, FontAwesome5, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
 import { Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
 import { primary } from '../../utils/theme';
 
+const format = 'DD/MM/YY HH:mm';
+const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
+
 const MovieScreen = ({ route }) => {
     const { movie } = route.params;
+    const screenings = useSelector(state => state.screenings);
     const navigation = useNavigation();
 
     const convertMinutesToHours = (minutes) => {
@@ -20,6 +25,20 @@ const MovieScreen = ({ route }) => {
     const Separator = () => (
         <View style={{ paddingHorizontal: 5 }} />
     );
+
+    const onNavigate = () => {
+        const filteredScreenings = screenings.filter((item) => {
+            return (
+                moment(item.date).set(initial).format(format) === moment().set(initial).format(format) &&
+                moment(item.date).isAfter(moment(new Date())) &&
+                item.movie.id === movie.tmdbID
+            );
+        });
+        navigation.navigate('Screenings', {
+            movie: movie,
+            filteredScreenings: filteredScreenings
+        });
+    }
 
     return (
         <SafeAreaView style={globalStyles.container}>
@@ -104,15 +123,17 @@ const MovieScreen = ({ route }) => {
                 <Text style={[styles.text, styles.sectionTitle]}>Overview</Text>
                 <Text style={styles.text}>{movie.overview}</Text>
             </ScrollView>
-            <TouchableOpacity
-                onPress={() => navigation.navigate('Screenings', { movie })}
-                style={styles.button}
-                activeOpacity={1}
-            >
-                <Text style={styles.buttonCaption}>
-                    Get Reservation
-                </Text>
-            </TouchableOpacity>
+            {screenings.find((screening) => screening.movie.id === movie.tmdbID) &&
+                <TouchableOpacity
+                    onPress={onNavigate}
+                    style={styles.button}
+                    activeOpacity={1}
+                >
+                    <Text style={styles.buttonCaption}>
+                        Get Reservation
+                    </Text>
+                </TouchableOpacity>
+            }
         </SafeAreaView>
     )
 }
@@ -121,7 +142,8 @@ export default MovieScreen;
 
 const styles = StyleSheet.create({
     scrollView: {
-        paddingHorizontal: 15
+        paddingHorizontal: 15,
+        paddingBottom: 10
     },
     text: {
         fontFamily: 'Poppins',

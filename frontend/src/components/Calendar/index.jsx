@@ -6,13 +6,22 @@ import { primary } from '../../utils/theme';
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
 
-const Calendar = ({ week, date, setDate }) => {
+const Calendar = (props) => {
+    const { week, date, setDate, selectedSeats, setSelectedSeats, price, setPrice } = props;
     const [months, setMonths] = useState([]);
     const uniqueMonths = [...new Set(months)];
 
     const Separator = () => (
         <View style={styles.separator} />
     );
+
+    const onSelectDate = (date) => {
+        setDate(date);
+        if (selectedSeats.length > 0)
+            setSelectedSeats([]);
+        if (price > 0)
+            setPrice(0);
+    }
 
     useEffect(() => {
         const res = [];
@@ -49,7 +58,7 @@ const Calendar = ({ week, date, setDate }) => {
                     const selectedDate = d.set(initial).format(format) === date.set(initial).format(format);
                     return (
                         <TouchableOpacity
-                            onPress={() => setDate(moment(item))}
+                            onPress={() => onSelectDate(moment(item))}
                             key={index}
                             activeOpacity={1}
                             style={[
