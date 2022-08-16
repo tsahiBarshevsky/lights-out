@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Barcode from '@kichiyaki/react-native-barcode-generator';
 import { globalStyles } from '../../utils/globalStyles';
-import { ticketPrice } from '../../utils/utilities';
+import { Header } from '../../components';
+import { background, secondary } from '../../utils/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -24,67 +25,79 @@ const TicketScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={globalStyles.container}>
+            <Header caption={ticket.seats.length === 1 ? "Ticket" : "Tickets"} />
             <FlatList
                 data={ticket.seats}
                 keyExtractor={(item, index) => index}
                 ItemSeparatorComponent={Separator}
-                contentContainerStyle={{ paddingHorizontal: 15, paddingBottom: 15 }}
+                contentContainerStyle={styles.flatList}
                 renderItem={({ item }) => {
                     return (
-                        <View style={styles.ticketContainer}>
-                            <View style={styles.poster}>
-                                <Image
-                                    source={{ uri: `https://image.tmdb.org/t/p/original/${findMoviePoster(ticket.movie.id)}` }}
-                                    style={styles.image}
-                                />
-                            </View>
-                            <View style={styles.wrapper}>
-                                <Text style={styles.movie}>{ticket.movie.title}</Text>
-                                <View style={styles.inforamtionContainer}>
-                                    <View style={[styles.information, styles.space]}>
-                                        <Text style={styles.title}>Date</Text>
-                                        <Text style={styles.value}>{moment(screening.date).format('D/M/YY')}</Text>
-                                    </View>
-                                    <View style={[styles.information, styles.space]}>
-                                        <Text style={styles.title}>Time</Text>
-                                        <Text style={styles.value}>{moment(screening.date).format('HH:mm')}</Text>
-                                    </View>
-                                    <View style={[styles.information, styles.space]}>
-                                        <Text style={styles.title}>Hall</Text>
-                                        <Text style={styles.value}>{screening.hall}</Text>
-                                    </View>
-                                    <View style={styles.information}>
-                                        <Text style={styles.title}>Line</Text>
-                                        <Text style={styles.value}>{item.line}</Text>
-                                    </View>
-                                    <View style={styles.information}>
-                                        <Text style={styles.title}>Seat</Text>
-                                        <Text style={styles.value}>{item.number + 1}</Text>
+                        <>
+                            <View style={styles.ticketUpperContainer}>
+                                <View style={styles.poster}>
+                                    <Image
+                                        source={{ uri: `https://image.tmdb.org/t/p/original/${findMoviePoster(ticket.movie.id)}` }}
+                                        style={styles.image}
+                                    />
+                                </View>
+                                <View style={styles.wrapper}>
+                                    <Text style={[styles.movie, styles.text]}>{ticket.movie.title}</Text>
+                                    <View style={styles.inforamtionContainer}>
+                                        <View style={[styles.information, styles.space]}>
+                                            <Text style={styles.title}>Date</Text>
+                                            <Text style={[styles.value, styles.text]}>{moment(screening.date).format('D/M/YY')}</Text>
+                                        </View>
+                                        <View style={[styles.information, styles.space]}>
+                                            <Text style={[styles.title]}>Time</Text>
+                                            <Text style={[styles.value, styles.text]}>{moment(screening.date).format('HH:mm')}</Text>
+                                        </View>
+                                        <View style={[styles.information, styles.space]}>
+                                            <Text style={styles.title}>Hall</Text>
+                                            <Text style={[styles.value, styles.text]}>{screening.hall.number}</Text>
+                                        </View>
+                                        <View style={styles.information}>
+                                            <Text style={styles.title}>Line</Text>
+                                            <Text style={[styles.value, styles.text]}>{item.line}</Text>
+                                        </View>
+                                        <View style={styles.information}>
+                                            <Text style={styles.title}>Seat</Text>
+                                            <Text style={[styles.value, styles.text]}>{item.number + 1}</Text>
+                                        </View>
                                     </View>
                                 </View>
+                            </View>
+                            <View style={styles.dividerContainer}>
+                                <View style={[styles.filler, { left: 0 }]} />
+                                <View style={styles.circle} />
                                 <View style={styles.dividerWrapper}>
                                     <View style={styles.divider} />
                                 </View>
+                                <View style={styles.circle} />
+                                <View style={[styles.filler, { right: 0 }]} />
+                            </View>
+                            <View style={styles.ticketLowerContainer}>
                                 <View style={styles.order}>
                                     <View>
                                         <Text style={styles.title}>Order ID</Text>
-                                        <Text style={styles.value}>{ticket.orderID}</Text>
+                                        <Text style={[styles.value, styles.text]}>{ticket.orderID}</Text>
                                     </View>
                                     <View>
                                         <Text style={styles.title}>Price</Text>
-                                        <Text style={styles.value}>{ticketPrice}₪</Text>
+                                        <Text style={[styles.value, styles.text]}>{screening.hall.ticketPrice}₪</Text>
                                     </View>
                                 </View>
                                 <Barcode
                                     value={item.code}
                                     format='CODE39'
-                                    lineColor='black'
+                                    lineColor='white'
+                                    background={secondary}
                                     height={50}
                                     maxWidth={width - 65}
                                     style={styles.barcode}
                                 />
                             </View>
-                        </View>
+                        </>
                     )
                 }}
             />
@@ -95,12 +108,28 @@ const TicketScreen = ({ route }) => {
 export default TicketScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        paddingHorizontal: 15
+    flatList: {
+        // paddingHorizontal: 15,
+        marginTop: 15,
+        paddingBottom: 30
     },
-    ticketContainer: {
-        backgroundColor: 'white',
-        borderRadius: 15
+    text: {
+        fontFamily: 'Poppins',
+        color: 'white'
+    },
+    ticketUpperContainer: {
+        backgroundColor: secondary,
+        borderTopRightRadius: 15,
+        borderTopLeftRadius: 15,
+        marginHorizontal: 15
+    },
+    ticketLowerContainer: {
+        backgroundColor: secondary,
+        borderBottomRightRadius: 15,
+        borderBottomLeftRadius: 15,
+        paddingHorizontal: 15,
+        paddingBottom: 15,
+        marginHorizontal: 15
     },
     wrapper: {
         paddingTop: 20,
@@ -121,7 +150,7 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     movie: {
-        fontSize: 20,
+        fontSize: 22,
         flexShrink: 1,
         marginBottom: 10
     },
@@ -141,23 +170,44 @@ const styles = StyleSheet.create({
     },
     title: {
         color: '#acacac',
-        fontWeight: 'bold',
-        fontSize: 15,
-        marginBottom: 2
+        fontFamily: 'PoppinsBold',
+        fontSize: 13,
+        marginBottom: -3,
+        letterSpacing: 1.2
     },
     value: {
         fontSize: 17
     },
+    dividerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        backgroundColor: secondary
+    },
     dividerWrapper: {
+        flex: 1,
         height: 1,
+        paddingHorizontal: 10,
         overflow: 'hidden',
-        marginVertical: 15
     },
     divider: {
         height: 2,
         borderWidth: 1,
-        borderColor: '#a19bb7',
+        borderColor: '#FFFFFF',
         borderStyle: 'dashed'
+    },
+    circle: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: background
+    },
+    filler: {
+        width: 15,
+        height: 30,
+        backgroundColor: background,
+        position: 'absolute',
     },
     order: {
         flexDirection: 'row',
