@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { AntDesign } from '@expo/vector-icons';
+import { secondary } from '../../utils/theme';
 
 const UserBar = () => {
     const user = useSelector(state => state.user);
@@ -21,8 +22,12 @@ const UserBar = () => {
             <TouchableOpacity
                 onPress={() => navigation.navigate('Personal area')}
                 style={styles.avatar}
+                activeOpacity={1}
             >
-                <AntDesign name="user" size={24} color="black" />
+                <Image
+                    source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/save-the-date-5d2e8.appspot.com/o/tsahi.13%40gmail.com?alt=media&token=dced2eef-5079-4655-964b-c49ba72fad5a' }}
+                    style={{ width: '100%', height: '100%' }}
+                />
             </TouchableOpacity>
         </View>
     )
@@ -52,7 +57,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: 40,
         height: 40,
-        borderRadius: 15,
-        backgroundColor: 'green'
+        borderRadius: 20,
+        overflow: 'hidden'
     }
 });

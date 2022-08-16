@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, useWindowDimensions, Text, TouchableOpacity, View, FlatList } from 'react-native';
+import { StyleSheet, SafeAreaView, useWindowDimensions, Text, TouchableOpacity, View, FlatList, Image } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
-import { SignUpTab, SignInTab } from '../../components';
+import { SignUpTab, SignInTab, Header } from '../../components';
 import { authentication } from '../../utils/firebase';
 import { signOutUser } from '../../redux/actions/user';
 import { signOut } from 'firebase/auth';
 import EditingModal from './modal';
+import { background } from '../../utils/theme';
 
 const PersonalAreaScreen = () => {
     const [index, setIndex] = useState(0);
@@ -49,9 +50,19 @@ const PersonalAreaScreen = () => {
         }, 200);
     }
 
-    const Header = () => (
-        <>
-            <View>
+    const ListHeader = () => (
+        <View style={styles.headerContainer}>
+            <Header caption={"My Profile"} />
+            <View style={styles.avatar}>
+                <Image
+                    source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/save-the-date-5d2e8.appspot.com/o/tsahi.13%40gmail.com?alt=media&token=dced2eef-5079-4655-964b-c49ba72fad5a' }}
+                    style={{ width: '100%', height: '100%' }}
+                />
+            </View>
+            <Text style={styles.text}>{user.firstName} {user.lastName}</Text>
+            <Text style={styles.text}>{authentication.currentUser.email}</Text>
+            <Text style={styles.text}>{user.phone}</Text>
+            {/* <View>
                 <Text>{user.firstName}</Text>
                 <TouchableOpacity
                     onPress={() => onOpenModal('firstName')}
@@ -79,16 +90,17 @@ const PersonalAreaScreen = () => {
             <TouchableOpacity onPress={onSignOut}>
                 <Text>Sign Out</Text>
             </TouchableOpacity>
-            <Text>My reservations</Text>
-        </>
+            <Text>My reservations</Text> */}
+        </View>
     );
 
     const Separator = () => (
         <View style={styles.separator} />
     );
 
-    return !authentication.currentUser ? (
+    return authentication.currentUser ? (
         <SafeAreaView style={globalStyles.container}>
+            <Header caption={"Personal Area"} />
             <TabView
                 overScrollMode='never'
                 navigationState={{ index, routes }}
@@ -98,14 +110,14 @@ const PersonalAreaScreen = () => {
                 renderTabBar={(props) =>
                     <TabBar
                         {...props}
-                        style={{ backgroundColor: '#f1f2f6', elevation: 0 }}
+                        style={{ backgroundColor: background, elevation: 0 }}
                         tabStyle={{ minHeight: 10 }}
                         indicatorStyle={styles.indicatorStyle}
                         indicatorContainerStyle={styles.indicatorContainerStyle}
                         labelStyle={styles.labelStyle}
                         pressColor='transparent'
-                        activeColor='#000000'
-                        inactiveColor='#00000033'
+                        activeColor='#FFFFFF'
+                        inactiveColor='#FFFFFF33'
                     />
                 }
             />
@@ -116,7 +128,7 @@ const PersonalAreaScreen = () => {
                 <FlatList
                     data={reservations}
                     keyExtractor={(item) => item._id}
-                    ListHeaderComponent={Header}
+                    ListHeaderComponent={ListHeader}
                     renderItem={({ item, index }) => {
                         return (
                             <View>
@@ -157,8 +169,12 @@ const PersonalAreaScreen = () => {
 export default PersonalAreaScreen;
 
 const styles = StyleSheet.create({
+    text: {
+        fontFamily: 'Poppins',
+        color: 'white'
+    },
     indicatorStyle: {
-        backgroundColor: 'black',
+        backgroundColor: 'white',
         borderRadius: 45
     },
     indicatorContainerStyle: {
@@ -166,9 +182,25 @@ const styles = StyleSheet.create({
         paddingHorizontal: 80
     },
     labelStyle: {
-        fontSize: 15
+        fontFamily: 'Poppins',
+        fontSize: 17,
+        textTransform: 'capitalize',
+        marginBottom: -7
     },
     separator: {
         marginVertical: 5
+    },
+    headerContainer: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20
+    },
+    avatar: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        overflow: 'hidden',
+        marginVertical: 10
     }
 });
