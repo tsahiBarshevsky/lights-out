@@ -43,11 +43,9 @@ const PersonalAreaScreen = () => {
     }
 
     const onSignOut = () => {
-        // signOut(authentication);
-        // dispatch(signOutUser());
-        setTimeout(() => {
-            navigation.goBack();
-        }, 200);
+        signOut(authentication);
+        dispatch(signOutUser());
+        navigation.goBack();
     }
 
     const ListHeader = () => (
@@ -62,6 +60,9 @@ const PersonalAreaScreen = () => {
             <Text style={styles.text}>{user.firstName} {user.lastName}</Text>
             <Text style={styles.text}>{authentication.currentUser.email}</Text>
             <Text style={styles.text}>{user.phone}</Text>
+            <TouchableOpacity onPress={onSignOut}>
+                <Text>Sign Out</Text>
+            </TouchableOpacity>
             {/* <View>
                 <Text>{user.firstName}</Text>
                 <TouchableOpacity
@@ -98,7 +99,7 @@ const PersonalAreaScreen = () => {
         <View style={styles.separator} />
     );
 
-    return authentication.currentUser ? (
+    return !authentication.currentUser ? (
         <SafeAreaView style={globalStyles.container}>
             <Header caption={"Personal Area"} />
             <TabView

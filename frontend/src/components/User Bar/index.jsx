@@ -3,11 +3,26 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { AntDesign } from '@expo/vector-icons';
-import { secondary } from '../../utils/theme';
+import { primary, secondary } from '../../utils/theme';
 
 const UserBar = () => {
     const user = useSelector(state => state.user);
     const navigation = useNavigation();
+
+    const renderImage = () => {
+        if (Object.keys(user).length > 0) {
+            if (Object.keys(user.image).length > 0)
+                return (
+                    <Image
+                        source={{ uri: user.image.url }}
+                        style={{ width: '100%', height: '100%' }}
+                    />
+                );
+            else
+                return <AntDesign name='user' size={33} color='white' />;
+        }
+        return <AntDesign name='user' size={33} color='white' />;
+    }
 
     return (
         <View style={styles.userBar}>
@@ -24,10 +39,7 @@ const UserBar = () => {
                 style={styles.avatar}
                 activeOpacity={1}
             >
-                <Image
-                    source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/save-the-date-5d2e8.appspot.com/o/tsahi.13%40gmail.com?alt=media&token=dced2eef-5079-4655-964b-c49ba72fad5a' }}
-                    style={{ width: '100%', height: '100%' }}
-                />
+                {renderImage()}
             </TouchableOpacity>
         </View>
     )
@@ -53,11 +65,12 @@ const styles = StyleSheet.create({
         marginTop: -5
     },
     avatar: {
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         width: 40,
         height: 40,
         borderRadius: 20,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        backgroundColor: '#444549'
     }
 });

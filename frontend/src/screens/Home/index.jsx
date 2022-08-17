@@ -86,12 +86,17 @@ const HomeScreen = () => {
     useEffect(() => {
         const unsubscribe = authentication.onAuthStateChanged((user) => {
             if (user) {
+                console.log('enter if')
                 fetch(`http://${localhost}/get-user-info?uid=${user.uid}`)
                     .then((res) => res.json())
-                    .then((res) => dispatch({ type: 'SET_USER', user: res }))
+                    .then((res) => {
+                        if (res)
+                            dispatch({ type: 'SET_USER', user: res });
+                    })
                     .finally(() => navigation.canGoBack() && navigation.goBack());
             }
             else {
+                console.log('enter else');
                 if (navigation.canGoBack())
                     navigation.goBack();
             }

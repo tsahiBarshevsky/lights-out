@@ -227,8 +227,8 @@ const ChockoutScreen = ({ route }) => {
                                                 value={values.firstName}
                                                 onChangeText={handleChange('firstName')}
                                                 underlineColorAndroid="transparent"
-                                                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                                                selectionColor='rgba(255, 255, 255, 0.25)'
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('firstName')}
                                                 returnKeyType='next'
@@ -253,8 +253,8 @@ const ChockoutScreen = ({ route }) => {
                                                 ref={lastNameRef}
                                                 onChangeText={handleChange('lastName')}
                                                 underlineColorAndroid="transparent"
-                                                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                                                selectionColor='rgba(255, 255, 255, 0.25)'
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('lastName')}
                                                 returnKeyType='next'
@@ -284,8 +284,8 @@ const ChockoutScreen = ({ route }) => {
                                                 ref={emailRef}
                                                 onChangeText={handleChange('email')}
                                                 underlineColorAndroid="transparent"
-                                                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                                                selectionColor='rgba(255, 255, 255, 0.25)'
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('email')}
                                                 returnKeyType='next'
@@ -311,8 +311,8 @@ const ChockoutScreen = ({ route }) => {
                                                 ref={phoneRef}
                                                 onChangeText={handleChange('phone')}
                                                 underlineColorAndroid="transparent"
-                                                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                                                selectionColor='rgba(255, 255, 255, 0.25)'
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('phone')}
                                                 onSubmitEditing={() => creditRef.current?.focus()}
@@ -339,8 +339,8 @@ const ChockoutScreen = ({ route }) => {
                                                 value={values.creditNumber}
                                                 ref={creditRef}
                                                 underlineColorAndroid="transparent"
-                                                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                                                selectionColor='rgba(255, 255, 255, 0.25)'
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('creditNumber')}
                                                 onSubmitEditing={() => expiryRef.current?.focus()}
@@ -367,8 +367,8 @@ const ChockoutScreen = ({ route }) => {
                                                 value={values.expiryDate}
                                                 ref={expiryRef}
                                                 underlineColorAndroid="transparent"
-                                                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                                                selectionColor='rgba(255, 255, 255, 0.25)'
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('expiryDate')}
                                                 style={globalStyles.textInput}
@@ -395,8 +395,8 @@ const ChockoutScreen = ({ route }) => {
                                                 value={values.cvc}
                                                 ref={cvcRef}
                                                 underlineColorAndroid="transparent"
-                                                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                                                selectionColor='rgba(255, 255, 255, 0.25)'
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
                                                 onBlur={handleBlur('cvc')}
                                                 style={globalStyles.textInput}
                                                 keyboardType='number-pad'

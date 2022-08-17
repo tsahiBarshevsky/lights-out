@@ -245,6 +245,7 @@ app.post('/add-new-user', async (req, res) => {
         phone: req.body.phone,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        image: req.body.image
     });
     await newUser.save();
     res.json(newUser._id);

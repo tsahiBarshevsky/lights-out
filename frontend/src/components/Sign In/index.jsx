@@ -2,10 +2,11 @@ import React, { useRef, useState } from 'react';
 import { Formik, ErrorMessage } from 'formik';
 import { Fontisto, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { BallIndicator } from 'react-native-indicators';
 import { authentication } from '../../utils/firebase';
 import { globalStyles } from '../../utils/globalStyles';
 import { loginSchema } from '../../utils/schemas';
-import { error } from '../../utils/theme';
+import { primary, error } from '../../utils/theme';
 
 // React Native components
 import {
@@ -20,16 +21,20 @@ import {
 } from 'react-native';
 
 const SignInTab = () => {
+    const [disabled, setDisabled] = useState(false);
     const [passwordVisibilty, setPasswordVisibilty] = useState(true);
     const passwordRef = useRef(null);
 
     const onSignIn = (values) => {
         Keyboard.dismiss();
-        console.log('values', values)
-        // setTimeout(() => {
-        //     signInWithEmailAndPassword(authentication, values.email.trim(), values.password)
-        //         .catch((error) => console.log(error.message))
-        // }, 500);
+        setDisabled(true);
+        setTimeout(() => {
+            signInWithEmailAndPassword(authentication, values.email.trim(), values.password)
+                .catch((error) => {
+                    console.log(error.message);
+                    setDisabled(false);
+                });
+        }, 500);
     }
 
     return (
@@ -134,8 +139,17 @@ const SignInTab = () => {
                                         )
                                     }}
                                 />
-                                <TouchableOpacity onPress={handleSubmit}>
-                                    <Text>Sign In</Text>
+                                <TouchableOpacity
+                                    onPress={handleSubmit}
+                                    style={styles.button}
+                                    activeOpacity={1}
+                                    disabled={disabled}
+                                >
+                                    {disabled ?
+                                        <BallIndicator size={18} count={8} color='black' />
+                                        :
+                                        <Text style={styles.buttonCaption}>Sign In</Text>
+                                    }
                                 </TouchableOpacity>
                             </View>
                         )
@@ -164,5 +178,21 @@ const styles = StyleSheet.create({
     },
     eye: {
         marginLeft: 10
+    },
+    button: {
+        marginTop: 25,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: primary,
+        width: '100%',
+        height: 38,
+        borderRadius: 50,
+        elevation: 2
+    },
+    buttonCaption: {
+        fontFamily: 'PoppinsBold',
+        transform: [{ translateY: 2 }],
+        letterSpacing: 1.1
     }
 });
