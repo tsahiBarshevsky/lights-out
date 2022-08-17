@@ -9,17 +9,16 @@ const SearchBar = ({ sortPanelRef }) => {
     const [term, setTerm] = useState('');
     const navigation = useNavigation();
 
-    const onSearchMovie = () => {
+    const onSearchMovie = async () => {
         Keyboard.dismiss();
-        setTimeout(async () => {
+        if (term) {
             const response = await fetch(`http://${localhost}/search-movie-by-name?name=${term}`);
             const results = await response.json();
-            if (results.length === 0)
-                ToastAndroid.show('No movie found', ToastAndroid.LONG);
-            else
-                navigation.navigate('Search', { results });
-            setTerm('');
-        }, 200);
+            navigation.navigate('Search', { results });
+            setTimeout(() => {
+                setTerm('');
+            }, 200);
+        }
     }
 
     return (
@@ -30,8 +29,8 @@ const SearchBar = ({ sortPanelRef }) => {
                 value={term}
                 onChangeText={(text) => setTerm(text)}
                 underlineColorAndroid="transparent"
-                placeholderTextColor='rgba(255, 255, 255, 0.25)'
-                selectionColor='rgba(255, 255, 255, 0.25)'
+                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                selectionColor='white'
                 blurOnSubmit={false}
                 onSubmitEditing={onSearchMovie}
                 style={styles.textInput}
