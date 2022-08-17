@@ -10,6 +10,7 @@ import { localhost } from '../../utils/utilities';
 import { globalStyles } from '../../utils/globalStyles';
 import { registrationSchema } from '../../utils/schemas';
 import { background, error, primary } from '../../utils/theme';
+import config from '../../utils/config';
 
 // React Native components
 import {
@@ -23,7 +24,6 @@ import {
     Keyboard,
     Image
 } from 'react-native';
-import config from '../../utils/config';
 
 const SignUpTab = () => {
     const [disabled, setDisabled] = useState(false);
@@ -120,7 +120,6 @@ const SignUpTab = () => {
                     console.log('Image uploaded');
                     createUser(values, data.url, data.public_id);
                 });
-
         }
         else {
             values.image = {};

@@ -13,7 +13,8 @@ const userReducer = (state = INITIAL_STATE, action) => {
                 $merge: {
                     firstName: action.payload.firstName,
                     lastName: action.payload.lastName,
-                    phone: action.payload.phone
+                    phone: action.payload.phone,
+                    image: action.payload.image
                 }
             });
         default:

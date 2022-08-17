@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Formik, ErrorMessage } from 'formik';
 import { BallIndicator } from 'react-native-indicators';
 import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
 import { Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
 import { background, primary } from '../../utils/theme';
 import { editingSchema } from '../../utils/schemas';
 import { updatePersonalDeatil } from '../../redux/actions/user';
 import { localhost } from '../../utils/utilities';
+import config from '../../utils/config';
 
 // React Native components
 import {
@@ -26,8 +28,9 @@ import {
 } from 'react-native';
 
 const EditProfileScreen = () => {
-    const user = useSelector(state => state.user);
     const [disabled, setDisabled] = useState(false);
+    const [image, setImage] = useState(null);
+    const user = useSelector(state => state.user);
     const firstNameRef = useRef(null);
     const lastNameRef = useRef(null);
     const phoneRef = useRef(null);
@@ -40,9 +43,27 @@ const EditProfileScreen = () => {
         phone: user.phone
     };
 
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1
+        });
+        if (!result.cancelled)
+            setImage(result.uri);
+    }
+
     const renderImage = () => {
-        if (Object.keys(user).length > 0) {
-            if (Object.keys(user.image).length > 0)
+        if (Object.keys(user.image).length > 0) {
+            if (image)
+                return (
+                    <Image
+                        source={{ uri: image }}
+                        style={{ width: '100%', height: '100%' }}
+                    />
+                );
+            else
                 return (
                     <Image
                         source={{ uri: user.image.url }}
@@ -50,7 +71,17 @@ const EditProfileScreen = () => {
                     />
                 );
         }
-        return <AntDesign name='user' size={80} color='white' />;
+        else {
+            if (image)
+                return (
+                    <Image
+                        source={{ uri: image }}
+                        style={{ width: '100%', height: '100%' }}
+                    />
+                );
+            else
+                return <AntDesign name='user' size={80} color='white' />;
+        }
     }
 
     const renderPickerButton = () => {
@@ -70,17 +101,14 @@ const EditProfileScreen = () => {
             <TouchableOpacity
                 activeOpacity={1}
                 style={styles.picker}
-                onPress={() => console.log('add image')}
+                onPress={pickImage}
             >
                 <Entypo name="camera" size={12} color={background} />
             </TouchableOpacity>
         );
     }
 
-    const onEditProfile = (values) => {
-        const { firstName, lastName, phone } = values;
-        setDisabled(true);
-        Keyboard.dismiss();
+    const updateDatabase = (firstName, lastName, phone, url, publicID) => {
         fetch(`http://${localhost}/update-user-detail?userID=${user._id}`,
             {
                 method: 'POST',
@@ -91,13 +119,21 @@ const EditProfileScreen = () => {
                 body: JSON.stringify({
                     firstName: firstName,
                     lastName: lastName,
-                    phone: phone
+                    phone: phone,
+                    image: url && publicID ? {
+                        url: url,
+                        public_id: publicID
+                    } : user.image
                 })
             })
             .then((res) => res.json())
             .then((res) => {
                 console.log(res);
-                dispatch(updatePersonalDeatil(firstName, lastName, phone));
+                const image = url && publicID ? {
+                    url: url,
+                    public_id: publicID
+                } : user.image;
+                dispatch(updatePersonalDeatil(firstName, lastName, phone, image));
                 setTimeout(() => {
                     navigation.goBack();
                 }, 200);
@@ -106,6 +142,65 @@ const EditProfileScreen = () => {
                 console.log('error', error);
                 setDisabled(false);
             });
+    }
+
+    const onEditProfile = (values) => {
+        const { firstName, lastName, phone } = values;
+        setDisabled(true);
+        Keyboard.dismiss();
+        if (image) {
+            if (Object.keys(user.image).length > 0) {
+                // Delete existing image from Cloudinary and upload new one
+                fetch(`https://cloudinary-management.herokuapp.com/delete-image?public_id=${user.image.public_id}`)
+                    .then((res) => res.json())
+                    .then((res) => {
+                        console.log(res);
+                        const newFile = {
+                            uri: image,
+                            type: `test/${image.split(".")[1]}`,
+                            name: `test.${image.split(".")[1]}`
+                        }
+                        const data = new FormData();
+                        data.append('file', newFile);
+                        data.append('upload_preset', 'whatToWear');
+                        data.append('folder', 'Lights Out');
+                        data.append('cloud_name', config.CLOUDINARY_KEY);
+                        fetch(`https://api.cloudinary.com/v1_1/${config.CLOUDINARY_KEY}/image/upload`, {
+                            method: 'POST',
+                            body: data
+                        })
+                            .then((res) => res.json())
+                            .then((data) => {
+                                console.log('Image uploaded');
+                                updateDatabase(firstName, lastName, phone, data.url, data.public_id);
+                            });
+                    })
+                    .catch((error) => console.log("error: ", error.message));
+            }
+            else {
+                const newFile = {
+                    uri: image,
+                    type: `test/${image.split(".")[1]}`,
+                    name: `test.${image.split(".")[1]}`
+                }
+                const data = new FormData();
+                data.append('file', newFile);
+                data.append('upload_preset', 'whatToWear');
+                data.append('folder', 'Lights Out');
+                data.append('cloud_name', config.CLOUDINARY_KEY);
+                fetch(`https://api.cloudinary.com/v1_1/${config.CLOUDINARY_KEY}/image/upload`, {
+                    method: 'POST',
+                    body: data
+                })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        console.log('Image uploaded');
+                        updateDatabase(firstName, lastName, phone, data.url, data.public_id);
+                    });
+            }
+        }
+        else
+            updateDatabase(firstName, lastName, phone, null, null);
     }
 
     return (
@@ -120,7 +215,18 @@ const EditProfileScreen = () => {
                     <View style={styles.image}>
                         {renderImage()}
                     </View>
-                    {renderPickerButton()}
+                    {/* {renderPickerButton()} */}
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        style={styles.picker}
+                        onPress={pickImage}
+                    >
+                        {image || Object.keys(user.image).length > 0 ?
+                            <MaterialIcons name="edit" size={15} color={background} />
+                            :
+                            <Entypo name="camera" size={12} color={background} />
+                        }
+                    </TouchableOpacity>
                 </View>
                 <KeyboardAvoidingView
                     enabled

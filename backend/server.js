@@ -257,11 +257,13 @@ app.post('/update-user-detail', async (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const phone = req.body.phone;
+    const image = req.body.image
     const filter = { _id: userID };
     User.findOneAndUpdate(filter, {
         "firstName": firstName,
         "lastName": lastName,
-        "phone": phone
+        "phone": phone,
+        "image": image
     },
         function (err) {
             if (err) {

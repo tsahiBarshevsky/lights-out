@@ -4,13 +4,14 @@ const signOutUser = () => {
     }
 };
 
-const updatePersonalDeatil = (firstName, lastName, phone) => {
+const updatePersonalDeatil = (firstName, lastName, phone, image) => {
     return {
         type: 'UPDATE_PERSONAL_DETAIL',
         payload: {
             firstName: firstName,
             lastName: lastName,
-            phone: phone
+            phone: phone,
+            image: image
         }
     }
 };
