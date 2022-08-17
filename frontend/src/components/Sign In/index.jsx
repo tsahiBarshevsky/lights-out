@@ -3,10 +3,12 @@ import { Formik, ErrorMessage } from 'formik';
 import { Fontisto, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { BallIndicator } from 'react-native-indicators';
+import { useDispatch } from 'react-redux';
 import { authentication } from '../../utils/firebase';
 import { globalStyles } from '../../utils/globalStyles';
 import { loginSchema } from '../../utils/schemas';
 import { primary, error } from '../../utils/theme';
+import { localhost } from '../../utils/utilities';
 
 // React Native components
 import {
@@ -24,12 +26,18 @@ const SignInTab = () => {
     const [disabled, setDisabled] = useState(false);
     const [passwordVisibilty, setPasswordVisibilty] = useState(true);
     const passwordRef = useRef(null);
+    const dispatch = useDispatch()
 
     const onSignIn = (values) => {
         Keyboard.dismiss();
         setDisabled(true);
         setTimeout(() => {
             signInWithEmailAndPassword(authentication, values.email.trim(), values.password)
+                .then((data) => {
+                    fetch(`http://${localhost}/get-all-reservations?uid=${data.user.uid}`)
+                        .then((res) => res.json())
+                        .then((res) => dispatch({ type: 'SET_RESERVATIONS', reservations: res }))
+                })
                 .catch((error) => {
                     console.log(error.message);
                     setDisabled(false);

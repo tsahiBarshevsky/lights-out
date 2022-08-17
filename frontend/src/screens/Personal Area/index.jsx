@@ -4,18 +4,19 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+import { AntDesign, MaterialIcons, Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { globalStyles } from '../../utils/globalStyles';
 import { SignUpTab, SignInTab, Header } from '../../components';
 import { authentication } from '../../utils/firebase';
 import { signOutUser } from '../../redux/actions/user';
 import { signOut } from 'firebase/auth';
-import EditingModal from './modal';
-import { background } from '../../utils/theme';
+import { resetReservations } from '../../redux/actions/reservations';
+import { background, primary } from '../../utils/theme';
 
 const PersonalAreaScreen = () => {
     const [index, setIndex] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [type, setType] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(authentication.currentUser);
     const user = useSelector(state => state.user);
     const reservations = useSelector(state => state.reservations);
     const navigation = useNavigation();
@@ -37,25 +38,57 @@ const PersonalAreaScreen = () => {
         }
     }
 
-    const onOpenModal = (type) => {
-        setType(type);
-        setIsModalVisible(true);
+    const renderImage = () => {
+        if (Object.keys(user).length > 0) {
+            if (Object.keys(user.image).length > 0)
+                return (
+                    <Image
+                        source={{ uri: user.image.url }}
+                        style={{ width: '100%', height: '100%' }}
+                    />
+                );
+        }
+        return <AntDesign name='user' size={80} color='white' />;
+    }
+
+    const renderPickerButton = () => {
+        if (Object.keys(user).length > 0) {
+            if (Object.keys(user.image).length > 0)
+                return (
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        style={styles.picker}
+                        onPress={() => console.log('edit image')}
+                    >
+                        <MaterialIcons name="edit" size={15} color={background} />
+                    </TouchableOpacity>
+                );
+        }
+        return (
+            <TouchableOpacity
+                activeOpacity={1}
+                style={styles.picker}
+                onPress={() => console.log('add image')}
+            >
+                <Entypo name="camera" size={12} color={background} />
+            </TouchableOpacity>
+        );
     }
 
     const onSignOut = () => {
         signOut(authentication);
+        setIsLoggedIn(false);
         dispatch(signOutUser());
-        navigation.goBack();
+        dispatch(resetReservations());
     }
 
     const ListHeader = () => (
         <View style={styles.headerContainer}>
             <Header caption={"My Profile"} />
-            <View style={styles.avatar}>
-                <Image
-                    source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/save-the-date-5d2e8.appspot.com/o/tsahi.13%40gmail.com?alt=media&token=dced2eef-5079-4655-964b-c49ba72fad5a' }}
-                    style={{ width: '100%', height: '100%' }}
-                />
+            <View style={styles.imageWrapper}>
+                <View style={styles.image}>
+                    {renderImage()}
+                </View>
             </View>
             <Text style={styles.text}>{user.firstName} {user.lastName}</Text>
             <Text style={styles.text}>{authentication.currentUser.email}</Text>
@@ -99,7 +132,7 @@ const PersonalAreaScreen = () => {
         <View style={styles.separator} />
     );
 
-    return !authentication.currentUser ? (
+    return !isLoggedIn ? (
         <SafeAreaView style={globalStyles.container}>
             <Header caption={"Personal Area"} />
             <TabView
@@ -126,7 +159,39 @@ const PersonalAreaScreen = () => {
     ) : (
         <>
             <SafeAreaView style={globalStyles.container}>
-                <FlatList
+                <Header caption={"My Profile"} />
+                <View style={styles.userInfo}>
+                    <View style={styles.imageWrapper}>
+                        <View style={styles.image}>
+                            {renderImage()}
+                        </View>
+                    </View>
+                    <Text style={styles.text}>{user.firstName} {user.lastName}</Text>
+                    <Text style={styles.text}>{authentication.currentUser.email}</Text>
+                    <Text style={styles.text}>{user.phone}</Text>
+                </View>
+                <View style={styles.optionContainer}>
+                    <View style={styles.option}>
+                        <FontAwesome5 name="user-edit" size={17} color="white" />
+                        <Text style={styles.optionCaption}>Edit Profile</Text>
+                    </View>
+                    <TouchableOpacity>
+                        <Entypo name="chevron-right" size={22} color="white" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.optionContainer}>
+                    <View style={styles.option}>
+                        <MaterialIcons name="logout" size={20} color="white" />
+                        <Text style={styles.optionCaption}>Sign out</Text>
+                    </View>
+                    <TouchableOpacity
+                        onPress={signOut}
+                        activeOpacity={1}
+                    >
+                        <Entypo name="chevron-right" size={22} color="white" />
+                    </TouchableOpacity>
+                </View>
+                {/* <FlatList
                     data={reservations}
                     keyExtractor={(item) => item._id}
                     ListHeaderComponent={ListHeader}
@@ -155,14 +220,8 @@ const PersonalAreaScreen = () => {
                         )
                     }}
                     ItemSeparatorComponent={Separator}
-                />
+                /> */}
             </SafeAreaView>
-            <EditingModal
-                isModalVisible={isModalVisible}
-                setIsModalVisible={setIsModalVisible}
-                user={user}
-                field={type}
-            />
         </>
     )
 }
@@ -197,11 +256,56 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20
     },
-    avatar: {
+    imageWrapper: {
+        width: 100,
+        height: 100,
+        marginVertical: 10
+    },
+    image: {
+        justifyContent: 'flex-end',
+        alignItems: 'center',
         width: 100,
         height: 100,
         borderRadius: 50,
         overflow: 'hidden',
-        marginVertical: 10
+        backgroundColor: '#444549',
+        alignSelf: 'center',
+    },
+    picker: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 2,
+        right: 2,
+        zIndex: 1,
+        width: 25,
+        height: 25,
+        borderRadius: 25 / 2,
+        backgroundColor: primary
+    },
+    userInfo: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10
+    },
+    optionContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        paddingHorizontal: 15,
+        backgroundColor: 'blue'
+    },
+    option: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    optionCaption: {
+        fontFamily: 'PoppinsBold',
+        color: 'white',
+        transform: [{ translateY: 2 }],
+        letterSpacing: 1.1,
+        marginLeft: 10
     }
 });

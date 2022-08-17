@@ -16,6 +16,8 @@ const reservationsReducer = (state = INITIAL_STATE, action) => {
                     $merge: { active: false }
                 }
             });
+        case 'RESET_RESERVATIONS':
+            return INITIAL_STATE;
         default:
             return state;
     }

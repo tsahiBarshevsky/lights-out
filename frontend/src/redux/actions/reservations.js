@@ -12,4 +12,10 @@ const cancelReservation = (index) => {
     }
 };
 
-export { addNewReservation, cancelReservation };
+const resetReservations = () => {
+    return {
+        type: 'RESET_RESERVATIONS'
+    }
+};
+
+export { addNewReservation, cancelReservation, resetReservations };
