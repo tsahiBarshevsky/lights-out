@@ -27,4 +27,10 @@ const checkoutSchema = Yup.object().shape({
     cvc: Yup.string().min(3, 'Invalid number').required(required)
 });
 
-export { registrationSchema, loginSchema, checkoutSchema };
+const editingSchema = Yup.object().shape({
+    firstName: Yup.string().trim().required(required),
+    lastName: Yup.string().trim().required(required),
+    phone: Yup.string().matches(phoneRegex, "Phone number isn't valid").required(required)
+});
+
+export { registrationSchema, loginSchema, checkoutSchema, editingSchema };

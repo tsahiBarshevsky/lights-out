@@ -51,30 +51,6 @@ const PersonalAreaScreen = () => {
         return <AntDesign name='user' size={80} color='white' />;
     }
 
-    const renderPickerButton = () => {
-        if (Object.keys(user).length > 0) {
-            if (Object.keys(user.image).length > 0)
-                return (
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        style={styles.picker}
-                        onPress={() => console.log('edit image')}
-                    >
-                        <MaterialIcons name="edit" size={15} color={background} />
-                    </TouchableOpacity>
-                );
-        }
-        return (
-            <TouchableOpacity
-                activeOpacity={1}
-                style={styles.picker}
-                onPress={() => console.log('add image')}
-            >
-                <Entypo name="camera" size={12} color={background} />
-            </TouchableOpacity>
-        );
-    }
-
     const onSignOut = () => {
         signOut(authentication);
         setIsLoggedIn(false);
@@ -175,7 +151,10 @@ const PersonalAreaScreen = () => {
                         <FontAwesome5 name="user-edit" size={17} color="white" />
                         <Text style={styles.optionCaption}>Edit Profile</Text>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Edit profile')}
+                        activeOpacity={1}
+                    >
                         <Entypo name="chevron-right" size={22} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -185,7 +164,7 @@ const PersonalAreaScreen = () => {
                         <Text style={styles.optionCaption}>Sign out</Text>
                     </View>
                     <TouchableOpacity
-                        onPress={signOut}
+                        onPress={onSignOut}
                         activeOpacity={1}
                     >
                         <Entypo name="chevron-right" size={22} color="white" />
@@ -270,18 +249,6 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         backgroundColor: '#444549',
         alignSelf: 'center',
-    },
-    picker: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        bottom: 2,
-        right: 2,
-        zIndex: 1,
-        width: 25,
-        height: 25,
-        borderRadius: 25 / 2,
-        backgroundColor: primary
     },
     userInfo: {
         justifyContent: 'center',

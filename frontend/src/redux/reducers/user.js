@@ -11,9 +11,11 @@ const userReducer = (state = INITIAL_STATE, action) => {
         case 'UPDATE_PERSONAL_DETAIL':
             return update(state, {
                 $merge: {
-                    [`${action.payload.field}`]: action.payload.value
+                    firstName: action.payload.firstName,
+                    lastName: action.payload.lastName,
+                    phone: action.payload.phone
                 }
-            })
+            });
         default:
             return state;
     }

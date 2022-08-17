@@ -4,12 +4,13 @@ const signOutUser = () => {
     }
 };
 
-const updatePersonalDeatil = (field, value) => {
+const updatePersonalDeatil = (firstName, lastName, phone) => {
     return {
         type: 'UPDATE_PERSONAL_DETAIL',
         payload: {
-            field: field,
-            value: value
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone
         }
     }
 };

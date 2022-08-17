@@ -251,20 +251,25 @@ app.post('/add-new-user', async (req, res) => {
     res.json(newUser._id);
 });
 
+// Update user
 app.post('/update-user-detail', async (req, res) => {
     const userID = req.query.userID;
-    const value = req.body.value;
-    const field = req.body.field;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const phone = req.body.phone;
     const filter = { _id: userID };
-    const update = { [`${field}`]: value };
-    User.findOneAndUpdate(filter, update,
+    User.findOneAndUpdate(filter, {
+        "firstName": firstName,
+        "lastName": lastName,
+        "phone": phone
+    },
         function (err) {
             if (err) {
                 console.log(err);
                 res.status(500).send(err);
             }
             else
-                res.json('Detail updated successfully')
+                res.json('User details updated successfully')
         }
     );
 });
