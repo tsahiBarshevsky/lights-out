@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { AntDesign, MaterialIcons, Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { globalStyles } from '../../utils/globalStyles';
-import { SignUpTab, SignInTab, Header } from '../../components';
+import { SignUpTab, SignInTab, Header, ReservationCard } from '../../components';
 import { authentication } from '../../utils/firebase';
 import { signOutUser } from '../../redux/actions/user';
 import { signOut } from 'firebase/auth';
@@ -58,55 +58,6 @@ const PersonalAreaScreen = () => {
         dispatch(resetReservations());
     }
 
-    const ListHeader = () => (
-        <View style={styles.headerContainer}>
-            <Header
-                caption={"My Profile"}
-                backFunction={() => navigation.goBack()}
-            />
-            <View style={styles.imageWrapper}>
-                <View style={styles.image}>
-                    {renderImage()}
-                </View>
-            </View>
-            <Text style={styles.text}>{user.firstName} {user.lastName}</Text>
-            <Text style={styles.text}>{authentication.currentUser.email}</Text>
-            <Text style={styles.text}>{user.phone}</Text>
-            <TouchableOpacity onPress={onSignOut}>
-                <Text>Sign Out</Text>
-            </TouchableOpacity>
-            {/* <View>
-                <Text>{user.firstName}</Text>
-                <TouchableOpacity
-                    onPress={() => onOpenModal('firstName')}
-                >
-                    <Text>Edit</Text>
-                </TouchableOpacity>
-            </View>
-            <View>
-                <Text>{user.lastName}</Text>
-                <TouchableOpacity
-                    onPress={() => onOpenModal('lastName')}
-                >
-                    <Text>Edit</Text>
-                </TouchableOpacity>
-            </View>
-            <Text>{authentication.currentUser.email}</Text>
-            <View>
-                <Text>{user.phone}</Text>
-                <TouchableOpacity
-                    onPress={() => onOpenModal('phone')}
-                >
-                    <Text>Edit</Text>
-                </TouchableOpacity>
-            </View>
-            <TouchableOpacity onPress={onSignOut}>
-                <Text>Sign Out</Text>
-            </TouchableOpacity>
-            <Text>My reservations</Text> */}
-        </View>
-    );
-
     const Separator = () => (
         <View style={styles.separator} />
     );
@@ -151,9 +102,15 @@ const PersonalAreaScreen = () => {
                             {renderImage()}
                         </View>
                     </View>
-                    <Text style={styles.text}>{user.firstName} {user.lastName}</Text>
-                    <Text style={styles.text}>{authentication.currentUser.email}</Text>
-                    <Text style={styles.text}>{user.phone}</Text>
+                    <Text style={[styles.text, styles.title]}>
+                        {user.firstName} {user.lastName}
+                    </Text>
+                    <Text style={[styles.text, styles.subtitle]}>
+                        {authentication.currentUser.email}
+                    </Text>
+                    <Text style={[styles.text, styles.subtitle]}>
+                        {user.phone}
+                    </Text>
                 </View>
                 <View style={styles.optionContainer}>
                     <View style={styles.option}>
@@ -167,10 +124,29 @@ const PersonalAreaScreen = () => {
                         <Entypo name="chevron-right" size={22} color="white" />
                     </TouchableOpacity>
                 </View>
-                <View style={styles.optionContainer}>
+                <View style={[styles.optionContainer, { paddingBottom: 7 }]}>
+                    <View style={styles.option}>
+                        <Entypo name="ticket" size={20} color="white" />
+                        <Text style={styles.optionCaption}>My Reservations</Text>
+                    </View>
+                </View>
+                <FlatList
+                    data={reservations}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item, index }) => {
+                        return (
+                            <ReservationCard
+                                item={item}
+                                index={index}
+                            />
+                        )
+                    }}
+                    ItemSeparatorComponent={Separator}
+                />
+                <View style={[styles.optionContainer, { paddingBottom: 7 }]}>
                     <View style={styles.option}>
                         <MaterialIcons name="logout" size={20} color="white" />
-                        <Text style={styles.optionCaption}>Sign out</Text>
+                        <Text style={styles.optionCaption}>Sign Out</Text>
                     </View>
                     <TouchableOpacity
                         onPress={onSignOut}
@@ -179,36 +155,6 @@ const PersonalAreaScreen = () => {
                         <Entypo name="chevron-right" size={22} color="white" />
                     </TouchableOpacity>
                 </View>
-                {/* <FlatList
-                    data={reservations}
-                    keyExtractor={(item) => item._id}
-                    ListHeaderComponent={ListHeader}
-                    renderItem={({ item, index }) => {
-                        return (
-                            <View>
-                                <Text>#{item.orderID}</Text>
-                                <Text>{item.movie.title}</Text>
-                                <Text>Reservation date {moment(item.reservationDate).format('DD/MM/YY HH:mm')}</Text>
-                                <Text>Screening date {moment(item.date).format('DD/MM/YY HH:mm')}</Text>
-                                {item.active &&
-                                    <TouchableOpacity
-                                        onPress={() => navigation.navigate('Ticket', { ticket: item })}
-                                    >
-                                        <Text>View tickets</Text>
-                                    </TouchableOpacity>
-                                }
-                                {item.active && moment(new Date()).isBefore(moment(item.date)) &&
-                                    <TouchableOpacity
-                                        onPress={() => navigation.navigate('Cancelation', { reservation: item, location: index })}
-                                    >
-                                        <Text>Cancel reservation</Text>
-                                    </TouchableOpacity>
-                                }
-                            </View>
-                        )
-                    }}
-                    ItemSeparatorComponent={Separator}
-                /> */}
             </SafeAreaView>
         </>
     )
@@ -247,22 +193,34 @@ const styles = StyleSheet.create({
     imageWrapper: {
         width: 100,
         height: 100,
-        marginVertical: 10
+        backgroundColor: primary,
+        borderRadius: 50,
+        marginVertical: 10,
+        padding: 5,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     image: {
         justifyContent: 'flex-end',
         alignItems: 'center',
-        width: 100,
-        height: 100,
+        width: '100%',
+        height: '100%',
         borderRadius: 50,
         overflow: 'hidden',
-        backgroundColor: '#444549',
-        alignSelf: 'center',
+        backgroundColor: '#444549'
     },
     userInfo: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 10
+        marginBottom: 5
+    },
+    title: {
+        fontSize: 18
+    },
+    subtitle: {
+        fontSize: 13,
+        marginBottom: -3,
+        color: '#acacac'
     },
     optionContainer: {
         flexDirection: 'row',
@@ -270,7 +228,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         paddingHorizontal: 15,
-        backgroundColor: 'blue'
+        paddingVertical: 5
     },
     option: {
         flexDirection: 'row',
