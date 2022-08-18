@@ -33,4 +33,15 @@ const editingSchema = Yup.object().shape({
     phone: Yup.string().matches(phoneRegex, "Phone number isn't valid").required(required)
 });
 
-export { registrationSchema, loginSchema, checkoutSchema, editingSchema };
+const cancelationSchema = Yup.object().shape({
+    email: Yup.string().trim().matches(emailRegex, "Email isn't valid").required(required),
+    creditNumber: Yup.string().trim().min(4, 'Invalid number').required(required)
+});
+
+export {
+    registrationSchema,
+    loginSchema,
+    checkoutSchema,
+    editingSchema,
+    cancelationSchema
+};
