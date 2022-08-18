@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { AntDesign, MaterialIcons, Entypo } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, ErrorMessage } from 'formik';
 import { BallIndicator } from 'react-native-indicators';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import { Header } from '../../components';
+import { Header, WarningModal } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
 import { background, primary } from '../../utils/theme';
 import { editingSchema } from '../../utils/schemas';
@@ -24,13 +24,16 @@ import {
     KeyboardAvoidingView,
     ScrollView,
     TextInput,
-    Keyboard
+    Keyboard,
+    BackHandler
 } from 'react-native';
 
 const EditProfileScreen = () => {
     const [disabled, setDisabled] = useState(false);
     const [image, setImage] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const user = useSelector(state => state.user);
+    const formRef = useRef(null);
     const firstNameRef = useRef(null);
     const lastNameRef = useRef(null);
     const phoneRef = useRef(null);
@@ -203,149 +206,185 @@ const EditProfileScreen = () => {
             updateDatabase(firstName, lastName, phone, null, null);
     }
 
+    const onCancelEdit = () => {
+        setIsModalVisible(false);
+        setTimeout(() => {
+            navigation.goBack();
+        }, 500);
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPressed = () => {
+                const { firstName, lastName, phone } = formRef.current?.values;
+                if (
+                    firstName !== user.firstName ||
+                    lastName !== user.lastName ||
+                    phone !== user.phone ||
+                    image
+                )
+                    setIsModalVisible(true);
+                else
+                    navigation.goBack();
+                return true;
+            };
+            BackHandler.addEventListener('hardwareBackPress', onBackPressed);
+            return () =>
+                BackHandler.removeEventListener('hardwareBackPress', onBackPressed);
+        }, [formRef.current?.values])
+    );
+
     return (
-        <SafeAreaView style={globalStyles.container}>
-            <Header caption={"Edit Profile"} />
-            <ScrollView
-                keyboardShouldPersistTaps="always"
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollView}
-            >
-                <View style={styles.imageWrapper}>
-                    <View style={styles.image}>
-                        {renderImage()}
-                    </View>
-                    {/* {renderPickerButton()} */}
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        style={styles.picker}
-                        onPress={pickImage}
-                    >
-                        {image || Object.keys(user.image).length > 0 ?
-                            <MaterialIcons name="edit" size={15} color={background} />
-                            :
-                            <Entypo name="camera" size={12} color={background} />
-                        }
-                    </TouchableOpacity>
-                </View>
-                <KeyboardAvoidingView
-                    enabled
-                    behavior={Platform.OS === 'ios' ? 'padding' : null}
+        <>
+            <SafeAreaView style={globalStyles.container}>
+                <Header caption={"Edit Profile"} />
+                <ScrollView
+                    keyboardShouldPersistTaps="always"
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollView}
                 >
-                    <Formik
-                        initialValues={initialValues}
-                        enableReinitialize
-                        onSubmit={(values) => onEditProfile(values)}
-                        validationSchema={editingSchema}
-                        validateOnChange={false}
-                        validateOnBlur={false}
+                    <View style={styles.imageWrapper}>
+                        <View style={styles.image}>
+                            {renderImage()}
+                        </View>
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            style={styles.picker}
+                            onPress={pickImage}
+                        >
+                            {image || Object.keys(user.image).length > 0 ?
+                                <MaterialIcons name="edit" size={15} color={background} />
+                                :
+                                <Entypo name="camera" size={12} color={background} />
+                            }
+                        </TouchableOpacity>
+                    </View>
+                    <KeyboardAvoidingView
+                        enabled
+                        behavior={Platform.OS === 'ios' ? 'padding' : null}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values, errors }) => {
-                            return (
-                                <View style={{ paddingHorizontal: 15 }}>
-                                    <Text style={styles.title}>First Name</Text>
-                                    <View style={[globalStyles.textInputWrapper, errors.firstName && globalStyles.error]}>
-                                        <TextInput
-                                            placeholder='First name...'
-                                            value={values.firstName}
-                                            ref={firstNameRef}
-                                            onChangeText={handleChange('firstName')}
-                                            underlineColorAndroid="transparent"
-                                            placeholderTextColor='rgba(255, 255, 255, 0.35)'
-                                            selectionColor='white'
-                                            blurOnSubmit={false}
-                                            onBlur={handleBlur('firstName')}
-                                            returnKeyType='next'
-                                            onSubmitEditing={() => lastNameRef.current?.focus()}
-                                            style={globalStyles.textInput}
+                        <Formik
+                            initialValues={initialValues}
+                            innerRef={formRef}
+                            enableReinitialize
+                            onSubmit={(values) => onEditProfile(values)}
+                            validationSchema={editingSchema}
+                            validateOnChange={false}
+                            validateOnBlur={false}
+                        >
+                            {({ handleChange, handleBlur, handleSubmit, values, errors }) => {
+                                return (
+                                    <View style={{ paddingHorizontal: 15 }}>
+                                        <Text style={styles.title}>First Name</Text>
+                                        <View style={[globalStyles.textInputWrapper, errors.firstName && globalStyles.error]}>
+                                            <TextInput
+                                                placeholder='First name...'
+                                                value={values.firstName}
+                                                ref={firstNameRef}
+                                                onChangeText={handleChange('firstName')}
+                                                underlineColorAndroid="transparent"
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
+                                                blurOnSubmit={false}
+                                                onBlur={handleBlur('firstName')}
+                                                returnKeyType='next'
+                                                onSubmitEditing={() => lastNameRef.current?.focus()}
+                                                style={globalStyles.textInput}
+                                            />
+                                        </View>
+                                        <ErrorMessage
+                                            name='firstName'
+                                            render={(message) => {
+                                                return (
+                                                    <View style={globalStyles.errorContainer}>
+                                                        <Text style={globalStyles.errorText}>{message}</Text>
+                                                    </View>
+                                                )
+                                            }}
                                         />
-                                    </View>
-                                    <ErrorMessage
-                                        name='firstName'
-                                        render={(message) => {
-                                            return (
-                                                <View style={globalStyles.errorContainer}>
-                                                    <Text style={globalStyles.errorText}>{message}</Text>
-                                                </View>
-                                            )
-                                        }}
-                                    />
-                                    <Text style={styles.title}>Last Name</Text>
-                                    <View style={[globalStyles.textInputWrapper, errors.lastName && globalStyles.error]}>
-                                        <TextInput
-                                            placeholder='Last name...'
-                                            value={values.lastName}
-                                            ref={lastNameRef}
-                                            onChangeText={handleChange('lastName')}
-                                            underlineColorAndroid="transparent"
-                                            placeholderTextColor='rgba(255, 255, 255, 0.35)'
-                                            selectionColor='white'
-                                            blurOnSubmit={false}
-                                            onBlur={handleBlur('lastName')}
-                                            returnKeyType='next'
-                                            onSubmitEditing={() => phoneRef.current?.focus()}
-                                            style={globalStyles.textInput}
+                                        <Text style={styles.title}>Last Name</Text>
+                                        <View style={[globalStyles.textInputWrapper, errors.lastName && globalStyles.error]}>
+                                            <TextInput
+                                                placeholder='Last name...'
+                                                value={values.lastName}
+                                                ref={lastNameRef}
+                                                onChangeText={handleChange('lastName')}
+                                                underlineColorAndroid="transparent"
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
+                                                blurOnSubmit={false}
+                                                onBlur={handleBlur('lastName')}
+                                                returnKeyType='next'
+                                                onSubmitEditing={() => phoneRef.current?.focus()}
+                                                style={globalStyles.textInput}
+                                            />
+                                        </View>
+                                        <ErrorMessage
+                                            name='lastName'
+                                            render={(message) => {
+                                                return (
+                                                    <View style={globalStyles.errorContainer}>
+                                                        <Text style={globalStyles.errorText}>{message}</Text>
+                                                    </View>
+                                                )
+                                            }}
                                         />
-                                    </View>
-                                    <ErrorMessage
-                                        name='lastName'
-                                        render={(message) => {
-                                            return (
-                                                <View style={globalStyles.errorContainer}>
-                                                    <Text style={globalStyles.errorText}>{message}</Text>
-                                                </View>
-                                            )
-                                        }}
-                                    />
-                                    <Text style={styles.title}>Phone</Text>
-                                    <View style={[globalStyles.textInputWrapper, errors.phone && globalStyles.error]}>
-                                        <TextInput
-                                            placeholder='Phone...'
-                                            value={values.phone}
-                                            ref={phoneRef}
-                                            onChangeText={handleChange('phone')}
-                                            underlineColorAndroid="transparent"
-                                            placeholderTextColor='rgba(255, 255, 255, 0.35)'
-                                            selectionColor='white'
-                                            keyboardType="phone-pad"
-                                            blurOnSubmit={false}
-                                            onBlur={handleBlur('phone')}
-                                            onSubmitEditing={handleSubmit}
-                                            style={globalStyles.textInput}
-                                            maxLength={10}
+                                        <Text style={styles.title}>Phone</Text>
+                                        <View style={[globalStyles.textInputWrapper, errors.phone && globalStyles.error]}>
+                                            <TextInput
+                                                placeholder='Phone...'
+                                                value={values.phone}
+                                                ref={phoneRef}
+                                                onChangeText={handleChange('phone')}
+                                                underlineColorAndroid="transparent"
+                                                placeholderTextColor='rgba(255, 255, 255, 0.35)'
+                                                selectionColor='white'
+                                                keyboardType="phone-pad"
+                                                blurOnSubmit={false}
+                                                onBlur={handleBlur('phone')}
+                                                onSubmitEditing={handleSubmit}
+                                                style={globalStyles.textInput}
+                                                maxLength={10}
+                                            />
+                                        </View>
+                                        <ErrorMessage
+                                            name='phone'
+                                            render={(message) => {
+                                                return (
+                                                    <View style={globalStyles.errorContainer}>
+                                                        <Text style={globalStyles.errorText}>{message}</Text>
+                                                    </View>
+                                                )
+                                            }}
                                         />
+                                        <TouchableOpacity
+                                            onPress={handleSubmit}
+                                            style={styles.button}
+                                            activeOpacity={1}
+                                            disabled={disabled}
+                                        >
+                                            {disabled ?
+                                                <BallIndicator size={18} count={8} color='black' />
+                                                :
+                                                <Text style={styles.buttonCaption}>
+                                                    Save Changes
+                                                </Text>
+                                            }
+                                        </TouchableOpacity>
                                     </View>
-                                    <ErrorMessage
-                                        name='phone'
-                                        render={(message) => {
-                                            return (
-                                                <View style={globalStyles.errorContainer}>
-                                                    <Text style={globalStyles.errorText}>{message}</Text>
-                                                </View>
-                                            )
-                                        }}
-                                    />
-                                    <TouchableOpacity
-                                        onPress={handleSubmit}
-                                        style={styles.button}
-                                        activeOpacity={1}
-                                        disabled={disabled}
-                                    >
-                                        {disabled ?
-                                            <BallIndicator size={18} count={8} color='black' />
-                                            :
-                                            <Text style={styles.buttonCaption}>
-                                                Save Changes
-                                            </Text>
-                                        }
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        }}
-                    </Formik>
-                </KeyboardAvoidingView>
-            </ScrollView>
-        </SafeAreaView>
+                                )
+                            }}
+                        </Formik>
+                    </KeyboardAvoidingView>
+                </ScrollView>
+            </SafeAreaView>
+            <WarningModal
+                isModalVisible={isModalVisible}
+                setIsModalVisible={setIsModalVisible}
+                onCancel={onCancelEdit}
+                caption="cancel editing?"
+            />
+        </>
     )
 }
 

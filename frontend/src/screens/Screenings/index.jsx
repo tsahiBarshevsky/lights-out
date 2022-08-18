@@ -5,10 +5,9 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import update from 'immutability-helper';
 import { globalStyles } from '../../utils/globalStyles';
-import { Calendar, Header } from '../../components';
+import { Calendar, Header, WarningModal } from '../../components';
 import { WeekContext } from '../../utils/context';
 import { primary } from '../../utils/theme';
-import WarningModal from './modal';
 
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
@@ -233,7 +232,8 @@ const ScreeningsScreen = ({ route }) => {
             <WarningModal
                 isModalVisible={isModalVisible}
                 setIsModalVisible={setIsModalVisible}
-                onCancelReservation={onCancelReservation}
+                onCancel={onCancelReservation}
+                caption="cancel your reservation?"
             />
         </>
     )
