@@ -3,7 +3,6 @@ import { StyleSheet, SafeAreaView, useWindowDimensions, Text, TouchableOpacity, 
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
 import { AntDesign, MaterialIcons, Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { globalStyles } from '../../utils/globalStyles';
 import { SignUpTab, SignInTab, Header, ReservationCard } from '../../components';
@@ -12,6 +11,7 @@ import { signOutUser } from '../../redux/actions/user';
 import { signOut } from 'firebase/auth';
 import { resetReservations } from '../../redux/actions/reservations';
 import { background, primary } from '../../utils/theme';
+import Vector from '../../../assets/Images/movies.png';
 
 const PersonalAreaScreen = () => {
     const [index, setIndex] = useState(0);
@@ -60,6 +60,18 @@ const PersonalAreaScreen = () => {
 
     const Separator = () => (
         <View style={styles.separator} />
+    );
+
+    const EmptyList = () => (
+        <View style={styles.emptyListContainer}>
+            <Image
+                source={Vector}
+                style={styles.vector}
+            />
+            <Text style={[styles.text, styles.emptyMessage]}>
+                You haven't ordered tickets yet
+            </Text>
+        </View>
     );
 
     return !isLoggedIn ? (
@@ -142,6 +154,8 @@ const PersonalAreaScreen = () => {
                         )
                     }}
                     ItemSeparatorComponent={Separator}
+                    ListEmptyComponent={EmptyList}
+                    contentContainerStyle={{ flexGrow: 1 }}
                 />
                 <View style={[styles.optionContainer, { paddingBottom: 7 }]}>
                     <View style={styles.option}>
@@ -241,5 +255,20 @@ const styles = StyleSheet.create({
         transform: [{ translateY: 2 }],
         letterSpacing: 1.1,
         marginLeft: 10
+    },
+    emptyListContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyMessage: {
+        fontSize: 17,
+        textAlign: 'center'
+    },
+    vector: {
+        width: 100,
+        height: 100,
+        marginBottom: 15
     }
 });

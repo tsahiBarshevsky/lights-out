@@ -410,18 +410,22 @@ const styles = StyleSheet.create({
     imageWrapper: {
         width: 100,
         height: 100,
-        marginTop: 10,
+        backgroundColor: primary,
+        borderRadius: 50,
+        marginVertical: 10,
+        padding: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
         alignSelf: 'center'
     },
     image: {
         justifyContent: 'flex-end',
         alignItems: 'center',
-        width: 100,
-        height: 100,
+        width: '100%',
+        height: '100%',
         borderRadius: 50,
         overflow: 'hidden',
-        backgroundColor: '#444549',
-        alignSelf: 'center'
+        backgroundColor: '#444549'
     },
     picker: {
         justifyContent: 'center',
