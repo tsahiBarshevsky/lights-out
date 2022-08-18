@@ -12,7 +12,7 @@ const SearchScreen = ({ route }) => {
     const ListHeader = () => (
         <View style={styles.headerContainer}>
             <Text style={[styles.text, styles.title]}>
-                {results.length} movies found
+                {results.length === 1 ? "One movie found" : `${results.length} movies found`}
             </Text>
         </View>
     );
@@ -46,7 +46,10 @@ const SearchScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <Header caption={"Search Results"} />
+            <Header
+                caption={"Search Results"}
+                backFunction={() => navigation.goBack()}
+            />
             <FlatList
                 data={results}
                 keyExtractor={(item) => item._id}

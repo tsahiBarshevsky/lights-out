@@ -52,7 +52,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 5
+        marginTop: 15,
+        marginBottom: 5
     },
     welcome: {
         fontFamily: 'Poppins',

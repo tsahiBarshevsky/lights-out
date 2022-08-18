@@ -25,7 +25,10 @@ const TicketScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <Header caption={ticket.seats.length === 1 ? "Ticket" : "Tickets"} />
+            <Header
+                caption={ticket.seats.length === 1 ? "Ticket" : "Tickets"}
+                backFunction={() => navigation.goBack()}
+            />
             <FlatList
                 data={ticket.seats}
                 keyExtractor={(item, index) => index}

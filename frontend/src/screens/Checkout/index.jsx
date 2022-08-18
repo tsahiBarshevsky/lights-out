@@ -163,7 +163,10 @@ const ChockoutScreen = ({ route }) => {
                 keyboardShouldPersistTaps="always"
                 contentContainerStyle={styles.scrollView}
             >
-                <Header caption={"Complete Reservation"} />
+                <Header
+                    caption={"Complete Reservation"}
+                    backFunction={() => navigation.goBack()}
+                />
                 <View style={styles.wrapper}>
                     <Text style={[styles.title, styles.text]}>Selected Movie</Text>
                     <Text style={[styles.text, { fontSize: 15 }]}>{movie.title}</Text>

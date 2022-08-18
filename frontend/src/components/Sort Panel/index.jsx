@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15
     },
     handleStyle: {
-        backgroundColor: secondary,
+        backgroundColor: '#33383f',
         marginTop: 2
     },
     text: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     divider: {
         width: '100%',
         height: 1,
-        backgroundColor: secondary,
+        backgroundColor: '#33383f',
         marginBottom: 10
     },
     button: {

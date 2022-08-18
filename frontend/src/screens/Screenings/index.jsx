@@ -85,6 +85,13 @@ const ScreeningsScreen = ({ route }) => {
         }, 500);
     }
 
+    const onBackPressed = () => {
+        if (selectedSeats.length > 0)
+            setIsModalVisible(true);
+        else
+            navigation.goBack();
+    }
+
     useEffect(() => {
         const filter = screenings.filter((item) => {
             return (
@@ -115,7 +122,10 @@ const ScreeningsScreen = ({ route }) => {
     return (
         <>
             <SafeAreaView style={globalStyles.container}>
-                <Header caption={"Select Seats"} />
+                <Header
+                    caption={"Select Seats"}
+                    backFunction={onBackPressed}
+                />
                 {movieScreenings.length > 0 &&
                     <>
                         <View style={styles.screen}>

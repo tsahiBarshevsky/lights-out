@@ -60,7 +60,10 @@ const PersonalAreaScreen = () => {
 
     const ListHeader = () => (
         <View style={styles.headerContainer}>
-            <Header caption={"My Profile"} />
+            <Header
+                caption={"My Profile"}
+                backFunction={() => navigation.goBack()}
+            />
             <View style={styles.imageWrapper}>
                 <View style={styles.image}>
                     {renderImage()}
@@ -110,7 +113,10 @@ const PersonalAreaScreen = () => {
 
     return !isLoggedIn ? (
         <SafeAreaView style={globalStyles.container}>
-            <Header caption={"Personal Area"} />
+            <Header
+                caption={"Personal Area"}
+                backFunction={() => navigation.goBack()}
+            />
             <TabView
                 overScrollMode='never'
                 navigationState={{ index, routes }}
@@ -135,7 +141,10 @@ const PersonalAreaScreen = () => {
     ) : (
         <>
             <SafeAreaView style={globalStyles.container}>
-                <Header caption={"My Profile"} />
+                <Header
+                    caption={"My Profile"}
+                    backFunction={() => navigation.goBack()}
+                />
                 <View style={styles.userInfo}>
                     <View style={styles.imageWrapper}>
                         <View style={styles.image}>

@@ -42,7 +42,10 @@ const MovieScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={globalStyles.container}>
-            <Header caption={"Movie Detail"} />
+            <Header
+                caption={"Movie Detail"}
+                backFunction={() => navigation.goBack()}
+            />
             <View style={styles.poster}>
                 <Image
                     source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}

@@ -213,6 +213,19 @@ const EditProfileScreen = () => {
         }, 500);
     }
 
+    const onBackPressed = () => {
+        const { firstName, lastName, phone } = formRef.current?.values;
+        if (
+            firstName !== user.firstName ||
+            lastName !== user.lastName ||
+            phone !== user.phone ||
+            image
+        )
+            setIsModalVisible(true);
+        else
+            navigation.goBack();
+    }
+
     useFocusEffect(
         useCallback(() => {
             const onBackPressed = () => {
@@ -237,7 +250,10 @@ const EditProfileScreen = () => {
     return (
         <>
             <SafeAreaView style={globalStyles.container}>
-                <Header caption={"Edit Profile"} />
+                <Header
+                    caption={"Edit Profile"}
+                    backFunction={onBackPressed}
+                />
                 <ScrollView
                     keyboardShouldPersistTaps="always"
                     showsVerticalScrollIndicator={false}
@@ -382,7 +398,7 @@ const EditProfileScreen = () => {
                 isModalVisible={isModalVisible}
                 setIsModalVisible={setIsModalVisible}
                 onCancel={onCancelEdit}
-                caption="cancel editing?"
+                caption="cancel editing? The changes won't save."
             />
         </>
     )

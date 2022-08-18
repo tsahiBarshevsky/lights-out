@@ -10,7 +10,7 @@ import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
 import { background } from '../../utils/theme';
 
-const headerHeight = 104;
+const headerHeight = 110;
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
@@ -185,73 +185,3 @@ const styles = StyleSheet.create({
         paddingBottom: 20
     }
 });
-
-// import React, { useRef } from 'react';
-// import { SafeAreaView, StyleSheet, StatusBar, Animated, View, Text, RefreshControl, ScrollView } from 'react-native';
-// import { globalStyles } from '../../utils/globalStyles';
-
-// const headerHeight = 58;
-
-// const HomeScreen = () => {
-//     const ref = useRef(null);
-//     const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
-//     const scrollY = useRef(new Animated.Value(0))
-//     const handleScroll = Animated.event(
-//         [
-//             {
-//                 nativeEvent: {
-//                     contentOffset: { y: scrollY.current },
-//                 },
-//             },
-//         ],
-//         {
-//             useNativeDriver: true,
-//         },
-//     );
-//     const scrollYClamped = Animated.diffClamp(scrollY.current, 0, headerHeight);
-//     const translateY = scrollYClamped.interpolate({
-//         inputRange: [0, headerHeight],
-//         outputRange: [0, -(headerHeight)],
-//     });
-//     const translateYNumber = useRef();
-//     translateY.addListener(({ value }) => {
-//         translateYNumber.current = value;
-//     });
-
-//     return (
-//         <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
-//             <StatusBar backgroundColor="#1c1c1c" barStyle='dark-content' />
-//             <Animated.View style={[styles.header, { transform: [{ translateY }] }]}>
-//                 <Text style={{ color: 'white' }}>Header</Text>
-//             </Animated.View>
-//             <AnimatedScrollView
-//                 scrollEventThrottle={50}
-//                 ref={ref}
-//                 onScroll={handleScroll}
-//                 contentContainerStyle={{ paddingTop: headerHeight, backgroundColor: '#1c1c1c' }}
-//             >
-//                 {[...Array(50).keys()].map((item) => {
-//                     return (
-//                         <View key={item}>
-//                             <Text style={{ color: 'white' }}>{item}</Text>
-//                         </View>
-//                     )
-//                 })}
-//             </AnimatedScrollView>
-//         </SafeAreaView>
-//     )
-// }
-
-// export default HomeScreen;
-
-// const styles = StyleSheet.create({
-//     header: {
-//         position: 'absolute',
-//         backgroundColor: '#1c1c1c',
-//         left: 0,
-//         right: 0,
-//         width: '100%',
-//         zIndex: 1,
-//         height: headerHeight
-//     }
-// });

@@ -1,16 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { background } from '../../utils/theme';
 
-const Hedaer = ({ caption }) => {
-    const navigation = useNavigation();
-
+const Hedaer = ({ caption, backFunction }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity
-                onPress={() => navigation.goBack()}
+                onPress={backFunction}
                 activeOpacity={1}
                 style={styles.button}
             >
