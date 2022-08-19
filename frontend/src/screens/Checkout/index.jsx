@@ -30,8 +30,7 @@ import {
 const ChockoutScreen = ({ route }) => {
     const {
         movie,
-        movieScreenings,
-        selectedScreening,
+        screening,
         selectedSeats,
         price,
         type,
@@ -93,7 +92,7 @@ const ChockoutScreen = ({ route }) => {
 
     const onCheckout = (values) => {
         Keyboard.dismiss();
-        const id = movieScreenings[selectedScreening]._id;
+        const id = screening._id;
         selectedSeats.forEach((seat) => {
             seat.code = 'ABC-' + Math.floor(Math.random() * (9999 - 1000 + 1) + 1000);
         });
@@ -116,11 +115,11 @@ const ChockoutScreen = ({ route }) => {
                 expiryDate: values.expiryDate,
                 cvc: values.cvc
             },
-            date: movieScreenings[selectedScreening].date,
+            date: screening.date,
             reservationDate: new Date(),
             active: true
         };
-        var seats = movieScreenings[selectedScreening].seats;
+        var seats = screening.seats;
         selectedSeats.forEach((seat) => {
             const newArray = update(seats[seat.line], {
                 [seat.number]: {
@@ -149,7 +148,7 @@ const ChockoutScreen = ({ route }) => {
                 newReservation.orderID = res.orderID;
             })
             .then(() => {
-                const index = screenings.findIndex((item) => item._id === movieScreenings[selectedScreening]._id);
+                const index = screenings.findIndex((item) => item._id === screening._id);
                 dispatch(bookSeats(seats, index));
                 dispatch(addNewReservation(newReservation));
                 navigation.popToTop();
@@ -173,7 +172,7 @@ const ChockoutScreen = ({ route }) => {
                     <View>
                         <Text style={styles.subtitle}>When?</Text>
                         <Text style={styles.text}>
-                            {moment(movieScreenings[selectedScreening].date).format('dddd, MMMM DD, YYYY; HH:mm')}
+                            {moment(screening.date).format('dddd, MMMM DD, YYYY; HH:mm')}
                         </Text>
                     </View>
                     <View>

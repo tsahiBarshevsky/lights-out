@@ -17,10 +17,10 @@ const Calendar = (props) => {
 
     const onSelectDate = (date) => {
         setDate(date);
-        if (selectedSeats.length > 0)
-            setSelectedSeats([]);
-        if (price > 0)
-            setPrice(0);
+        // if (selectedSeats.length > 0)
+        //     setSelectedSeats([]);
+        // if (price > 0)
+        //     setPrice(0);
     }
 
     useEffect(() => {
@@ -66,7 +66,15 @@ const Calendar = (props) => {
                                 selectedDate && styles.selectedDay
                             ]}
                         >
-                            <Text style={[styles.text, styles.day]}>{d.format('ddd')}</Text>
+                            <Text
+                                style={[
+                                    styles.text,
+                                    styles.day,
+                                    selectedDate ? { color: 'black' } : { color: 'white' }
+                                ]}
+                            >
+                                {d.format('ddd')}
+                            </Text>
                             <View style={[styles.dateContainer, selectedDate ? styles.selectedDate : styles.otherDate]}>
                                 <Text
                                     style={[

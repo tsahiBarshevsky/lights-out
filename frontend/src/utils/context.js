@@ -8,7 +8,7 @@ export const WeekProvider = ({ children }) => {
 
     useEffect(() => {
         const res = [new Date()];
-        for (var i = 1; i < 10; i++)
+        for (var i = 1; i < 8; i++)
             res.push(addDays(new Date(), i));
         setWeek(res);
     }, []);

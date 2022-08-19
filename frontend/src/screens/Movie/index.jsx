@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
 import { FontAwesome, AntDesign, FontAwesome5, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import { Header } from '../../components';
+import { Calendar, Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
 import { background, primary } from '../../utils/theme';
+import { WeekContext } from '../../utils/context';
 
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
 
 const MovieScreen = ({ route }) => {
     const { movie } = route.params;
+    const { week } = useContext(WeekContext);
+    const [date, setDate] = useState(moment());
     const screenings = useSelector(state => state.screenings);
+    const hasScreenings = screenings.find((screening) => screening.movie.id === movie.tmdbID);
     const navigation = useNavigation();
 
     const convertMinutesToHours = (minutes) => {
@@ -30,13 +34,26 @@ const MovieScreen = ({ route }) => {
     const onNavigate = () => {
         const filteredScreenings = screenings.filter((item) => {
             return (
-                moment(item.date).set(initial).format(format) === moment().set(initial).format(format) &&
-                moment(item.date).isAfter(moment(new Date())) &&
+                moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
+                // moment(item.date).isAfter(moment(new Date())) &&
                 item.movie.id === movie.tmdbID
             );
         });
+        const result = filteredScreenings.reduce((c, v) => {
+            c[v.hall.number] = c[v.hall.number] || [];
+            c[v.hall.number].push(v);
+            return c;
+        }, {});
+        // Object.keys(result).forEach((e) => {
+        //     console.log('e', e)
+        //     result[e].forEach((i) => {
+        //         console.log(moment(i.date).format('MM/DD/YY HH:mm'))
+        //     })
+        // })
         navigation.navigate('Screenings', {
             movie: movie,
+            date: date,
+            result: result,
             filteredScreenings: filteredScreenings
         });
     }
@@ -56,7 +73,7 @@ const MovieScreen = ({ route }) => {
                     blurRadius={5}
                 />
                 <LinearGradient
-                    colors={['transparent', background]}
+                    colors={[background, 'transparent', background]}
                     style={styles.linearGradient}
                 />
                 <View style={styles.ratingWrapper}>
@@ -72,8 +89,12 @@ const MovieScreen = ({ route }) => {
                 </View>
             </View>
             <ScrollView
-                contentContainerStyle={styles.scrollView}
+                contentContainerStyle={[
+                    styles.scrollView,
+                    hasScreenings ? styles.screenings : styles.noScreenings
+                ]}
                 overScrollMode="never"
+                showsVerticalScrollIndicator={false}
             >
                 <View style={styles.aboutContainer}>
                     <View style={styles.about}>
@@ -135,16 +156,23 @@ const MovieScreen = ({ route }) => {
                 <Text style={[styles.text, styles.sectionTitle]}>Overview</Text>
                 <Text style={styles.text}>{movie.overview}</Text>
             </ScrollView>
-            {screenings.find((screening) => screening.movie.id === movie.tmdbID) &&
-                <TouchableOpacity
-                    onPress={onNavigate}
-                    style={styles.button}
-                    activeOpacity={1}
-                >
-                    <Text style={styles.buttonCaption}>
-                        Get Reservation
-                    </Text>
-                </TouchableOpacity>
+            {hasScreenings &&
+                <View style={styles.dates}>
+                    <Calendar
+                        week={week}
+                        date={date}
+                        setDate={setDate}
+                    />
+                    <TouchableOpacity
+                        onPress={onNavigate}
+                        style={styles.button}
+                        activeOpacity={1}
+                    >
+                        <Text style={styles.buttonCaption}>
+                            Get Reservation
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             }
         </SafeAreaView>
     )
@@ -160,8 +188,8 @@ const styles = StyleSheet.create({
         zIndex: 2
     },
     linearGradientWrapper: {
-        marginBottom: 10,
-        zIndex: 1
+        zIndex: 1,
+        marginTop: 10
     },
     linearGradient: {
         position: 'absolute',
@@ -170,8 +198,13 @@ const styles = StyleSheet.create({
         height: '100%'
     },
     scrollView: {
-        paddingHorizontal: 15,
-        paddingBottom: 10
+        paddingHorizontal: 15
+    },
+    screenings: {
+        paddingBottom: 185
+    },
+    noScreenings: {
+        paddingBottom: 10,
     },
     text: {
         fontFamily: 'Poppins',
@@ -184,19 +217,8 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 19
     },
-    poster: {
-        width: '100%',
-        height: 220,
-        justifyContent: 'flex-end',
-        overflow: 'hidden',
-        marginTop: 5,
-        marginBottom: 10,
-        paddingHorizontal: 15,
-        paddingBottom: 15,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)'
-    },
     image: {
-        height: 250,
+        height: 200,
         width: '100%',
         opacity: 0.6
     },
@@ -272,11 +294,24 @@ const styles = StyleSheet.create({
         fontSize: 10,
         textAlign: 'center'
     },
+    dates: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
+        backgroundColor: '#2c2c35',
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 10
+    },
     button: {
         // position: 'absolute',
         // bottom: 15,
-        marginTop: 10,
-        marginBottom: 15,
+        marginTop: 15,
+        // marginBottom: 15,
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',

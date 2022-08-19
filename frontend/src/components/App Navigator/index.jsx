@@ -7,7 +7,9 @@ import { background } from '../../utils/theme';
 import {
     CancelationScreen,
     ChockoutScreen,
+    ConfirmationScreen,
     EditProfileScreen,
+    HallScreen,
     HomeScreen,
     MovieScreen,
     PersonalAreaScreen,
@@ -50,7 +52,9 @@ const AppNavigator = () => {
                 />
                 <Stack.Screen name='Movie' component={MovieScreen} options={options} />
                 <Stack.Screen name='Screenings' component={ScreeningsScreen} options={options} />
+                <Stack.Screen name='Hall' component={HallScreen} options={options} />
                 <Stack.Screen name='Checkout' component={ChockoutScreen} options={options} />
+                <Stack.Screen name='Confirmation' component={ConfirmationScreen} options={options} />
                 <Stack.Screen name='Search' component={SearchScreen} options={options} />
                 <Stack.Screen name='Personal area' component={PersonalAreaScreen} options={options} />
                 <Stack.Screen name='Ticket' component={TicketScreen} options={options} />

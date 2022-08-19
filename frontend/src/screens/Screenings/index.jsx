@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, BackHandler } from 'react-native';
+import React, { useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, ScrollView, View, TouchableOpacity, Dimensions, BackHandler } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
@@ -11,12 +11,16 @@ import { primary } from '../../utils/theme';
 
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
+const { width, height } = Dimensions.get('screen');
 
 const ScreeningsScreen = ({ route }) => {
-    const { movie, filteredScreenings } = route.params;
+    const { movie, date, result, filteredScreenings } = route.params;
     const { week } = useContext(WeekContext);
+    const [id, setId] = useState('');
+    const [screening, setScreening] = useState({});
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [date, setDate] = useState(moment());
+    const [activeScreen, setActiveScreen] = useState(1);
+    // const [date, setDate] = useState(moment());
     const [movieScreenings, setMovieScreenings] = useState(filteredScreenings);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [price, setPrice] = useState(0);
@@ -38,25 +42,56 @@ const ScreeningsScreen = ({ route }) => {
     }
 
     const onSelectScreening = (item) => {
-        const index = movieScreenings.findIndex((e) => e._id === item._id);
-        setSelectedScreening(index);
-        if (selectedSeats.length > 0)
-            setSelectedSeats([]);
-        if (price > 0)
-            setPrice(0);
+        if (item._id !== id) {
+            setId(item._id);
+            setScreening(screenings.find((screening) => screening._id === item._id));
+        }
+        else {
+            setId('');
+            setScreening({});
+        }
+        // if (selectedSeats.length > 0)
+        //     setSelectedSeats([]);
+        // if (price > 0)
+        //     setPrice(0);
     }
+
+    const onChooseScreening = () => {
+        navigation.navigate('Hall', { movie, screening });
+    }
+
+    // const onSelectScreening = (item) => {
+    //     const index = movieScreenings.findIndex((e) => e._id === item._id);
+    //     setSelectedScreening(index);
+    //     if (selectedSeats.length > 0)
+    //         setSelectedSeats([]);
+    //     if (price > 0)
+    //         setPrice(0);
+    // }
 
     const onSelectSeat = (line, index) => {
         const j = selectedSeats.findIndex((seat) => seat.line === line && seat.number === index);
         if (j !== -1) {
-            setPrice(prevState => prevState - movieScreenings[selectedScreening].hall.ticketPrice);
+            setPrice(prevState => prevState - screening.hall.ticketPrice);
             setSelectedSeats(update(selectedSeats, { $splice: [[j, 1]] }));
         }
         else {
-            setPrice(prevState => prevState + movieScreenings[selectedScreening].hall.ticketPrice);
+            setPrice(prevState => prevState + screening.hall.ticketPrice);
             setSelectedSeats(update(selectedSeats, { $push: [{ line: line, number: index }] }));
         }
     }
+
+    // const onSelectSeat = (line, index) => {
+    //     const j = selectedSeats.findIndex((seat) => seat.line === line && seat.number === index);
+    //     if (j !== -1) {
+    //         setPrice(prevState => prevState - movieScreenings[selectedScreening].hall.ticketPrice);
+    //         setSelectedSeats(update(selectedSeats, { $splice: [[j, 1]] }));
+    //     }
+    //     else {
+    //         setPrice(prevState => prevState + movieScreenings[selectedScreening].hall.ticketPrice);
+    //         setSelectedSeats(update(selectedSeats, { $push: [{ line: line, number: index }] }));
+    //     }
+    // }
 
     const onBookSeats = () => {
         const groups = selectedSeats.sort((a, b) => { return a.number - b.number }).reduce((group, seat) => {
@@ -65,7 +100,7 @@ const ScreeningsScreen = ({ route }) => {
             group[line].push(seat);
             return group;
         }, {});
-        const hall = movieScreenings[selectedScreening].hall;
+        const hall = screening.hall;
         navigation.navigate('Checkout', {
             movie,
             movieScreenings,
@@ -92,17 +127,17 @@ const ScreeningsScreen = ({ route }) => {
             navigation.goBack();
     }
 
-    useEffect(() => {
-        const filter = screenings.filter((item) => {
-            return (
-                moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
-                moment(item.date).isAfter(moment(new Date())) &&
-                item.movie.id === movie.tmdbID
-            );
-        });
-        setMovieScreenings(filter);
-        setSelectedScreening(0);
-    }, [date]);
+    // useEffect(() => {
+    //     const filter = screenings.filter((item) => {
+    //         return (
+    //             moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
+    //             moment(item.date).isAfter(moment(new Date())) &&
+    //             item.movie.id === movie.tmdbID
+    //         );
+    //     });
+    //     setMovieScreenings(filter);
+    //     setSelectedScreening(0);
+    // }, [date]);
 
     useFocusEffect(
         useCallback(() => {
@@ -123,50 +158,94 @@ const ScreeningsScreen = ({ route }) => {
         <>
             <SafeAreaView style={globalStyles.container}>
                 <Header
-                    caption={"Select Seats"}
+                    caption={"Select Screening"}
                     backFunction={onBackPressed}
                 />
-                {movieScreenings.length > 0 &&
-                    <>
-                        <View style={styles.screen}>
+                <View style={styles.screenContainer}>
+                    {Object.keys(result).map((e) => {
+                        return (
+                            <View key={e}>
+                                <Text style={styles.text}>Hall {e}</Text>
+                                <FlatList
+                                    horizontal
+                                    data={result[e]}
+                                    keyExtractor={(item) => item._id}
+                                    showsHorizontalScrollIndicator={false}
+                                    renderItem={({ item }) => {
+                                        return (
+                                            <TouchableOpacity
+                                                onPress={() => onSelectScreening(item)}
+                                                activeOpacity={1}
+                                                disabled={moment(item.date).isBefore(moment(new Date()))}
+                                                style={[
+                                                    styles.hourButton,
+                                                    id === item._id && styles.selectedHour
+                                                ]}
+                                            >
+                                                <Text
+                                                    style={[
+                                                        styles.text,
+                                                        { transform: [{ translateY: 2 }] },
+                                                        id === item._id && styles.selectedHourText
+                                                    ]}
+                                                >
+                                                    {moment(item.date).format('HH:mm')}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )
+                                    }}
+                                    ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
+                                    style={styles.hours}
+                                />
+                            </View>
+                        )
+                    })}
+                    <TouchableOpacity
+                        onPress={onChooseScreening}
+                        style={[styles.button, id === '' && styles.disabled]}
+                        activeOpacity={1}
+                        disabled={id === ''}
+                    >
+                        <Text style={styles.buttonCaption}>Select Seats</Text>
+                    </TouchableOpacity>
+                </View>
+                {/* <View style={styles.screen}>
                             <View style={styles.screenLine} />
                             <Text style={[styles.text, styles.screenText]}>
                                 {renderHallInfo()}
                             </Text>
                         </View>
-                        <View>
-                            {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
-                                return (
-                                    <View style={styles.line} key={line}>
-                                        <Text style={[styles.text, styles.lineText]}>{line}</Text>
-                                        <View style={styles.seats}>
-                                            {movieScreenings[selectedScreening].seats[line].map((e, i) => {
-                                                return (
-                                                    <TouchableOpacity
-                                                        onPress={() => onSelectSeat(line, i)}
-                                                        key={e.number}
-                                                        disabled={!e.available}
-                                                        activeOpacity={1}
-                                                        style={[
-                                                            styles.seat,
-                                                            e.available ?
-                                                                (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
-                                                                    styles.selected : styles.available)
-                                                                : styles.unavailable
-                                                        ]}
-                                                    >
-                                                        <Text style={[styles.seatNumber, !e.available && { color: 'white' }]}>
-                                                            {e.number + 1}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                )
-                                            })}
-                                        </View>
-                                        <Text style={[styles.text, styles.lineText]}>{line}</Text>
+                        {Object.keys(screening).length > 0 && Object.keys(screening.seats).map((line) => {
+                            return (
+                                <View style={styles.line} key={line}>
+                                    <Text style={[styles.text, styles.lineText]}>{line}</Text>
+                                    <View style={styles.seats}>
+                                        {screening.seats[line].map((e, i) => {
+                                            return (
+                                                <TouchableOpacity
+                                                    onPress={() => onSelectSeat(line, i)}
+                                                    key={e.number}
+                                                    disabled={!e.available}
+                                                    activeOpacity={1}
+                                                    style={[
+                                                        styles.seat,
+                                                        e.available ?
+                                                            (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
+                                                                styles.selected : styles.available)
+                                                            : styles.unavailable
+                                                    ]}
+                                                >
+                                                    <Text style={[styles.seatNumber, !e.available && { color: 'white' }]}>
+                                                        {e.number + 1}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )
+                                        })}
                                     </View>
-                                )
-                            })}
-                        </View>
+                                    <Text style={[styles.text, styles.lineText]}>{line}</Text>
+                                </View>
+                            )
+                        })}
                         <View style={styles.legend}>
                             <View style={[styles.circle, styles.availableSeat]} />
                             <Text style={[styles.text, styles.legendCaption]}>Available</Text>
@@ -175,69 +254,22 @@ const ScreeningsScreen = ({ route }) => {
                             <View style={[styles.circle, styles.reservedSeat]} />
                             <Text style={[styles.text, styles.legendCaption]}>Reserved</Text>
                         </View>
-                    </>
-                }
-                <View style={styles.dates}>
-                    <Text style={[styles.text, { alignSelf: 'center' }]}>
-                        Select Date and Time
-                    </Text>
-                    <Calendar
-                        week={week}
-                        date={date}
-                        setDate={setDate}
-                        price={price}
-                        setPrice={setPrice}
-                        selectedSeats={selectedSeats}
-                        setSelectedSeats={setSelectedSeats}
-                    />
-                    <FlatList
-                        horizontal
-                        data={movieScreenings}
-                        keyExtractor={(item) => item._id}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({ item, index }) => {
-                            return (
-                                <TouchableOpacity
-                                    onPress={() => onSelectScreening(item, index)}
-                                    activeOpacity={1}
-                                    style={[
-                                        styles.hourButton,
-                                        movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && styles.selectedHour
-                                    ]}
-                                >
-                                    <Text
-                                        style={[
-                                            styles.text,
-                                            { transform: [{ translateY: 2 }] },
-                                            movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && styles.selectedHourText
-                                        ]}
-                                    >
-                                        {moment(item.date).format('HH:mm')}
-                                    </Text>
-                                </TouchableOpacity>
-                            )
-                        }}
-                        ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
-                        ListEmptyComponent={EmptyList}
-                        style={styles.hours}
-                    />
-                    <View style={styles.book}>
-                        <View style={styles.priceAndSeats}>
-                            <Text style={[styles.text, styles.seatsCaption]}>
-                                {selectedSeats.length} Seats
-                            </Text>
-                            <Text style={[styles.text, styles.price]}>{price}₪</Text>
-                        </View>
-                        <TouchableOpacity
-                            onPress={onBookSeats}
-                            disabled={selectedSeats.length === 0}
-                            style={[styles.button, selectedSeats.length === 0 && styles.disabled]}
-                            activeOpacity={1}
-                        >
-                            <Text style={styles.buttonCaption}>Book Tickets</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                        <View style={styles.book}>
+                            <View style={styles.priceAndSeats}>
+                                <Text style={[styles.text, styles.seatsCaption]}>
+                                    {selectedSeats.length} Seats
+                                </Text>
+                                <Text style={[styles.text, styles.price]}>{price}₪</Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={onBookSeats}
+                                disabled={selectedSeats.length === 0}
+                                style={[styles.button, selectedSeats.length === 0 && styles.disabled]}
+                                activeOpacity={1}
+                            >
+                                <Text style={styles.buttonCaption}>Book Tickets</Text>
+                            </TouchableOpacity>
+                        </View> */}
             </SafeAreaView>
             <WarningModal
                 isModalVisible={isModalVisible}
@@ -247,6 +279,207 @@ const ScreeningsScreen = ({ route }) => {
             />
         </>
     )
+
+    // return (
+    //     <>
+    //         <SafeAreaView style={globalStyles.container}>
+    //             <Header
+    //                 caption={"Select Screening & Seats"}
+    //                 backFunction={onBackPressed}
+    //             />
+    // {Object.keys(result).map((e) => {
+    //     return (
+    //         <View key={e}>
+    //             <Text style={styles.text}>Hall {e}</Text>
+    //             <FlatList
+    //                 horizontal
+    //                 data={result[e]}
+    //                 keyExtractor={(item) => item._id}
+    //                 showsHorizontalScrollIndicator={false}
+    //                 renderItem={({ item }) => {
+    //                     return (
+    //                         <TouchableOpacity
+    //                             onPress={() => onSelectScreening(item)}
+    //                             activeOpacity={1}
+    //                             disabled={moment(item.date).isBefore(moment(new Date()))}
+    //                             style={[
+    //                                 styles.hourButton,
+    //                                 id === item._id && styles.selectedHour
+    //                             ]}
+    //                         >
+    //                             <Text
+    //                                 style={[
+    //                                     styles.text,
+    //                                     { transform: [{ translateY: 2 }] },
+    //                                     id === item._id && styles.selectedHourText
+    //                                 ]}
+    //                             >
+    //                                 {moment(item.date).format('HH:mm')}
+    //                                 {/* {item._id} */}
+    //                             </Text>
+    //                         </TouchableOpacity>
+    //                     )
+    //                 }}
+    //                 ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
+    //                 style={styles.hours}
+    //             />
+    //         </View>
+    //     )
+    // })}
+    //             <View>
+    //                 {Object.keys(screening).length > 0 && Object.keys(screening.seats).map((line) => {
+    //                     return (
+    //                         <View style={styles.line} key={line}>
+    //                             <Text style={[styles.text, styles.lineText]}>{line}</Text>
+    //                             <View style={styles.seats}>
+    //                                 {screening.seats[line].map((e, i) => {
+    //                                     return (
+    //                                         <TouchableOpacity
+    //                                             onPress={() => onSelectSeat(line, i)}
+    //                                             key={e.number}
+    //                                             disabled={!e.available}
+    //                                             activeOpacity={1}
+    //                                             style={[
+    //                                                 styles.seat,
+    //                                                 e.available ?
+    //                                                     (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
+    //                                                         styles.selected : styles.available)
+    //                                                     : styles.unavailable
+    //                                             ]}
+    //                                         >
+    //                                             <Text style={[styles.seatNumber, !e.available && { color: 'white' }]}>
+    //                                                 {e.number + 1}
+    //                                             </Text>
+    //                                         </TouchableOpacity>
+    //                                     )
+    //                                 })}
+    //                             </View>
+    //                             <Text style={[styles.text, styles.lineText]}>{line}</Text>
+    //                         </View>
+    //                     )
+    //                 })}
+    //             </View>
+    //             {/* {movieScreenings.length > 0 &&
+    //                 <>
+    //                     <View style={styles.screen}>
+    //                         <View style={styles.screenLine} />
+    //                         <Text style={[styles.text, styles.screenText]}>
+    //                             {renderHallInfo()}
+    //                         </Text>
+    //                     </View>
+    //                     <View>
+    //                         {Object.keys(movieScreenings[selectedScreening].seats).map((line) => {
+    //                             return (
+    //                                 <View style={styles.line} key={line}>
+    //                                     <Text style={[styles.text, styles.lineText]}>{line}</Text>
+    //                                     <View style={styles.seats}>
+    //                                         {movieScreenings[selectedScreening].seats[line].map((e, i) => {
+    //                                             return (
+    //                                                 <TouchableOpacity
+    //                                                     onPress={() => onSelectSeat(line, i)}
+    //                                                     key={e.number}
+    //                                                     disabled={!e.available}
+    //                                                     activeOpacity={1}
+    //                                                     style={[
+    //                                                         styles.seat,
+    //                                                         e.available ?
+    //                                                             (selectedSeats.findIndex((seat) => seat.line === line && seat.number === i) !== -1 ?
+    //                                                                 styles.selected : styles.available)
+    //                                                             : styles.unavailable
+    //                                                     ]}
+    //                                                 >
+    //                                                     <Text style={[styles.seatNumber, !e.available && { color: 'white' }]}>
+    //                                                         {e.number + 1}
+    //                                                     </Text>
+    //                                                 </TouchableOpacity>
+    //                                             )
+    //                                         })}
+    //                                     </View>
+    //                                     <Text style={[styles.text, styles.lineText]}>{line}</Text>
+    //                                 </View>
+    //                             )
+    //                         })}
+    //                     </View>
+    //                     <View style={styles.legend}>
+    //                         <View style={[styles.circle, styles.availableSeat]} />
+    //                         <Text style={[styles.text, styles.legendCaption]}>Available</Text>
+    //                         <View style={[styles.circle, styles.selectedSeat]} />
+    //                         <Text style={[styles.text, styles.legendCaption]}>Selected</Text>
+    //                         <View style={[styles.circle, styles.reservedSeat]} />
+    //                         <Text style={[styles.text, styles.legendCaption]}>Reserved</Text>
+    //                     </View>
+    //                 </>
+    //             } */}
+    //             {/*<View style={styles.dates}>
+    //                 <Text style={[styles.text, { alignSelf: 'center' }]}>
+    //                     Select Date and Time
+    //                 </Text>
+    //                  <Calendar
+    //                     week={week}
+    //                     date={date}
+    //                     setDate={setDate}
+    //                     price={price}
+    //                     setPrice={setPrice}
+    //                     selectedSeats={selectedSeats}
+    //                     setSelectedSeats={setSelectedSeats}
+    //                 />
+    //                 <FlatList
+    //                     horizontal
+    //                     data={movieScreenings}
+    //                     keyExtractor={(item) => item._id}
+    //                     showsHorizontalScrollIndicator={false}
+    //                     renderItem={({ item, index }) => {
+    //                         return (
+    //                             <TouchableOpacity
+    //                                 onPress={() => onSelectScreening(item, index)}
+    //                                 activeOpacity={1}
+    //                                 style={[
+    //                                     styles.hourButton,
+    //                                     movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && styles.selectedHour
+    //                                 ]}
+    //                             >
+    //                                 <Text
+    //                                     style={[
+    //                                         styles.text,
+    //                                         { transform: [{ translateY: 2 }] },
+    //                                         movieScreenings.findIndex((e) => e._id === item._id) === selectedScreening && styles.selectedHourText
+    //                                     ]}
+    //                                 >
+    //                                     {moment(item.date).format('HH:mm')}
+    //                                 </Text>
+    //                             </TouchableOpacity>
+    //                         )
+    //                     }}
+    //                     ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
+    //                     ListEmptyComponent={EmptyList}
+    //                     style={styles.hours}
+    //                 /> 
+    // <View style={styles.book}>
+    //     <View style={styles.priceAndSeats}>
+    //         <Text style={[styles.text, styles.seatsCaption]}>
+    //             {selectedSeats.length} Seats
+    //         </Text>
+    //         <Text style={[styles.text, styles.price]}>{price}₪</Text>
+    //     </View>
+    //     <TouchableOpacity
+    //         onPress={onBookSeats}
+    //         disabled={selectedSeats.length === 0}
+    //         style={[styles.button, selectedSeats.length === 0 && styles.disabled]}
+    //         activeOpacity={1}
+    //     >
+    //         <Text style={styles.buttonCaption}>Book Tickets</Text>
+    //     </TouchableOpacity>
+    // </View>
+    //             </View>*/}
+    //         </SafeAreaView>
+    //         <WarningModal
+    //             isModalVisible={isModalVisible}
+    //             setIsModalVisible={setIsModalVisible}
+    //             onCancel={onCancelReservation}
+    //             caption="cancel your reservation?"
+    //         />
+    //     </>
+    // )
 }
 
 export default ScreeningsScreen;
@@ -255,6 +488,11 @@ const styles = StyleSheet.create({
     text: {
         color: 'white',
         fontFamily: 'Poppins'
+    },
+    screenContainer: {
+        width: width,
+        paddingTop: 10
+        // paddingHorizontal: 15
     },
     screen: {
         justifyContent: 'center',
@@ -351,8 +589,10 @@ const styles = StyleSheet.create({
     },
     hours: {
         flexGrow: 0,
-        marginTop: 20,
-        marginBottom: 15,
+        marginTop: 10,
+        marginBottom: 15
+        // marginTop: 20,
+        // marginBottom: 15,
     },
     hourButton: {
         paddingHorizontal: 13,
