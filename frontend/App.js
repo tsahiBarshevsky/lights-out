@@ -15,7 +15,8 @@ const store = createStore(rootReducer);
 export default function App() {
     const [loaded] = useFonts({
         Poppins: require('./assets/Fonts/Poppins-Light.ttf'),
-        PoppinsBold: require('./assets/Fonts/Poppins-SemiBold.ttf')
+        PoppinsBold: require('./assets/Fonts/Poppins-SemiBold.ttf'),
+        Imax: require('./assets/Fonts/IMAX.ttf'),
     });
 
     if (!loaded)

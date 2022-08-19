@@ -10,6 +10,6 @@ const ConfirmationScreen = () => {
     )
 }
 
-export default ConfirmationScreen
+export default ConfirmationScreen;
 
 const styles = StyleSheet.create({});

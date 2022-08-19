@@ -35,26 +35,18 @@ const MovieScreen = ({ route }) => {
         const filteredScreenings = screenings.filter((item) => {
             return (
                 moment(item.date).set(initial).format(format) === date.set(initial).format(format) &&
-                // moment(item.date).isAfter(moment(new Date())) &&
                 item.movie.id === movie.tmdbID
             );
         });
-        const result = filteredScreenings.reduce((c, v) => {
+        // Order by halls
+        const movieScreenings = filteredScreenings.reduce((c, v) => {
             c[v.hall.number] = c[v.hall.number] || [];
             c[v.hall.number].push(v);
             return c;
         }, {});
-        // Object.keys(result).forEach((e) => {
-        //     console.log('e', e)
-        //     result[e].forEach((i) => {
-        //         console.log(moment(i.date).format('MM/DD/YY HH:mm'))
-        //     })
-        // })
         navigation.navigate('Screenings', {
             movie: movie,
-            date: date,
-            result: result,
-            filteredScreenings: filteredScreenings
+            movieScreenings: movieScreenings
         });
     }
 
