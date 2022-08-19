@@ -8,7 +8,7 @@ import { globalStyles } from '../../utils/globalStyles';
 import { UserBar, MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
-import { background } from '../../utils/theme';
+import { background, primary, secondary } from '../../utils/theme';
 
 const headerHeight = 110;
 const wait = (timeout) => {
@@ -68,7 +68,7 @@ const HomeScreen = () => {
                     dispatch({ type: 'SET_MOVIES', movies: movies });
                     dispatch({ type: 'SET_HALLS', halls: halls });
                     dispatch({ type: 'SET_SCREENINGS', screenings: screenings });
-                })
+                });
         });
     }, []);
 
@@ -114,12 +114,16 @@ const HomeScreen = () => {
                     contentContainerStyle={styles.scrollView}
                     ref={ref}
                     onScroll={handleScroll}
-                // refreshControl={
-                //     <RefreshControl
-                //         refreshing={refreshing}
-                //         onRefresh={onRefresh}
-                //     />
-                // }
+                    refreshControl={
+                        <RefreshControl
+                            progressViewOffset={headerHeight}
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor="#acacac"
+                            colors={['#acacac']}
+                            progressBackgroundColor={secondary}
+                        />
+                    }
                 >
                     <Text style={styles.title}>Now Showing</Text>
                     <View style={styles.carousel}>
