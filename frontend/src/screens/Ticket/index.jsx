@@ -1,6 +1,7 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import Barcode from '@kichiyaki/react-native-barcode-generator';
 import { globalStyles } from '../../utils/globalStyles';
@@ -14,6 +15,11 @@ const TicketScreen = ({ route }) => {
     const movies = useSelector(state => state.movies);
     const screenings = useSelector(state => state.screenings);
     const screening = screenings.find((screening) => screening._id === ticket.screeningID);
+    const navigation = useNavigation();
+
+    // const routes = navigation.getState()?.routes;
+    // const prevRoute = routes[routes.length - 2];
+    // console.log('prevRoute', prevRoute.name)
 
     const findMoviePoster = (id) => {
         return movies.find((movie) => movie._id === id).backdropPath;
