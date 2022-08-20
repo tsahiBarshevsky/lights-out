@@ -5,17 +5,14 @@ import { useSelector } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
-import { Header, WarningModal } from '../../components';
+import { Header } from '../../components';
 import { primary, background } from '../../utils/theme';
 import { convertMinutesToHours } from '../../utils/utilities';
 
 const ScreeningsScreen = ({ route }) => {
     const { movie, movieScreenings } = route.params;
-    // console.log('movie.language', movie.language)
-    // console.log('movie.certification', movie.certification)
     const [id, setId] = useState('');
     const [screening, setScreening] = useState({});
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const screenings = useSelector(state => state.screenings);
     const navigation = useNavigation();
 
@@ -34,113 +31,98 @@ const ScreeningsScreen = ({ route }) => {
         navigation.navigate('Hall', { movie, screening });
     }
 
-    const onCancelReservation = () => {
-        setIsModalVisible(false);
-        setTimeout(() => {
-            navigation.goBack();
-        }, 500);
-    }
-
     return (
-        <>
-            <SafeAreaView style={globalStyles.container}>
-                <View style={styles.headerWrapper}>
-                    <Header
-                        caption={"Select Screening"}
-                        backFunction={() => navigation.goBack()}
-                    />
-                </View>
-                <View style={styles.linearGradientWrapper}>
+        <SafeAreaView style={globalStyles.container}>
+            <View style={styles.headerWrapper}>
+                <Header
+                    caption={"Select Screening"}
+                    backFunction={() => navigation.goBack()}
+                />
+            </View>
+            <View style={styles.linearGradientWrapper}>
+                <Image
+                    source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}
+                    style={styles.image}
+                    blurRadius={5}
+                />
+                <LinearGradient
+                    colors={[background, 'transparent', background]}
+                    style={styles.linearGradient}
+                />
+            </View>
+            <View style={styles.wrapper}>
+                <View style={styles.header}>
                     <Image
-                        source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}
-                        style={styles.image}
-                        blurRadius={5}
+                        source={{ uri: `https://image.tmdb.org/t/p/original/${movie.posterPath}` }}
+                        style={styles.poster}
+                        resizeMode="center"
                     />
-                    <LinearGradient
-                        colors={[background, 'transparent', background]}
-                        style={styles.linearGradient}
-                    />
-                </View>
-                <View style={styles.wrapper}>
-                    <View style={styles.header}>
-                        <Image
-                            source={{ uri: `https://image.tmdb.org/t/p/original/${movie.posterPath}` }}
-                            style={styles.poster}
-                            resizeMode="center"
-                        />
-                        <View style={{ flex: 1 }}>
-                            <Text style={styles.title}>{movie.title}</Text>
-                            <View style={{ marginTop: 10 }}>
-                                <View style={styles.certificationWrapper}>
-                                    <Text style={styles.certification}>
-                                        {movie.certification}
-                                    </Text>
-                                </View>
-                                <Text style={[styles.text, { fontSize: 12 }]}>
-                                    {movie.language}, {convertMinutesToHours(movie.duration)}
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.title}>{movie.title}</Text>
+                        <View style={{ marginTop: 10 }}>
+                            <View style={styles.certificationWrapper}>
+                                <Text style={styles.certification}>
+                                    {movie.certification}
                                 </Text>
                             </View>
+                            <Text style={[styles.text, { fontSize: 12 }]}>
+                                {movie.language}, {convertMinutesToHours(movie.duration)}
+                            </Text>
                         </View>
                     </View>
-                    {Object.keys(movieScreenings).map((hall) => {
-                        const type = movieScreenings[hall][0].hall.type;
-                        return (
-                            <View key={hall}>
-                                <Text style={styles.text}>
-                                    Hall {hall} -  <Text style={[styles.text, type === 'IMAX' && styles.imax]}>{type}</Text>
-                                </Text>
-                                <FlatList
-                                    horizontal
-                                    data={movieScreenings[hall]}
-                                    keyExtractor={(item) => item._id}
-                                    showsHorizontalScrollIndicator={false}
-                                    renderItem={({ item }) => {
-                                        return (
-                                            <TouchableOpacity
-                                                onPress={() => onSelectScreening(item)}
-                                                activeOpacity={1}
-                                                disabled={moment(item.date).isBefore(moment(new Date()))}
+                </View>
+                {Object.keys(movieScreenings).map((hall) => {
+                    const type = movieScreenings[hall][0].hall.type;
+                    return (
+                        <View key={hall}>
+                            <Text style={styles.text}>
+                                Hall {hall} -  <Text style={[styles.text, type === 'IMAX' && styles.imax]}>{type}</Text>
+                            </Text>
+                            <FlatList
+                                horizontal
+                                data={movieScreenings[hall]}
+                                keyExtractor={(item) => item._id}
+                                showsHorizontalScrollIndicator={false}
+                                renderItem={({ item }) => {
+                                    return (
+                                        <TouchableOpacity
+                                            onPress={() => onSelectScreening(item)}
+                                            activeOpacity={1}
+                                            disabled={moment(item.date).isBefore(moment(new Date()))}
+                                            style={[
+                                                styles.hourButton,
+                                                id === item._id && styles.selectedHour,
+                                                moment(item.date).isBefore(moment(new Date())) && styles.disabledHourButton
+                                            ]}
+                                        >
+                                            <Text
                                                 style={[
-                                                    styles.hourButton,
-                                                    id === item._id && styles.selectedHour,
-                                                    moment(item.date).isBefore(moment(new Date())) && styles.disabledHourButton
+                                                    styles.text,
+                                                    { transform: [{ translateY: 2 }] },
+                                                    id === item._id && styles.selectedHourText
                                                 ]}
                                             >
-                                                <Text
-                                                    style={[
-                                                        styles.text,
-                                                        { transform: [{ translateY: 2 }] },
-                                                        id === item._id && styles.selectedHourText
-                                                    ]}
-                                                >
-                                                    {moment(item.date).format('HH:mm')}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        )
-                                    }}
-                                    ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
-                                    style={styles.hours}
-                                />
-                            </View>
-                        )
-                    })}
-                    <TouchableOpacity
-                        onPress={onChooseScreening}
-                        style={[styles.button, id === '' && styles.disabled]}
-                        activeOpacity={1}
-                        disabled={id === ''}
-                    >
-                        <Text style={styles.buttonCaption}>Select Seats</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-            <WarningModal
-                isModalVisible={isModalVisible}
-                setIsModalVisible={setIsModalVisible}
-                onCancel={onCancelReservation}
-                caption="cancel your reservation?"
-            />
-        </>
+                                                {moment(item.date).format('HH:mm')}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )
+                                }}
+                                ItemSeparatorComponent={() => <View style={{ marginHorizontal: 5 }} />}
+                                style={styles.hours}
+                            />
+                        </View>
+                    )
+                })}
+                <TouchableOpacity
+                    onPress={onChooseScreening}
+                    style={[styles.button, id === '' && styles.disabled]}
+                    activeOpacity={1}
+                    disabled={id === ''}
+                >
+                    <Text style={styles.buttonCaption}>Select Seats</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     )
 }
 

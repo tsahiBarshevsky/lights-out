@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, BackHandler, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, BackHandler, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import update from 'immutability-helper';
 import { Header, WarningModal } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
-import { primary } from '../../utils/theme';
+import { background, primary } from '../../utils/theme';
+import moment from 'moment';
 
 const HallScreen = ({ route }) => {
     const { movie, screening } = route.params;
@@ -76,14 +78,55 @@ const HallScreen = ({ route }) => {
     return (
         <>
             <SafeAreaView style={globalStyles.container}>
-                <Header
-                    caption={"Select Seats"}
-                    backFunction={onBackPressed}
-                />
+                <View style={styles.headerWrapper}>
+                    <Header
+                        caption={"Select Seats"}
+                        backFunction={onBackPressed}
+                    />
+                </View>
+                <View style={styles.linearGradientWrapper}>
+                    <Image
+                        source={{ uri: `https://image.tmdb.org/t/p/original/${movie.backdropPath}` }}
+                        style={styles.image}
+                        blurRadius={5}
+                    />
+                    <LinearGradient
+                        colors={[background, 'transparent', background]}
+                        style={styles.linearGradient}
+                    />
+                </View>
+                <View style={styles.header}>
+                    <Image
+                        source={{ uri: `https://image.tmdb.org/t/p/original/${movie.posterPath}` }}
+                        style={styles.poster}
+                        resizeMode="center"
+                    />
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.title}>{movie.title}</Text>
+                        <View style={styles.screening}>
+                            <Text style={[styles.text, styles.smaller]}>
+                                {moment(screening.date).format('dddd, MMMM DD | HH:mm')}
+                            </Text>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text style={[styles.text, styles.smaller, styles.hall]}>
+                                    Hall {screening.hall.number}
+                                </Text>
+                                <Text
+                                    style={[
+                                        styles.text,
+                                        screening.hall.type === 'IMAX' ? styles.imax : styles.smaller]
+                                    }
+                                >
+                                    {screening.hall.type}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
                 <View style={styles.screen}>
                     <View style={styles.screenLine} />
                     <Text style={[styles.text, styles.screenText]}>
-                        Screen - hall {screening.hall.number}
+                        Screen
                     </Text>
                 </View>
                 {Object.keys(screening).length > 0 && Object.keys(screening.seats).map((line) => {
@@ -158,6 +201,64 @@ const styles = StyleSheet.create({
     text: {
         color: 'white',
         fontFamily: 'Poppins'
+    },
+    imax: {
+        fontFamily: 'Imax',
+        transform: [{ translateY: -3 }]
+    },
+    headerWrapper: {
+        position: 'absolute',
+        top: 0,
+        width: '100%',
+        zIndex: 2
+    },
+    linearGradientWrapper: {
+        zIndex: 1,
+        marginTop: 10
+    },
+    linearGradient: {
+        position: 'absolute',
+        top: 0,
+        width: '100%',
+        height: '100%'
+    },
+    image: {
+        height: 160,
+        width: '100%',
+        opacity: 0.6
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        marginTop: -55,
+        paddingHorizontal: 15,
+        marginBottom: 10,
+        zIndex: 2
+    },
+    poster: {
+        width: 40,
+        height: 60,
+        borderRadius: 7,
+        marginRight: 15
+    },
+    title: {
+        fontFamily: 'BebasNeue',
+        fontSize: 22,
+        flexShrink: 1,
+        color: 'white',
+        lineHeight: 25
+    },
+    screening: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end'
+    },
+    smaller: {
+        fontSize: 12
+    },
+    hall: {
+        marginBottom: -5
     },
     screen: {
         justifyContent: 'center',
