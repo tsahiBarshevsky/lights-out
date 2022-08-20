@@ -1,7 +1,7 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, Dimensions } from 'react-native';
+import React, { useCallback } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, Dimensions, BackHandler } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import Barcode from '@kichiyaki/react-native-barcode-generator';
 import { globalStyles } from '../../utils/globalStyles';
@@ -17,9 +17,14 @@ const TicketScreen = ({ route }) => {
     const screening = screenings.find((screening) => screening._id === ticket.screeningID);
     const navigation = useNavigation();
 
-    // const routes = navigation.getState()?.routes;
-    // const prevRoute = routes[routes.length - 2];
-    // console.log('prevRoute', prevRoute.name)
+    const onBackPressed = () => {
+        const routes = navigation.getState()?.routes;
+        const prevRoute = routes[routes.length - 2];
+        if (prevRoute.name === "Confirmation")
+            navigation.popToTop();
+        else
+            navigation.goBack();
+    }
 
     const findMoviePoster = (id) => {
         return movies.find((movie) => movie._id === id).backdropPath;
@@ -29,11 +34,28 @@ const TicketScreen = ({ route }) => {
         <View style={styles.separator} />
     );
 
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPressed = () => {
+                const routes = navigation.getState()?.routes;
+                const prevRoute = routes[routes.length - 2];
+                if (prevRoute.name === "Confirmation")
+                    navigation.popToTop();
+                else
+                    navigation.goBack();
+                return true;
+            };
+            BackHandler.addEventListener('hardwareBackPress', onBackPressed);
+            return () =>
+                BackHandler.removeEventListener('hardwareBackPress', onBackPressed);
+        }, [])
+    );
+
     return (
         <SafeAreaView style={globalStyles.container}>
             <Header
                 caption={ticket.seats.length === 1 ? "Ticket" : "Tickets"}
-                backFunction={() => navigation.goBack()}
+                backFunction={onBackPressed}
             />
             <FlatList
                 data={ticket.seats}
@@ -64,6 +86,10 @@ const TicketScreen = ({ route }) => {
                                         <View style={[styles.information, styles.space]}>
                                             <Text style={styles.title}>Hall</Text>
                                             <Text style={[styles.value, styles.text]}>{screening.hall.number}</Text>
+                                        </View>
+                                        <View style={styles.information}>
+                                            <Text style={styles.title}>Type</Text>
+                                            <Text style={[styles.value, styles.text]}>{screening.hall.type}</Text>
                                         </View>
                                         <View style={styles.information}>
                                             <Text style={styles.title}>Line</Text>

@@ -49,11 +49,7 @@ const ReservationCard = ({ item, index }) => {
                 }
                 {item.active &&
                     <TouchableOpacity
-                        // onPress={() => navigation.navigate('Ticket', { ticket: item })}
-                        onPress={() => {
-                            const movie = movies.find((movie) => movie._id === item.movie.id);
-                            navigation.navigate('Confirmation', { reservation: item, movie: movie })
-                        }}
+                        onPress={() => navigation.navigate('Ticket', { ticket: item })}
                         style={[styles.button, styles.ticket]}
                         activeOpacity={1}
                     >
