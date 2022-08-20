@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
+import { SkypeIndicator } from 'react-native-indicators';
 import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
+import { background, primary } from '../../utils/theme';
 
 const SplashScreen = () => {
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -55,9 +57,12 @@ const SplashScreen = () => {
     }, [dataLoaded]);
 
     return (
-        <View style={styles.container}>
-            <Text>Loading...</Text>
-        </View>
+        <>
+            <StatusBar backgroundColor={background} barStyle="light-content" />
+            <View style={styles.container}>
+                <SkypeIndicator size={30} color='white' />
+            </View>
+        </>
     )
 }
 
