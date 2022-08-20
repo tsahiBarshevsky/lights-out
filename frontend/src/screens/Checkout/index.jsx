@@ -1,16 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { Formik, ErrorMessage } from 'formik';
+import { FontAwesome, Entypo, Fontisto } from '@expo/vector-icons';
+import { BallIndicator } from 'react-native-indicators';
 import update from 'immutability-helper';
 import moment from 'moment';
-import { Formik, ErrorMessage } from 'formik';
 import { Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
 import { bookSeats } from '../../redux/actions/screenings';
 import { addNewReservation } from '../../redux/actions/reservations';
 import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
-import { primary } from '../../utils/theme';
+import { primary, error } from '../../utils/theme';
 import { checkoutSchema } from '../../utils/schemas';
 
 // React Native Components
@@ -37,6 +39,7 @@ const ChockoutScreen = ({ route }) => {
         ticketPrice,
         groups
     } = route.params;
+    const [disabled, setDisabled] = useState(false);
     const screenings = useSelector(state => state.screenings);
     const user = useSelector(state => state.user);
     const dispatch = useDispatch();
@@ -91,6 +94,7 @@ const ChockoutScreen = ({ route }) => {
     }
 
     const onCheckout = (values) => {
+        setDisabled(true);
         Keyboard.dismiss();
         const id = screening._id;
         selectedSeats.forEach((seat) => {
@@ -151,28 +155,34 @@ const ChockoutScreen = ({ route }) => {
                 const index = screenings.findIndex((item) => item._id === screening._id);
                 dispatch(bookSeats(seats, index));
                 dispatch(addNewReservation(newReservation));
-                navigation.popToTop();
+                navigation.navigate('Confirmation', {
+                    reservation: newReservation,
+                    movie: movie
+                })
             })
-            .catch((error) => console.log(error.message));
+            .catch((error) => {
+                console.log(error.message);
+                setDisabled(false);
+            });
     }
 
     return (
         <SafeAreaView style={globalStyles.container}>
+            <Header
+                caption={"Complete Reservation"}
+                backFunction={() => navigation.goBack()}
+            />
             <ScrollView
                 keyboardShouldPersistTaps="always"
                 contentContainerStyle={styles.scrollView}
             >
-                <Header
-                    caption={"Complete Reservation"}
-                    backFunction={() => navigation.goBack()}
-                />
                 <View style={styles.wrapper}>
                     <Text style={[styles.title, styles.text]}>Selected Movie</Text>
                     <Text style={[styles.text, { fontSize: 15 }]}>{movie.title}</Text>
                     <View>
                         <Text style={styles.subtitle}>When?</Text>
                         <Text style={styles.text}>
-                            {moment(screening.date).format('dddd, MMMM DD, YYYY; HH:mm')}
+                            {moment(screening.date).format('dddd, MMMM DD, YYYY | HH:mm')}
                         </Text>
                     </View>
                     <View>
@@ -223,6 +233,7 @@ const ChockoutScreen = ({ route }) => {
                                 return (
                                     <View>
                                         <Text style={[styles.title, styles.text]}>Personal Details</Text>
+                                        <Text style={styles.inputTitle}>First Name</Text>
                                         <View style={[globalStyles.textInputWrapper, errors.firstName && globalStyles.error]}>
                                             <TextInput
                                                 placeholder='First name...'
@@ -248,6 +259,7 @@ const ChockoutScreen = ({ route }) => {
                                                 )
                                             }}
                                         />
+                                        <Text style={styles.inputTitle}>Last Name</Text>
                                         <View style={[globalStyles.textInputWrapper, errors.lastName && globalStyles.error]}>
                                             <TextInput
                                                 placeholder='Last name...'
@@ -279,6 +291,7 @@ const ChockoutScreen = ({ route }) => {
                                                 )
                                             }}
                                         />
+                                        <Text style={styles.inputTitle}>Email</Text>
                                         <View style={[globalStyles.textInputWrapper, errors.email && globalStyles.error]}>
                                             <TextInput
                                                 placeholder='Email...'
@@ -306,6 +319,7 @@ const ChockoutScreen = ({ route }) => {
                                                 )
                                             }}
                                         />
+                                        <Text style={styles.inputTitle}>Phone</Text>
                                         <View style={[globalStyles.textInputWrapper, errors.phone && globalStyles.error]}>
                                             <TextInput
                                                 placeholder='Phone...'
@@ -335,9 +349,16 @@ const ChockoutScreen = ({ route }) => {
                                             }}
                                         />
                                         <Text style={[styles.title, styles.text, { marginTop: 10 }]}>Payment Details</Text>
+                                        <Text style={styles.inputTitle}>Credit Card Number</Text>
                                         <View style={[globalStyles.textInputWrapper, errors.creditNumber && globalStyles.error]}>
+                                            <FontAwesome
+                                                name="credit-card-alt"
+                                                size={10}
+                                                color={errors.creditNumber ? error : "white"}
+                                                style={styles.icon}
+                                            />
                                             <TextInput
-                                                placeholder='Credit card number...'
+                                                placeholder='•••• •••• •••• ••••'
                                                 value={values.creditNumber}
                                                 ref={creditRef}
                                                 underlineColorAndroid="transparent"
@@ -363,9 +384,16 @@ const ChockoutScreen = ({ route }) => {
                                                 )
                                             }}
                                         />
+                                        <Text style={styles.inputTitle}>Expiry Date</Text>
                                         <View style={[globalStyles.textInputWrapper, errors.expiryDate && globalStyles.error]}>
+                                            <Entypo
+                                                name="calendar"
+                                                size={14}
+                                                color={errors.expiryDate ? error : "white"}
+                                                style={styles.icon}
+                                            />
                                             <TextInput
-                                                placeholder='Expiry date...'
+                                                placeholder='MM/YY'
                                                 value={values.expiryDate}
                                                 ref={expiryRef}
                                                 underlineColorAndroid="transparent"
@@ -391,9 +419,16 @@ const ChockoutScreen = ({ route }) => {
                                                 )
                                             }}
                                         />
+                                        <Text style={styles.inputTitle}>CVC/CVV</Text>
                                         <View style={[globalStyles.textInputWrapper, errors.cvc && globalStyles.error]}>
+                                            <Fontisto
+                                                name="locked"
+                                                size={14}
+                                                color={errors.cvc ? error : "white"}
+                                                style={styles.icon}
+                                            />
                                             <TextInput
-                                                placeholder='CVC...'
+                                                placeholder='•••'
                                                 value={values.cvc}
                                                 ref={cvcRef}
                                                 underlineColorAndroid="transparent"
@@ -425,10 +460,15 @@ const ChockoutScreen = ({ route }) => {
                             onPress={() => formRef.current?.handleSubmit()}
                             activeOpacity={1}
                             style={styles.button}
+                            disabled={disabled}
                         >
-                            <Text style={styles.buttonCaption}>
-                                Complete Reservation
-                            </Text>
+                            {disabled ?
+                                <BallIndicator size={18} count={8} color='black' />
+                                :
+                                <Text style={styles.buttonCaption}>
+                                    Complete Reservation
+                                </Text>
+                            }
                         </TouchableOpacity>
                     </KeyboardAvoidingView>
                 </View>
@@ -462,6 +502,12 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: -5
     },
+    inputTitle: {
+        fontFamily: 'Poppins',
+        color: 'white',
+        marginBottom: -10,
+        marginTop: 10
+    },
     button: {
         marginTop: 25,
         alignSelf: 'center',
@@ -477,5 +523,8 @@ const styles = StyleSheet.create({
         fontFamily: 'PoppinsBold',
         transform: [{ translateY: 2 }],
         letterSpacing: 1.1
+    },
+    icon: {
+        marginRight: 10
     }
 });
