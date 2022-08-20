@@ -94,7 +94,7 @@ app.post('/delete-movie', async (req, res) => {
             }
         }
     );
-    res.json('The movie has been added successfully');
+    res.json('The movie has been deleted successfully');
 });
 
 /* ====== Halls ======= */

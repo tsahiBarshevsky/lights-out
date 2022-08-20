@@ -1,4 +1,9 @@
 const localhost = '10.0.0.18:5000';
-const ticketPrice = 35;
 
-export { localhost, ticketPrice };
+const convertMinutesToHours = (minutes) => {
+    const m = minutes % 60;
+    const h = (minutes - m) / 60;
+    return `${h.toString()}h ${(m < 10 ? "0" : "")}${m.toString()}m`;
+}
+
+export { localhost, convertMinutesToHours };

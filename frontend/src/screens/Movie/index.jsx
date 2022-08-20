@@ -9,6 +9,7 @@ import { Calendar, Header } from '../../components';
 import { globalStyles } from '../../utils/globalStyles';
 import { background, primary } from '../../utils/theme';
 import { WeekContext } from '../../utils/context';
+import { convertMinutesToHours } from '../../utils/utilities';
 
 const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
@@ -20,12 +21,6 @@ const MovieScreen = ({ route }) => {
     const screenings = useSelector(state => state.screenings);
     const hasScreenings = screenings.find((screening) => screening.movie.id === movie.tmdbID);
     const navigation = useNavigation();
-
-    const convertMinutesToHours = (minutes) => {
-        const m = minutes % 60;
-        const h = (minutes - m) / 60;
-        return `${h.toString()}h ${(m < 10 ? "0" : "")}${m.toString()}m`;
-    }
 
     const Separator = () => (
         <View style={{ paddingHorizontal: 5 }} />

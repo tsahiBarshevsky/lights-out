@@ -39,14 +39,15 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
 
     const onAddNewMovie = async (id) => {
         Promise.all([
-            fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${tmdbApiKey}&language=en-US`),
-            fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${tmdbApiKey}&language=en-US`)
+            fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${tmdbApiKey}&language=en-US&append_to_response=releases`),
+            fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${tmdbApiKey}&language=en-US`),
         ])
             .then(([movie, credits]) => Promise.all([
                 movie.json(),
                 credits.json()
             ]))
             .then(([movie, credits]) => {
+                const certification = movie.releases.countries.find((country) => country.iso_3166_1 === 'US').certification;
                 const newMovie = {
                     title: movie.title,
                     tmdbID: id,
@@ -57,7 +58,9 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
                     releaseDate: movie.release_date,
                     rating: movie.vote_average,
                     backdropPath: movie.backdrop_path.substring(1),
-                    cast: credits.cast
+                    language: movie.spoken_languages[0].english_name,
+                    certification: certification,
+                    cast: credits.cast,
                 };
                 fetch(`/add-new-movie`,
                     {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,9 +7,12 @@ import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
 import { Header, WarningModal } from '../../components';
 import { primary, background } from '../../utils/theme';
+import { convertMinutesToHours } from '../../utils/utilities';
 
 const ScreeningsScreen = ({ route }) => {
     const { movie, movieScreenings } = route.params;
+    // console.log('movie.language', movie.language)
+    // console.log('movie.certification', movie.certification)
     const [id, setId] = useState('');
     const [screening, setScreening] = useState({});
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -59,16 +62,32 @@ const ScreeningsScreen = ({ route }) => {
                     />
                 </View>
                 <View style={styles.wrapper}>
-                    <Image
-                        source={{ uri: `https://image.tmdb.org/t/p/original/${movie.posterPath}` }}
-                        style={styles.poster}
-                        resizeMode="center"
-                    />
+                    <View style={styles.header}>
+                        <Image
+                            source={{ uri: `https://image.tmdb.org/t/p/original/${movie.posterPath}` }}
+                            style={styles.poster}
+                            resizeMode="center"
+                        />
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.title}>{movie.title}</Text>
+                            <View style={{ marginTop: 10 }}>
+                                <View style={styles.certificationWrapper}>
+                                    <Text style={styles.certification}>
+                                        {movie.certification}
+                                    </Text>
+                                </View>
+                                <Text style={[styles.text, { fontSize: 12 }]}>
+                                    {movie.language}, {convertMinutesToHours(movie.duration)}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
                     {Object.keys(movieScreenings).map((hall) => {
+                        const type = movieScreenings[hall][0].hall.type;
                         return (
                             <View key={hall}>
                                 <Text style={styles.text}>
-                                    Hall {hall} - {movieScreenings[hall][0].hall.type}
+                                    Hall {hall} -  <Text style={[styles.text, type === 'IMAX' && styles.imax]}>{type}</Text>
                                 </Text>
                                 <FlatList
                                     horizontal
@@ -132,6 +151,9 @@ const styles = StyleSheet.create({
         color: 'white',
         fontFamily: 'Poppins'
     },
+    imax: {
+        fontFamily: 'Imax'
+    },
     headerWrapper: {
         position: 'absolute',
         top: 0,
@@ -157,16 +179,46 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 15
     },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        marginTop: -55,
+        marginBottom: 10,
+        zIndex: 2
+    },
     poster: {
         width: 55,
         height: 80,
         borderRadius: 7,
-        marginTop: -55,
-        zIndex: 2
+        marginRight: 15
+    },
+    certificationWrapper: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        paddingHorizontal: 12,
+        paddingVertical: 2,
+        marginBottom: 2,
+        borderRadius: 7,
+        backgroundColor: primary,
+    },
+    certification: {
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        color: 'black',
+        transform: [{ translateY: 1 }]
+    },
+    title: {
+        fontFamily: 'BebasNeue',
+        fontSize: 22,
+        flexShrink: 1,
+        color: 'white',
+        lineHeight: 25
     },
     hours: {
         flexGrow: 0,
-        marginTop: 10,
+        marginTop: 2,
         marginBottom: 15
     },
     hourButton: {
@@ -179,8 +231,8 @@ const styles = StyleSheet.create({
         elevation: 1
     },
     disabledHourButton: {
-        backgroundColor: 'grey',
-        borderColor: 'grey'
+        backgroundColor: '#2e2e37',
+        borderColor: '#2e2e37'
     },
     selectedHour: {
         borderColor: primary
