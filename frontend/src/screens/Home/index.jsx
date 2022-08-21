@@ -94,10 +94,6 @@ const HomeScreen = () => {
                     })
                     .finally(() => navigation.canGoBack() && navigation.goBack());
             }
-            // else {
-            //     if (navigation.canGoBack())
-            //         navigation.goBack();
-            // }
         });
         return unsubscribe;
     }, []);

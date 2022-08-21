@@ -1,12 +1,14 @@
 import 'react-native-gesture-handler';
 import React from 'react';
+import Toast from 'react-native-toast-message';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { I18nManager } from 'react-native';
+import { useFonts } from 'expo-font';
 import { WeekProvider } from './src/utils/context';
 import { AppNavigator } from './src/components';
 import rootReducer from './src/redux/reducers';
-import { useFonts } from 'expo-font';
+import { toastConfig } from './src/utils/toastConfig';
 
 I18nManager.allowRTL(false);
 I18nManager.forceRTL(false);
@@ -27,6 +29,7 @@ export default function App() {
             <WeekProvider>
                 <AppNavigator />
             </WeekProvider>
+            <Toast config={toastConfig} />
         </Provider>
     )
 }

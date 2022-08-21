@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Toast from 'react-native-toast-message';
 import { Formik, ErrorMessage } from 'formik';
 import { Fontisto, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -28,6 +29,31 @@ const SignInTab = () => {
     const passwordRef = useRef(null);
     const dispatch = useDispatch()
 
+    const notify = (message) => {
+        var text = '';
+        switch (message) {
+            case 'Firebase: Error (auth/user-not-found).':
+                text = "User doesn't exists";
+                break;
+            case 'Firebase: The password is invalid or the user does not have a password. (auth/wrong-password).':
+                text = "Invalid password or the user doesn't have one";
+                break;
+            case 'Firebase: Error (auth/wrong-password).':
+                text = "You've entered a wrong password"
+                break;
+            default:
+                return null;
+        }
+        Toast.show({
+            type: 'errorToast',
+            position: 'bottom',
+            bottomOffset: 25,
+            props: {
+                text: text
+            }
+        });
+    }
+
     const onSignIn = (values) => {
         Keyboard.dismiss();
         setDisabled(true);
@@ -39,7 +65,7 @@ const SignInTab = () => {
                         .then((res) => dispatch({ type: 'SET_RESERVATIONS', reservations: res }))
                 })
                 .catch((error) => {
-                    console.log(error.message);
+                    notify(error.message);
                     setDisabled(false);
                 });
         }, 500);

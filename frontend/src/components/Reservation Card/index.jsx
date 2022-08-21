@@ -47,7 +47,7 @@ const ReservationCard = ({ item, index }) => {
                         </Text>
                     </TouchableOpacity>
                 }
-                {item.active &&
+                {item.active && moment(new Date()).isBefore(moment(item.date)) &&
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Ticket', { ticket: item })}
                         style={[styles.button, styles.ticket]}

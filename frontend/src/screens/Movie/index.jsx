@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
 import { FontAwesome, AntDesign, FontAwesome5, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -19,7 +19,12 @@ const MovieScreen = ({ route }) => {
     const { week } = useContext(WeekContext);
     const [date, setDate] = useState(moment());
     const screenings = useSelector(state => state.screenings);
-    const hasScreenings = screenings.find((screening) => screening.movie.id === movie.tmdbID);
+    const hasScreenings = screenings.find((screening) => {
+        return (
+            screening.movie.id === movie.tmdbID &&
+            moment(screening.date).set(initial).format(format) === moment(new Date()).set(initial).format(format)
+        );
+    });
     const navigation = useNavigation();
 
     const Separator = () => (
@@ -150,15 +155,28 @@ const MovieScreen = ({ route }) => {
                         date={date}
                         setDate={setDate}
                     />
-                    <TouchableOpacity
-                        onPress={onNavigate}
-                        style={styles.button}
-                        activeOpacity={1}
-                    >
-                        <Text style={styles.buttonCaption}>
-                            Get Reservation
-                        </Text>
-                    </TouchableOpacity>
+                    {screenings.filter((screening) => {
+                        return (
+                            moment(screening.date).set(initial).format(format) === date.set(initial).format(format) &&
+                            screening.movie.id === movie.tmdbID
+                        )
+                    }).length > 0 ?
+                        <TouchableOpacity
+                            onPress={onNavigate}
+                            style={styles.button}
+                            activeOpacity={1}
+                        >
+                            <Text style={styles.buttonCaption}>
+                                Get Reservation
+                            </Text>
+                        </TouchableOpacity>
+                        :
+                        <View style={styles.message}>
+                            <Text style={[styles.text, styles.buttonCaption]}>
+                                No screenings on this day yet
+                            </Text>
+                        </View>
+                    }
                 </View>
             }
         </SafeAreaView>
@@ -312,5 +330,12 @@ const styles = StyleSheet.create({
         fontFamily: 'PoppinsBold',
         transform: [{ translateY: 2 }],
         letterSpacing: 1.1
+    },
+    message: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 38,
+        marginTop: 15
     }
 });

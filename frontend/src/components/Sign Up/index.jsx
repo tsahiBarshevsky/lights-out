@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Toast from 'react-native-toast-message';
 import { Formik, ErrorMessage } from 'formik';
 import { Fontisto, FontAwesome, MaterialIcons, AntDesign, Entypo } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
@@ -34,6 +35,28 @@ const SignUpTab = () => {
     const lastNameRef = useRef(null);
     const passwordRef = useRef(null);
     const phoneRef = useRef(null);
+
+    const notify = (message) => {
+        var text = '';
+        switch (message) {
+            case 'Firebase: Error (auth/email-already-in-use).':
+                text = "Email is already in use";
+                break;
+            case 'Firebase: The password is invalid or the user does not have a password. (auth/wrong-password).':
+                text = "Invalid password";
+                break;
+            default:
+                return null;
+        }
+        Toast.show({
+            type: 'errorToast',
+            position: 'bottom',
+            bottomOffset: 25,
+            props: {
+                text: text
+            }
+        });
+    }
 
     const createUser = (user, url, publicID) => {
         createUserWithEmailAndPassword(authentication, user.email.trim(), user.password)
@@ -75,7 +98,7 @@ const SignUpTab = () => {
                         });
                     })
                     .catch((error) => {
-                        console.log('error', error.message);
+                        notify(error.message);
                         setDisabled(false);
                     });
 

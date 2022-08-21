@@ -9,3 +9,4 @@ export { default as SignInTab } from './Sign In';
 export { default as Header } from './Header';
 export { default as WarningModal } from './Warning Modal';
 export { default as ReservationCard } from './Reservation Card';
+export { default as ErrorToast } from './Error Toast';
