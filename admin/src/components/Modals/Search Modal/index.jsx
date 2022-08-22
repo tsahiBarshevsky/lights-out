@@ -6,6 +6,8 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { addNewMovie } from '../../../redux/actions/movies';
+import { useStyles } from '../../../services/inputsStyles';
+import { modalBackground } from '../../../services/theme';
 import './styles.sass';
 
 const SearchModal = ({ isOpen, setIsOpen }) => {
@@ -13,6 +15,21 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
     const [searchResults, setSearchResults] = useState({});
     const tmdbApiKey = process.env.REACT_APP_TMDB_API_KEY;
     const dispatch = useDispatch();
+    const classes = useStyles();
+
+    const notify = (type, message) => {
+        toast(message, {
+            position: "bottom-center",
+            type: type,
+            autoClose: 5000,
+            theme: 'dark',
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+        });
+    }
 
     const handleClose = () => {
         setIsOpen(false);
@@ -33,8 +50,17 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
         e.preventDefault();
         fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&api_key=${tmdbApiKey}&language=en-US&page=1&include_adult=false`)
             .then((res) => res.json())
-            .then((res) => setSearchResults(res))
-            .catch((error) => console.log(error));
+            .then((res) => {
+                if (res.results.length > 0)
+                    setSearchResults(res);
+                else {
+                    setSearchResults({});
+                    notify('info', 'No movie found');
+                }
+            })
+            .catch((error) => {
+                notify('error', error.message);
+            });
     }
 
     const onAddNewMovie = async (id) => {
@@ -79,17 +105,7 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
                         dispatch(addNewMovie(newMovie));
                         handleClose();
                         setTimeout(() => {
-                            toast('The movie has been added successfully', {
-                                position: "bottom-center",
-                                type: 'success',
-                                autoClose: 5000,
-                                theme: 'dark',
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined
-                            });
+                            notify('success', 'The movie has been added successfully');
                         }, 200);
                     });
             });
@@ -101,7 +117,7 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
             onBackgroundClick={handleClose}
             onEscapeKeydown={handleClose}
         >
-            <form onSubmit={onSearchMovie} className="search-bar">
+            <form onSubmit={onSearchMovie} id="search-bar">
                 <Input
                     required
                     autoFocus
@@ -109,10 +125,13 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
                     placeholder="Movie name..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    className="text-input"
+                    classes={{ root: classes.input }}
                 />
                 <Button
                     variant="contained"
-                    onClick={onSearchMovie}
+                    className="button"
+                    type="submit"
                 >
                     Search
                 </Button>
@@ -128,7 +147,7 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
                                     disableFocusRipple
                                     onClick={() => onAddNewMovie(movie.id)}
                                 >
-                                    <AiOutlinePlus color='white' size={20} />
+                                    <AiOutlinePlus color='black' size={20} />
                                 </Button>
                                 {movie.poster_path &&
                                     <img
@@ -138,10 +157,10 @@ const SearchModal = ({ isOpen, setIsOpen }) => {
                                     />
                                 }
                                 <div className="date">
-                                    <Typography>
+                                    <Typography variant="subtitle1" className="text">
                                         {movie.title}
                                     </Typography>
-                                    <Typography variant="caption">
+                                    <Typography variant="caption" className="text">
                                         {moment(movie.release_date).format('DD/MM/YY')}
                                     </Typography>
                                 </div>
@@ -162,7 +181,7 @@ const StyledModal = Modal.styled`
     justify-content: flex-start;
     align-items: flex-start;
     border-radius: 25px;
-    background-color: #ffffff;
+    background-color: ${modalBackground};
     cursor: default;
     padding: 20px;
 
