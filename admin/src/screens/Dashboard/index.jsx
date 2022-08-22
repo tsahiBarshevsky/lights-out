@@ -3,11 +3,13 @@ import { AuthContext } from '../../services/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { LoopCircleLoading } from 'react-loadingg';
 import { Halls, Movies, Screenings, Sidebar } from '../../components';
 import './styles.sass';
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
+    const [loaded, setLoaded] = useState(false);
     const [activeTab, setActiveTab] = useState('movies');
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -27,7 +29,9 @@ const Dashboard = () => {
                 dispatch({ type: 'SET_MOVIES', movies: movies });
                 dispatch({ type: 'SET_HALLS', halls: halls });
                 dispatch({ type: 'SET_SCREENINGS', screenings: screenings });
-            });
+            })
+            .catch((error) => console.log(error.message))
+            .finally(() => setLoaded(true));
     }, [dispatch]);
 
     useEffect(() => {
@@ -38,7 +42,7 @@ const Dashboard = () => {
         fetchData();
     }, [user, navigate, fetchData]);
 
-    return (
+    return loaded ? (
         <>
             <div className="dashboard-container">
                 <Sidebar
@@ -60,6 +64,10 @@ const Dashboard = () => {
             </div>
             <ToastContainer />
         </>
+    ) : (
+        <div className="loading-container">
+            <LoopCircleLoading size="small" color="white" />
+        </div>
     )
 }
 

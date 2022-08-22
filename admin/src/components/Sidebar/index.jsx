@@ -3,10 +3,16 @@ import { Button, Typography } from '@mui/material';
 import { IoTicketOutline } from 'react-icons/io5';
 import { GiTheater } from 'react-icons/gi';
 import { BiCameraMovie } from 'react-icons/bi';
+import { MdLogout } from 'react-icons/md'
+import { auth } from '../../services/firebase';
 import './styles.sass';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
     const tabs = ['movies', 'halls', 'screenings'];
+
+    const onSignOut = async () => {
+        await auth.signOut();
+    }
 
     const renderIcon = (tab) => {
         switch (tab) {
@@ -65,53 +71,26 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                         </Button>
                     )
                 })}
-            </div>
-
-
-
-            {/* <Button
-                disableFocusRipple
-                disableRipple
-                className="button"
+                <Button
+                    disableFocusRipple
+                    disableRipple
+                    className="button"
+                    onClick={onSignOut}
                 >
-                <div className={activeTab === 'movies' ? "side-mark side-mark-active" : "side-mark"} />
-                <div className="content">
-                    <MdLocalMovies
-                        size={30}
-                        className={activeTab === 'movies' ? "icon icon-active" : "icon"}
-                    />
-                    <Typography
-                        className={activeTab === 'movies' ? "caption caption-active" : "caption"}
-                        variant='h6'
-                    >
-                        Movies
-                    </Typography>
-                </div>
-            </Button>
-            <Button
-                disableFocusRipple
-                disableRipple
-                className="button space"
-            >
-                <div className="content">
-                    <GiTheater size={20} />
-                    <Typography variant='subtitle1'>
-                        Halls
-                    </Typography>
-                </div>
-            </Button>
-            <Button
-                disableFocusRipple
-                disableRipple
-                className="button"
-            >
-                <div className="content">
-                    <BsCameraReelsFill size={20} />
-                    <Typography variant='subtitle1'>
-                        Screenings
-                    </Typography>
-                </div>
-            </Button> */}
+                    <div className="side-mark" />
+                    <div className="content">
+                        <div className="icon-wrapper">
+                            <MdLogout size={20} className="icon" />
+                        </div>
+                        <Typography
+                            className="caption"
+                            variant='subtitle1'
+                        >
+                            Sign Out
+                        </Typography>
+                    </div>
+                </Button>
+            </div>
         </div>
     )
 }
