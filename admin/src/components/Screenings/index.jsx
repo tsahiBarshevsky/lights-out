@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import ScreeningModal from '../Modals/Screening Modal';
+import FloatingButton from '../Floating Button';
 import { deleteScreening } from '../../redux/actions/screenings';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
@@ -55,8 +56,8 @@ const Screenings = () => {
 
     return (
         <>
+            <FloatingButton onClick={() => setIsOpen(true)} />
             <div className="screenings-container">
-                <Button onClick={() => setIsOpen(true)} variant="contained">Add New Screening</Button>
                 <table id="screenings">
                     <thead>
                         <tr>

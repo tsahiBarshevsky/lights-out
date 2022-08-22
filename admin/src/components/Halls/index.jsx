@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import HallsModal from '../Modals/Hall Modal';
+import FloatingButton from '../Floating Button';
 import { deleteHall } from '../../redux/actions/halls';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
@@ -49,8 +50,8 @@ const Halls = () => {
 
     return (
         <>
+            <FloatingButton onClick={() => setIsOpen(true)} />
             <div className="halls-container">
-                <Button onClick={() => setIsOpen(true)} variant="contained">Add New Hall</Button>
                 <table id="halls">
                     <thead>
                         <tr>

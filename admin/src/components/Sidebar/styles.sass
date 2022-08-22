@@ -1,10 +1,11 @@
 @import '../../_variables'
 
 .sidebar-container
-    background-color: lightgreen
+    background-color: #1b1c21
     height: 100vh
     width: $sidebar-width
     padding: 100px 0
+    border-right: 1px solid rgba(white,0.2)
 
     .button
         display: flex
@@ -34,14 +35,14 @@
                 margin-right: 10px
 
                 .icon-active
-                    color: blue
+                    color: $primary
 
             .caption
                 font-family: 'Signika Negative', sans-serif
                 font-weight: bold
 
             .caption-active
-                color: blue
+                color: $primary
 
     .side-mark
         width: 6px
@@ -51,7 +52,7 @@
         margin-right: 15px
 
     .side-mark-active
-        background-color: blue
+        background-color: $primary
 
     .space
         margin: 10px 0
