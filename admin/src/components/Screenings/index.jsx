@@ -1,22 +1,36 @@
-import React, { useState } from 'react';
-import { Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, Pagination, Stack, Typography } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import MovieScreeningModal from '../Modals/Movie Screening Modal';
 import ScreeningModal from '../Modals/Screening Modal';
 import FloatingButton from '../Floating Button';
 import TabTitle from '../Tab Title';
+import usePagination from "../../services/pagination";
 import { deleteScreening } from '../../redux/actions/screenings';
+import { useStyles } from '../../services/paginationStyle';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
-import MovieScreeningModal from '../Modals/Movie Screening Modal';
 
 const Screenings = () => {
+    const screenings = useSelector(state => state.screenings);
+    const ENTRIES_PER_PAGE = 10;
     const [isOpen, setIsOpen] = useState(false);
+    const [count, setCount] = useState(Math.ceil(screenings.length / ENTRIES_PER_PAGE));
     const [chosenScreening, setChosenScreening] = useState({});
     const [showScreening, setShowScreening] = useState(false);
-    const screenings = useSelector(state => state.screenings);
     const dispatch = useDispatch();
+    const classes = useStyles();
+
+    // Pagination
+    const [page, setPage] = useState(1);
+    const _DATA = usePagination(screenings, ENTRIES_PER_PAGE);
+
+    const handlePageChange = (e, p) => {
+        setPage(p);
+        _DATA.jump(p);
+    }
 
     const handleClose = () => {
         setShowScreening(false);
@@ -55,6 +69,10 @@ const Screenings = () => {
             .catch((error) => console.log(error));
     }
 
+    useEffect(() => {
+        setCount(Math.ceil(screenings.length / ENTRIES_PER_PAGE))
+    }, [screenings]);
+
     return (
         <>
             <FloatingButton onClick={() => setIsOpen(true)} />
@@ -63,29 +81,80 @@ const Screenings = () => {
                 <table id="screenings">
                     <thead>
                         <tr>
-                            <th><h3>Movie</h3></th>
-                            <th><h3>Hall</h3></th>
-                            <th><h3>Date And Hour</h3></th>
-                            <th><h3>Options</h3></th>
+                            <th style={{ width: 450 }}>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Movie
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Hall
+                                </Typography>
+                            </th>
+                            <th style={{ width: 300 }}>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Date & Hour
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Options
+                                </Typography>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {screenings.map((screening, index) => {
+                        {_DATA.currentData().map((screening, index) => {
                             return (
                                 <tr key={screening._id}>
-                                    <td><h3>{screening.movie.title}</h3></td>
-                                    <td><h3>{screening.hall.number}</h3></td>
-                                    <td><h3>{moment(screening.date).format('DD/MM/YYYY HH:mm')}</h3></td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {screening.movie.title}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {screening.hall.number}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {moment(screening.date).format('DD/MM/YYYY HH:mm')}
+                                        </Typography>
+                                    </td>
                                     <td>
                                         <Button
-                                            variant="contained"
                                             onClick={() => onDeleteScreening(screening._id, index)}
+                                            variant="contained"
+                                            className="button delete"
                                         >
                                             Delete
                                         </Button>
                                         <Button
-                                            variant="contained"
                                             onClick={() => onOpenScreening(screening)}
+                                            variant="contained"
+                                            className="button view"
                                         >
                                             View
                                         </Button>
@@ -95,6 +164,20 @@ const Screenings = () => {
                         })}
                     </tbody>
                 </table>
+                <div className='pagination-container'>
+                    <Stack spacing={2} className={classes.stack}>
+                        <Pagination
+                            count={count}
+                            page={page}
+                            onChange={handlePageChange}
+                            showLastButton
+                            showFirstButton
+                            classes={{
+                                root: classes.pagination
+                            }}
+                        />
+                    </Stack>
+                </div>
             </div>
             <ScreeningModal
                 isOpen={isOpen}

@@ -1,6 +1,19 @@
+@import './_variables'
+
 *
     margin: 0
     padding: 0
     box-sizing: border-box
     scroll-behaviour: smooth
     font-family: 'Poppins', sans-serif
+
+*::-webkit-scrollbar
+    width: 16px
+
+*::-webkit-scrollbar-track
+    background: $background
+
+*::-webkit-scrollbar-thumb
+    background-color: rgba(white, 0.2)
+    border-radius: 15px
+    border: 5px solid $background

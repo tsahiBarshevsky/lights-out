@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Button } from '@mui/material';
+import { Button, Pagination, Stack, Typography } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import HallsModal from '../Modals/Hall Modal';
 import FloatingButton from '../Floating Button';
 import TabTitle from '../Tab Title';
+import usePagination from "../../services/pagination";
 import { deleteHall } from '../../redux/actions/halls';
+import { useStyles } from '../../services/paginationStyle';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
 
@@ -13,6 +15,19 @@ const Halls = () => {
     const [isOpen, setIsOpen] = useState(false);
     const halls = useSelector(state => state.halls);
     const dispatch = useDispatch();
+    const classes = useStyles();
+
+    // Pagination
+    const [page, setPage] = useState(1);
+    const ENTRIES_PER_PAGE = 10;
+
+    const count = Math.ceil(halls.length / ENTRIES_PER_PAGE);
+    const _DATA = usePagination(halls, ENTRIES_PER_PAGE);
+
+    const handlePageChange = (e, p) => {
+        setPage(p);
+        _DATA.jump(p);
+    }
 
     const calculateNumberOfSeats = (seats) => {
         let sum = 0;
@@ -57,27 +72,105 @@ const Halls = () => {
                 <table id="halls">
                     <thead>
                         <tr>
-                            <th><h3>Hall</h3></th>
-                            <th><h3>Type</h3></th>
-                            <th><h3>Ticket Price</h3></th>
-                            <th><h3>Number Of Lines</h3></th>
-                            <th><h3>Number Of Seats</h3></th>
-                            <th><h3>Options</h3></th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Hall
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Type
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Ticket Price
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Number Of Lines
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Number Of Seats
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Options
+                                </Typography>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {halls.map((hall, index) => {
+                        {_DATA.currentData().map((hall, index) => {
                             return (
                                 <tr key={hall._id}>
-                                    <td><h3>#{hall.number}</h3></td>
-                                    <td><h3>{hall.type}</h3></td>
-                                    <td><h3>{hall.ticketPrice}₪</h3></td>
-                                    <td><h3>{Object.keys(hall.seats).length}</h3></td>
-                                    <td><h3>{calculateNumberOfSeats(hall.seats)}</h3></td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            #{hall.number}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {hall.type}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {hall.ticketPrice}₪
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {Object.keys(hall.seats).length}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {calculateNumberOfSeats(hall.seats)}
+                                        </Typography>
+                                    </td>
                                     <td>
                                         <Button
-                                            variant="contained"
                                             onClick={() => onDeleteHall(hall._id, index)}
+                                            variant="contained"
+                                            className="button"
                                         >
                                             Delete
                                         </Button>
@@ -87,6 +180,18 @@ const Halls = () => {
                         })}
                     </tbody>
                 </table>
+                <Stack spacing={2} className={classes.stack}>
+                    <Pagination
+                        count={count}
+                        page={page}
+                        onChange={handlePageChange}
+                        showLastButton
+                        showFirstButton
+                        classes={{
+                            root: classes.pagination
+                        }}
+                    />
+                </Stack>
             </div>
             <HallsModal
                 isOpen={isOpen}

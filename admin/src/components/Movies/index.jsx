@@ -8,8 +8,8 @@ import FloatingButton from '../Floating Button';
 import TabTitle from '../Tab Title';
 import usePagination from "../../services/pagination";
 import { deleteMovie } from '../../redux/actions/movies';
+import { useStyles } from '../../services/paginationStyle';
 import 'react-toastify/dist/ReactToastify.css';
-import { useStyles } from './styles';
 import './styles.sass';
 
 const Movies = () => {

@@ -137,7 +137,7 @@ app.post('/delete-hall', async (req, res) => {
 
 // Get all screenings
 app.get('/get-all-screenings', async (req, res) => {
-    const screenings = await Screening.find({}).sort({ date: 1 }).exec();
+    const screenings = await Screening.find({}).sort({ date: -1 }).exec();
     console.log(`${screenings.length} screenings found`);
     res.json(screenings);
 });
