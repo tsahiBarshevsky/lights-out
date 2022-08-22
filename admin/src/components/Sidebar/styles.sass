@@ -4,55 +4,72 @@
     background-color: #1b1c21
     height: 100vh
     width: $sidebar-width
-    padding: 100px 0
+    padding: 50px 0
     border-right: 1px solid rgba(white,0.2)
 
-    .button
-        display: flex
-        justify-content: flex-start
-        align-items: center
-        width: 100%
-        height: 50px
-        text-transform: capitalize
-        background-color: transparent
-        color: black
-        padding: 0
+    .logo
+        color: white
+        font-family: 'Satisfy', sans-serif
+        text-align: center
 
-        &:hover
-            background-color: transparent
+    .subtitle
+        color: white
+        font-family: 'Poppins', sans-serif
+        text-align: center
 
-        .content
+    .tabs
+        padding: 50px 0
+
+        .button
             display: flex
             justify-content: flex-start
             align-items: center
+            width: 100%
+            height: 40px
+            text-transform: capitalize
+            background-color: transparent
+            color: black
+            padding: 0
 
-            .icon-wrapper
-                width: 35px
-                height: 35px
+            &:hover
+                background-color: transparent
+
+            .content
                 display: flex
-                justify-content: center
+                justify-content: flex-start
                 align-items: center
-                margin-right: 10px
 
-                .icon-active
-                    color: $primary
+                .icon-wrapper
+                    width: 35px
+                    height: 35px
+                    display: flex
+                    justify-content: center
+                    align-items: center
+                    margin-right: 10px
 
-            .caption
-                font-family: 'Signika Negative', sans-serif
-                font-weight: bold
+                    .icon
+                        color: #414350
 
-            .caption-active
-                color: $primary
+                    .icon-active
+                        color: $primary
 
-    .side-mark
-        width: 6px
-        height: 100%
-        border-top-right-radius: 10px
-        border-bottom-right-radius: 10px
-        margin-right: 15px
+                .caption
+                    font-family: 'Poppins', sans-serif
+                    letter-spacing: 0.5px
+                    color: #414350
 
-    .side-mark-active
-        background-color: $primary
+                .caption-active
+                    color: white
 
-    .space
-        margin: 10px 0
+        .side-mark
+            width: 6px
+            height: 100%
+            border-top-right-radius: 10px
+            border-bottom-right-radius: 10px
+            margin-right: 15px
+
+        .side-mark-active
+            background-color: $primary
+
+        .space
+            margin: 10px 0
