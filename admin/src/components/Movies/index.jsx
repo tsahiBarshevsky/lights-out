@@ -1,18 +1,40 @@
 import React, { useState } from 'react';
-import { Button } from '@mui/material';
+import { Button, Pagination, Stack, Typography } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import FloatingButton from '../Floating Button';
 import SearchModal from '../Modals/Search Modal';
+import FloatingButton from '../Floating Button';
+import TabTitle from '../Tab Title';
+import usePagination from "../../services/pagination";
 import { deleteMovie } from '../../redux/actions/movies';
 import 'react-toastify/dist/ReactToastify.css';
+import { useStyles } from './styles';
 import './styles.sass';
 
 const Movies = () => {
     const [isOpen, setIsOpen] = useState(false);
     const movies = useSelector(state => state.movies);
     const dispatch = useDispatch();
+    const classes = useStyles();
+
+    // Pagination
+    const [page, setPage] = useState(1);
+    const ENTRIES_PER_PAGE = 5;
+
+    const count = Math.ceil(movies.length / ENTRIES_PER_PAGE);
+    const _DATA = usePagination(movies, ENTRIES_PER_PAGE);
+
+    const handlePageChange = (e, p) => {
+        setPage(p);
+        _DATA.jump(p);
+    }
+
+    const convertMinutesToHours = (minutes) => {
+        const m = minutes % 60;
+        const h = (minutes - m) / 60;
+        return `${h.toString()}h ${(m < 10 ? "0" : "")}${m.toString()}m`;
+    }
 
     const onDeleteMovie = (id, index) => {
         fetch(`/delete-movie?id=${id}`,
@@ -44,40 +66,125 @@ const Movies = () => {
     return (
         <>
             <FloatingButton onClick={() => setIsOpen(true)} />
-            {/* <div className="movies-container">
-                <Button onClick={() => setIsOpen(true)} variant="contained">Add New Movie</Button>
+            <div className="movies-container">
+                <TabTitle title="Movies" />
                 <table id="movies">
                     <thead>
                         <tr>
                             <th style={{ width: 130 }}>
-                                <h3>Poster</h3>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Poster
+                                </Typography>
                             </th>
-                            <th><h3>Title</h3></th>
-                            <th><h3>Genre</h3></th>
-                            <th><h3>Duration</h3></th>
-                            <th><h3>Release Date</h3></th>
-                            <th><h3>Options</h3></th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Title
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Language
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Genre
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Duration
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Release Date
+                                </Typography>
+                            </th>
+                            <th>
+                                <Typography
+                                    variant='h6'
+                                    className='title'
+                                >
+                                    Options
+                                </Typography>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {movies.map((movie, index) => {
+                        {_DATA.currentData().map((movie, index) => {
                             return (
                                 <tr key={movie._id}>
                                     <td>
                                         <img
                                             src={`https://image.tmdb.org/t/p/original/${movie.posterPath}`}
                                             alt={movie.title}
-                                            style={{ width: 90, height: '100%', borderRadius: 10 }}
+                                            style={{ width: 90, height: '100%', borderRadius: 15 }}
                                         />
                                     </td>
-                                    <td><h3>{movie.title}</h3></td>
-                                    <td><h3>{movie.genre}</h3></td>
-                                    <td><h3>{movie.duration}</h3></td>
-                                    <td><h3>{moment(movie.releaseDate).format('DD/MM/YY')}</h3></td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {movie.title}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {movie.language}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {movie.genre}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {movie.duration ? convertMinutesToHours(movie.duration) : "N/A"}
+                                        </Typography>
+                                    </td>
+                                    <td>
+                                        <Typography
+                                            variant='body1'
+                                            className='caption'
+                                        >
+                                            {moment(movie.releaseDate).format('DD/MM/YYYY')}
+                                        </Typography>
+                                    </td>
                                     <td>
                                         <Button
-                                            variant="contained"
                                             onClick={() => onDeleteMovie(movie._id, index)}
+                                            variant="contained"
+                                            className='button'
                                         >
                                             Delete
                                         </Button>
@@ -87,7 +194,19 @@ const Movies = () => {
                         })}
                     </tbody>
                 </table>
-            </div> */}
+                <Stack spacing={2} className={classes.stack}>
+                    <Pagination
+                        count={count}
+                        page={page}
+                        onChange={handlePageChange}
+                        showLastButton
+                        showFirstButton
+                        classes={{
+                            root: classes.pagination
+                        }}
+                    />
+                </Stack>
+            </div>
             <SearchModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}

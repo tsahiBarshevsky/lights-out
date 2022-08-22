@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import moment from 'moment';
 import ScreeningModal from '../Modals/Screening Modal';
 import FloatingButton from '../Floating Button';
+import TabTitle from '../Tab Title';
 import { deleteScreening } from '../../redux/actions/screenings';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
@@ -58,6 +59,7 @@ const Screenings = () => {
         <>
             <FloatingButton onClick={() => setIsOpen(true)} />
             <div className="screenings-container">
+                <TabTitle title="Screenings" />
                 <table id="screenings">
                     <thead>
                         <tr>

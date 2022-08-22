@@ -11,20 +11,31 @@
     padding: 20px
 
     #movies
-        font-family: 'Signika Negative', sans-serif
+        font-family: 'Poppins', sans-serif
         border-collapse: collapse
         width: 100%
+        min-height: 870px
 
         td, th
-            border: 1px solid #ddd
+            border-bottom: 1px solid #414350
             padding: 10px 20px
 
-        tr:nth-child(even)
-            background-color: #f2f2f2
-
         th
-            padding-top: 12px
-            padding-bottom: 12px
             text-align: left
-            background-color: #04AA6D
             color: white
+
+        .title
+            font-family: 'Poppins', sans-serif
+
+        .caption
+            font-family: 'Poppins', sans-serif
+            color: white
+
+        .button
+            background-color: $primary
+            border-radius: 50px
+            text-transform: capitalize
+            color: black
+            font-family: 'Poppins', sans-serif
+            font-weight: bold
+            padding: 8px 24px

@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import HallsModal from '../Modals/Hall Modal';
 import FloatingButton from '../Floating Button';
+import TabTitle from '../Tab Title';
 import { deleteHall } from '../../redux/actions/halls';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.sass';
@@ -52,6 +53,7 @@ const Halls = () => {
         <>
             <FloatingButton onClick={() => setIsOpen(true)} />
             <div className="halls-container">
+                <TabTitle title="Halls" />
                 <table id="halls">
                     <thead>
                         <tr>
