@@ -1,7 +1,40 @@
-.seats
+@import '../../../_variables'
+
+#form
     display: flex
     flex-direction: column
-    justify-content: flex-start
-    align-items: flex-start
     overflow-y: auto
-    width: 100%
+
+    .title
+        font-family: 'Poppins', sans-serif
+        color: white
+
+    .text-input
+        font-family: 'Poppins', sans-serif
+        background-color: #2a2d38
+        border-radius: 25px
+        padding: 5px 15px
+        color: white
+        width: calc( 25vw - 40px )
+        margin-bottom: 10px
+
+    .button
+        width: 70px
+        font-family: 'Poppins', sans-serif
+        font-weight: bold
+        background-color: $primary
+        border-radius: 25px
+        color: black
+        text-transform: capitalize
+        align-self: flex-end
+
+#form::-webkit-scrollbar
+    width: 16px
+
+#form::-webkit-scrollbar-track
+    background: $modal-background
+
+#form::-webkit-scrollbar-thumb
+    background-color: rgba(white, 0.2)
+    border-radius: 15px
+    border: 5px solid $modal-background

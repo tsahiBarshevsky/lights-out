@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import Modal from 'styled-react-modal';
-import { Button, Input } from '@mui/material';
+import { Button, Input, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import update from 'immutability-helper';
 import { addNewHall } from '../../../redux/actions/halls';
+import { useStyles } from '../../../services/inputsStyles';
+import { modalBackground } from '../../../services/theme';
 import './styles.sass';
 
 const HallModal = ({ isOpen, setIsOpen }) => {
@@ -16,6 +18,7 @@ const HallModal = ({ isOpen, setIsOpen }) => {
         "1": { numberOfSeats: 1 }
     });
     const dispatch = useDispatch();
+    const classes = useStyles();
 
     const handleClose = () => {
         setIsOpen(false);
@@ -54,7 +57,8 @@ const HallModal = ({ isOpen, setIsOpen }) => {
         setSeats(newData);
     }
 
-    const onAddNewHall = () => {
+    const onAddNewHall = (e) => {
+        e.preventDefault();
         const newHall = {
             number: number,
             type: type,
@@ -97,7 +101,8 @@ const HallModal = ({ isOpen, setIsOpen }) => {
             onBackgroundClick={handleClose}
             onEscapeKeydown={handleClose}
         >
-            <form>
+            <form id="form" onSubmit={onAddNewHall}>
+                <Typography variant='subtitle1' className="title">Hall Number</Typography>
                 <Input
                     required
                     autoFocus
@@ -105,14 +110,20 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                     placeholder="Number..."
                     value={number}
                     onChange={(e) => setNumber(e.target.value)}
+                    className="text-input"
+                    classes={{ root: classes.input }}
                 />
+                <Typography variant='subtitle1' className="title">Ticket Type</Typography>
                 <Input
                     required
                     disableUnderline
                     placeholder="Type..."
                     value={type}
                     onChange={(e) => setType(e.target.value)}
+                    className="text-input"
+                    classes={{ root: classes.input }}
                 />
+                <Typography variant='subtitle1' className="title">Ticket Price</Typography>
                 <Input
                     required
                     disableUnderline
@@ -121,7 +132,10 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                     onChange={(e) => setPrice(e.target.value)}
                     type="number"
                     inputProps={{ min: 1 }}
+                    className="text-input"
+                    classes={{ root: classes.input }}
                 />
+                <Typography variant='subtitle1' className="title">Number Of Lines</Typography>
                 <Input
                     required
                     disableUnderline
@@ -130,14 +144,14 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                     onChange={handleChangeNumberOfLines}
                     type="number"
                     inputProps={{ min: 1, max: 20 }}
+                    className="text-input"
+                    classes={{ root: classes.input }}
                 />
-            </form>
-            <div className="seats">
                 {Object.keys(seats).map((line) => {
                     return (
-                        <div>
-                            <h1>line {line}</h1>
-                            <h3>{seats[line].numberOfSeats} seats</h3>
+                        <div key={line}>
+                            <Typography variant='h6' className="title">line {line}</Typography>
+                            <Typography variant='subtitle1' className="title">Number Of Seats</Typography>
                             <Input
                                 required
                                 disableUnderline
@@ -146,30 +160,33 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                                 onChange={(e) => handleChangeNumberOfSeats(e, line)}
                                 type="number"
                                 inputProps={{ min: 1 }}
+                                className="text-input"
+                                classes={{ root: classes.input }}
                             />
                         </div>
                     )
                 })}
-            </div>
-            <Button
-                variant="contained"
-                onClick={onAddNewHall}
-            >
-                Add
-            </Button>
+                <Button
+                    variant="contained"
+                    className="button"
+                    type="submit"
+                >
+                    Add
+                </Button>
+            </form>
         </StyledModal>
     )
 }
 
 const StyledModal = Modal.styled`
-    width: 50vw;
+    width: 25vw;
     height: 50vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
     border-radius: 25px;
-    background-color: #ffffff;
+    background-color: ${modalBackground};
     cursor: default;
     padding: 20px;
 
