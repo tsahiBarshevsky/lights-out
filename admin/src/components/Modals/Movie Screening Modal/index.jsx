@@ -1,6 +1,8 @@
 import React from 'react';
+import { Typography } from '@mui/material';
 import Modal from 'styled-react-modal';
 import moment from 'moment';
+import { modalBackground } from '../../../services/theme';
 import './styles.sass';
 
 const MovieScreeningModal = ({ isOpen, handleClose, selectedScreening }) => {
@@ -10,12 +12,16 @@ const MovieScreeningModal = ({ isOpen, handleClose, selectedScreening }) => {
             const length = selectedScreening.seats[line].length;
             const availableLength = selectedScreening.seats[line].filter((seat) => seat.available).length;
             available += availableLength;
-            unavailable += length - availableLength
+            unavailable += length - availableLength;
         });
         return (
             <>
-                <h3>Available seats: {available}</h3>
-                <h3>Booked seats: {unavailable}</h3>
+                <Typography variant='title1' className="text">
+                    Available seats: {available}
+                </Typography>
+                <Typography variant='title1' className="text">
+                    Booked seats: {unavailable}
+                </Typography>
             </>
         )
     }
@@ -26,19 +32,25 @@ const MovieScreeningModal = ({ isOpen, handleClose, selectedScreening }) => {
             onBackgroundClick={handleClose}
             onEscapeKeydown={handleClose}
         >
-            <h1>{selectedScreening.movie.title}</h1>
-            <h3>Hall {selectedScreening.hall.number}</h3>
-            <h3>{moment(selectedScreening.date).format('DD/MM/YYYY HH:mm')}</h3>
+            <Typography variant='h4' className="text">
+                {selectedScreening.movie.title}
+            </Typography>
+            <Typography variant='title1' className="text">
+                Hall {selectedScreening.hall.number}
+            </Typography>
+            <Typography variant='title1' className="text">
+                {moment(selectedScreening.date).format('DD/MM/YYYY HH:mm')}
+            </Typography>
             {countAvailableSeats()}
             <div className="hall">
                 <div className="screen">
                     <div className="screen-line" />
-                    <h4>Screen</h4>
+                    <Typography variant="h6" className="text">Screen</Typography>
                 </div>
                 {Object.keys(selectedScreening.seats).map((line) => {
                     return (
                         <div className="line" key={line}>
-                            <h4>{line}</h4>
+                            <Typography variant='caption' className='line-text'>{line}</Typography>
                             <div className="seats">
                                 {selectedScreening.seats[line].map((e) => {
                                     return (
@@ -46,12 +58,17 @@ const MovieScreeningModal = ({ isOpen, handleClose, selectedScreening }) => {
                                             key={e.number}
                                             className={e.available ? "seat available" : "seat unavailable"}
                                         >
-                                            <p>{e.number + 1}</p>
+                                            <Typography
+                                                variant="subtitle1"
+                                                className="caption"
+                                            >
+                                                {e.number + 1}
+                                            </Typography>
                                         </div>
                                     )
                                 })}
                             </div>
-                            <h4>{line}</h4>
+                            <Typography variant='caption' className='line-text'>{line}</Typography>
                         </div>
                     )
                 })}
@@ -68,7 +85,7 @@ const StyledModal = Modal.styled`
     justify-content: flex-start;
     align-items: flex-start;
     border-radius: 25px;
-    background-color: #ffffff;
+    background-color: ${modalBackground};
     cursor: default;
     padding: 20px;
 `;
