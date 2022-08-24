@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Modal from 'styled-react-modal';
-import { Button, TextField, InputLabel, MenuItem, FormControl, Select } from '@mui/material';
+import { Button, TextField, MenuItem, FormControl, Select, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import { addNewScreening } from '../../../redux/actions/screenings';
-// import './styles.sass';
+import { modalBackground } from '../../../services/theme';
+import { useStyles } from './style';
 
 const format = 'DD/MM/YY HH:mm';
 
@@ -18,6 +19,7 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
     const halls = useSelector(state => state.halls);
     const screenings = useSelector(state => state.screenings);
     const dispatch = useDispatch();
+    const classes = useStyles();
 
     const handleClose = () => {
         setIsOpen(false);
@@ -30,8 +32,8 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
         setDate(newDate);
     }
 
-    const onAddNewScreening = (event) => {
-        event.preventDefault();
+    const onAddNewScreening = (e) => {
+        e.preventDefault();
         var canSchedule = true;
         // Check if hall is available
         screenings.forEach((screening) => {
@@ -104,58 +106,76 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
             onBackgroundClick={handleClose}
             onEscapeKeydown={handleClose}
         >
-            <form>
-                <FormControl fullWidth>
-                    <InputLabel id="movie-label">Movie</InputLabel>
+            <form onSubmit={onAddNewScreening}>
+                <FormControl className={classes.formControl}>
+                    <Typography variant='subtitle1' className={classes.title}>Movie</Typography>
                     <Select
-                        labelId="movie-label"
                         id="movie-select"
                         value={movie}
-                        label="Movie"
+                        renderValue={movie !== '' ? undefined : () => <Placeholder>Select movie</Placeholder>}
                         onChange={(e) => setMovie(e.target.value)}
                         required
+                        className={classes.select}
+                        variant="standard"
+                        disableUnderline
+                        displayEmpty
+                        MenuProps={{ classes: { paper: classes.paper } }}
+                        style={{ borderRadius: 25, color: 'white' }}
                     >
                         {movies.map((movie) => {
                             return (
                                 <MenuItem
                                     key={movie._id}
+                                    className={classes.menuItem}
                                     value={JSON.stringify({
                                         id: movie.tmdbID.toString(),
                                         title: movie.title
                                     })}
                                 >
-                                    {movie.title}
+                                    <Typography variant="subtitle1" className={classes.text}>
+                                        {movie.title}
+                                    </Typography>
                                 </MenuItem>
                             )
                         })}
                     </Select>
                 </FormControl>
-                <FormControl fullWidth>
-                    <InputLabel id="hall-label">Hall</InputLabel>
+                <FormControl className={classes.formControl}>
+                    <Typography variant='subtitle1' className={classes.title}>Hall</Typography>
                     <Select
-                        labelId="hall-label"
                         id="hall-select"
                         value={hall}
-                        label="Hall"
+                        renderValue={hall !== '' ? undefined : () => <Placeholder>Select hall</Placeholder>}
                         onChange={(e) => setHall(e.target.value)}
                         required
+                        className={classes.select}
+                        variant="standard"
+                        disableUnderline
+                        displayEmpty
+                        MenuProps={{ classes: { paper: classes.paper } }}
+                        style={{ borderRadius: 25, color: 'white' }}
                     >
                         {halls.map((hall) => {
                             return (
+
                                 <MenuItem
                                     key={hall._id}
+                                    className={classes.menuItem}
                                     value={JSON.stringify({
                                         number: hall.number,
                                         ticketPrice: hall.ticketPrice,
                                         type: hall.type
                                     })}
                                 >
-                                    {hall.number} ({hall.type})
+                                    <Typography variant="subtitle1" className={classes.text}>
+                                        {hall.number} ({hall.type})
+                                    </Typography>
                                 </MenuItem>
                             )
                         })}
                     </Select>
                 </FormControl>
+                <Typography variant='subtitle1' className={classes.title}>Date & hour</Typography>
                 <DateTimePicker
                     label="Screening date and time"
                     value={date}
@@ -164,26 +184,35 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                     onChange={handleDateChange}
                     renderInput={(params) => <TextField {...params} />}
                 />
-                <Button
+                {/* <Button
                     variant="contained"
-                    onClick={onAddNewScreening}
+                    type="submit"
                 >
                     Add
-                </Button>
+                </Button> */}
             </form>
         </StyledModal>
     )
 }
 
+const Placeholder = ({ children }) => {
+    const classes = useStyles();
+    return (
+        <div className={classes.placeholder}>
+            <Typography variant='subtitle' className={classes.text}>{children}</Typography>
+        </div>
+    );
+};
+
 const StyledModal = Modal.styled`
-    width: 50vw;
-    height: 50vh;
+    width: 25vw;
+    height: fit-content;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
     border-radius: 25px;
-    background-color: #ffffff;
+    background-color: ${modalBackground};
     cursor: default;
     padding: 20px;
 
