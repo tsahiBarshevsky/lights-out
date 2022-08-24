@@ -1,4 +1,32 @@
 import { makeStyles } from '@mui/styles';
+import { primary } from '../../../services/theme';
+
+const popper = {
+    "& .MuiPickersDay-dayWithMargin": {
+        fontFamily: "Poppins",
+        color: "white",
+        backgroundColor: "transparent"
+    },
+    "& .Mui-disabled": {
+        color: "rgba(255, 255, 255, 0.6)",
+        backgroundColor: '#222329'
+    },
+    "& .css-1v994a0": {
+        fontFamily: "Poppins",
+        color: 'white'
+    },
+    "& .PrivatePickersYear-yearButton": {
+        fontFamily: "Poppins",
+        color: 'white'
+    },
+    "& .PrivatePickersYear-yearButton.Mui-selected": {
+        backgroundColor: `${primary} !important`,
+        color: 'black'
+    },
+    "& .MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.css-i4bv87-MuiSvgIcon-root": {
+        color: 'rgba(255, 255, 255, 0.35)'
+    }
+};
 
 const useStyles = makeStyles({
     text: {
@@ -14,9 +42,9 @@ const useStyles = makeStyles({
     },
     paper: {
         '&&': {
-            backgroundColor: '#2a2d38 !important',
+            backgroundColor: '#222329 !important',
             borderRadius: 10,
-            border: '1px solid rgba(255, 255, 255, 0.1)'
+            border: '2px solid rgba(255, 255, 255, 0.1)'
         }
     },
     placeholder: {
@@ -30,7 +58,7 @@ const useStyles = makeStyles({
         height: 50,
         marginBottom: 15,
         '&&': {
-            backgroundColor: '#2a2d38',
+            backgroundColor: '#222329',
             padding: '0 20px'
         },
         "& .MuiSelect-icon": {
@@ -47,21 +75,33 @@ const useStyles = makeStyles({
         '&&': {
             fontFamily: `'Varela Round', sans-serif`,
             color: 'white',
-            backgroundColor: '#2a2d38 !important'
+            backgroundColor: '#222329 !important'
         },
         '&:hover': {
-            backgroundColor: '#2a2d38 !important'
+            backgroundColor: '#222329 !important'
         },
         '&:focus': {
-            backgroundColor: '#2a2d38 !important'
+            backgroundColor: '#222329 !important'
         },
         '&:selcted': {
-            backgroundColor: '#2a2d38 !important'
+            backgroundColor: '#222329 !important'
+        }
+    },
+    picker: {
+        '&&': {
+            paddingTop: 10
+        }
+    },
+    calendar: {
+        '&&': {
+            backgroundColor: '#222329',
+            borderRadius: 15,
+            border: '2px solid rgba(255, 255, 255, 0.1)'
         }
     },
     button: {
         '&&': {
-            fontFamily: `'Varela Round', sans-serif`,
+            fontFamily: `'Poppins', sans-serif`,
             margin: '0 5px',
             width: 85,
             height: 45,
@@ -72,4 +112,4 @@ const useStyles = makeStyles({
     },
 });
 
-export { useStyles };
+export { useStyles, popper };

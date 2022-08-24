@@ -4,10 +4,13 @@ import { Button, TextField, MenuItem, FormControl, Select, Typography } from '@m
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { toast } from 'react-toastify';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import moment from 'moment';
+import clsx from 'clsx';
 import { addNewScreening } from '../../../redux/actions/screenings';
 import { modalBackground } from '../../../services/theme';
-import { useStyles } from './style';
+import { popper, useStyles } from './style';
 
 const format = 'DD/MM/YY HH:mm';
 
@@ -157,7 +160,6 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                     >
                         {halls.map((hall) => {
                             return (
-
                                 <MenuItem
                                     key={hall._id}
                                     className={classes.menuItem}
@@ -175,15 +177,36 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                         })}
                     </Select>
                 </FormControl>
-                <Typography variant='subtitle1' className={classes.title}>Date & hour</Typography>
-                <DateTimePicker
-                    label="Screening date and time"
-                    value={date}
-                    inputFormat="DD/MM/YY HH:mm"
-                    ampm={false}
-                    onChange={handleDateChange}
-                    renderInput={(params) => <TextField {...params} />}
-                />
+                <FormControl className={classes.formControl}>
+                    <Typography variant='subtitle1' className={classes.title}>Date & hour</Typography>
+                    <DateTimePicker
+                        value={date}
+                        inputFormat="DD/MM/YY HH:mm"
+                        ampm={false}
+                        onChange={handleDateChange}
+                        InputProps={{ disableUnderline: true }}
+                        className={classes.picker}
+                        minDateTime={moment()}
+                        components={{ OpenPickerIcon: CalendarMonthIcon }}
+                        PaperProps={{ classes: { root: classes.calendar } }}
+                        PopperProps={{ sx: popper }}
+                        renderInput={(params) => {
+                            return (
+                                <TextField
+                                    variant="standard"
+                                    className={clsx(classes.select, classes.picker)}
+                                    style={{ borderRadius: 25 }}
+                                    sx={{
+                                        input: { color: 'white', fontFamily: 'Poppins' },
+                                        svg: { color: 'rgba(255, 255, 255, 0.35)' },
+                                        label: { color: 'red' }
+                                    }}
+                                    {...params}
+                                />
+                            )
+                        }}
+                    />
+                </FormControl>
                 {/* <Button
                     variant="contained"
                     type="submit"
