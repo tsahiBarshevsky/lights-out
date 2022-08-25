@@ -102,70 +102,72 @@ const HallModal = ({ isOpen, setIsOpen }) => {
             onEscapeKeydown={handleClose}
         >
             <form id="form" onSubmit={onAddNewHall}>
-                <Typography variant='subtitle1' className="title">Hall Number</Typography>
-                <Input
-                    required
-                    autoFocus
-                    disableUnderline
-                    placeholder="Number..."
-                    value={number}
-                    onChange={(e) => setNumber(e.target.value)}
-                    className="text-input"
-                    classes={{ root: classes.input }}
-                />
-                <Typography variant='subtitle1' className="title">Ticket Type</Typography>
-                <Input
-                    required
-                    disableUnderline
-                    placeholder="Type..."
-                    value={type}
-                    onChange={(e) => setType(e.target.value)}
-                    className="text-input"
-                    classes={{ root: classes.input }}
-                />
-                <Typography variant='subtitle1' className="title">Ticket Price</Typography>
-                <Input
-                    required
-                    disableUnderline
-                    placeholder="Ticket price..."
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    type="number"
-                    inputProps={{ min: 1 }}
-                    className="text-input"
-                    classes={{ root: classes.input }}
-                />
-                <Typography variant='subtitle1' className="title">Number Of Lines</Typography>
-                <Input
-                    required
-                    disableUnderline
-                    placeholder="Number of lines..."
-                    value={numberOfLines}
-                    onChange={handleChangeNumberOfLines}
-                    type="number"
-                    inputProps={{ min: 1, max: 20 }}
-                    className="text-input"
-                    classes={{ root: classes.input }}
-                />
-                {Object.keys(seats).map((line) => {
-                    return (
-                        <div key={line}>
-                            <Typography variant='h6' className="title">line {line}</Typography>
-                            <Typography variant='subtitle1' className="title">Number Of Seats</Typography>
-                            <Input
-                                required
-                                disableUnderline
-                                placeholder="Number of lines..."
-                                value={seats[line].numberOfSeats}
-                                onChange={(e) => handleChangeNumberOfSeats(e, line)}
-                                type="number"
-                                inputProps={{ min: 1 }}
-                                className="text-input"
-                                classes={{ root: classes.input }}
-                            />
-                        </div>
-                    )
-                })}
+                <div className="scrollable">
+                    <Typography variant='subtitle1' className="title">Hall Number</Typography>
+                    <Input
+                        required
+                        autoFocus
+                        disableUnderline
+                        placeholder="Number..."
+                        value={number}
+                        onChange={(e) => setNumber(e.target.value)}
+                        className="text-input"
+                        classes={{ root: classes.input }}
+                    />
+                    <Typography variant='subtitle1' className="title">Ticket Type</Typography>
+                    <Input
+                        required
+                        disableUnderline
+                        placeholder="Type..."
+                        value={type}
+                        onChange={(e) => setType(e.target.value)}
+                        className="text-input"
+                        classes={{ root: classes.input }}
+                    />
+                    <Typography variant='subtitle1' className="title">Ticket Price</Typography>
+                    <Input
+                        required
+                        disableUnderline
+                        placeholder="Ticket price..."
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        type="number"
+                        inputProps={{ min: 1 }}
+                        className="text-input"
+                        classes={{ root: classes.input }}
+                    />
+                    <Typography variant='subtitle1' className="title">Number Of Lines</Typography>
+                    <Input
+                        required
+                        disableUnderline
+                        placeholder="Number of lines..."
+                        value={numberOfLines}
+                        onChange={handleChangeNumberOfLines}
+                        type="number"
+                        inputProps={{ min: 1, max: 20 }}
+                        className="text-input"
+                        classes={{ root: classes.input }}
+                    />
+                    {Object.keys(seats).map((line) => {
+                        return (
+                            <div key={line}>
+                                <Typography variant='h6' className="title">line {line}</Typography>
+                                <Typography variant='subtitle1' className="title">Number Of Seats</Typography>
+                                <Input
+                                    required
+                                    disableUnderline
+                                    placeholder="Number of lines..."
+                                    value={seats[line].numberOfSeats}
+                                    onChange={(e) => handleChangeNumberOfSeats(e, line)}
+                                    type="number"
+                                    inputProps={{ min: 1 }}
+                                    className="text-input"
+                                    classes={{ root: classes.input }}
+                                />
+                            </div>
+                        )
+                    })}
+                </div>
                 <Button
                     variant="contained"
                     className="button"

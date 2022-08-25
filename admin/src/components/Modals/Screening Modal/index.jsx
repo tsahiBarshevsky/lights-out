@@ -24,6 +24,20 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
+    const notify = (message, type) => {
+        toast(message, {
+            position: "bottom-center",
+            type: type,
+            autoClose: 5000,
+            theme: 'dark',
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+        });
+    }
+
     const handleClose = () => {
         setIsOpen(false);
         setMovie('');
@@ -40,66 +54,53 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
         var canSchedule = true;
         // Check if hall is available
         screenings.forEach((screening) => {
-            if (screening.hall === hall && moment(screening.date).format(format) === moment(date).format(format))
+            if (screening.hall.number === JSON.parse(hall).number && moment(screening.date).format(format) === moment(date).format(format))
                 canSchedule = false;
         });
         if (!canSchedule)
-            toast("Can't schedule at this time, there's another movie showing already", {
-                position: "bottom-center",
-                type: 'error',
-                autoClose: 5000,
-                theme: 'dark',
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined
-            });
+            notify("Can't schedule at this time, there's another movie showing already", "error");
         else {
-            const seats = {};
-            const newScreening = {
-                hall: JSON.parse(hall),
-                movie: JSON.parse(movie),
-                date: date
-            };
-            newScreening.hall.ticketPrice = Number(newScreening.hall.ticketPrice);
-            const index = halls.findIndex((item) => item.number === JSON.parse(hall).number);
-            Object.keys(halls[index].seats).forEach((line) => {
-                const seatsArray = [];
-                [...Array(halls[index].seats[line].numberOfSeats).keys()].forEach((_, index) => {
-                    seatsArray.push({ number: index, available: true });
-                });
-                seats[line] = seatsArray;
-            });
-            newScreening.seats = seats;
-            fetch('/add-new-screening',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        newScreening: newScreening
-                    })
-                })
-                .then((res) => res.json())
-                .then((res) => {
-                    newScreening._id = res;
-                    dispatch(addNewScreening(newScreening));
-                    handleClose();
-                    toast('The screening has been added successfully', {
-                        position: "bottom-center",
-                        type: 'success',
-                        autoClose: 5000,
-                        theme: 'dark',
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined
+            const lastScreening = screenings.find((screening) => screening.hall.number === JSON.parse(hall).number);
+            const duration = movies.find((item) => item.id === lastScreening.movie.tmdbID).duration;
+            const endTime = moment(lastScreening.date).add(duration, 'minutes');
+            if (!endTime.isBefore(moment(date)))
+                notify("Can't schedule at this time, the previous screening is not over yet", "error")
+            else {
+                const seats = {};
+                const newScreening = {
+                    hall: JSON.parse(hall),
+                    movie: JSON.parse(movie),
+                    date: date
+                };
+                newScreening.hall.ticketPrice = Number(newScreening.hall.ticketPrice);
+                const index = halls.findIndex((item) => item.number === JSON.parse(hall).number);
+                Object.keys(halls[index].seats).forEach((line) => {
+                    const seatsArray = [];
+                    [...Array(halls[index].seats[line].numberOfSeats).keys()].forEach((_, index) => {
+                        seatsArray.push({ number: index, available: true });
                     });
+                    seats[line] = seatsArray;
                 });
+                newScreening.seats = seats;
+                fetch('/add-new-screening',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            newScreening: newScreening
+                        })
+                    })
+                    .then((res) => res.json())
+                    .then((res) => {
+                        newScreening._id = res;
+                        dispatch(addNewScreening(newScreening));
+                        handleClose();
+                        notify("The screening has been added successfully", "success");
+                    });
+            }
         }
     }
 
@@ -134,6 +135,7 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                                         id: movie.tmdbID.toString(),
                                         title: movie.title
                                     })}
+                                    disabled={moment(movie.releaseDate).diff(moment(), 'day') > 5}
                                 >
                                     <Typography variant="subtitle1" className={classes.text}>
                                         {movie.title}
