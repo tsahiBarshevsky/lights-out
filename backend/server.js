@@ -84,6 +84,7 @@ app.post('/add-new-movie', async (req, res) => {
     res.json(newMovie._id);
 });
 
+// Delete movie
 app.post('/delete-movie', async (req, res) => {
     const id = req.query.id;
     Movie.findByIdAndDelete(id,
@@ -99,6 +100,7 @@ app.post('/delete-movie', async (req, res) => {
 
 /* ====== Halls ======= */
 
+// Get all halls
 app.get('/get-all-halls', async (req, res) => {
     Hall.find({},
         function (err, result) {
@@ -114,12 +116,14 @@ app.get('/get-all-halls', async (req, res) => {
     );
 });
 
+// Add new hall
 app.post('/add-new-hall', async (req, res) => {
     const newHall = new Hall(req.body.newHall);
     await newHall.save();
     res.json(newHall._id);
 });
 
+// Delete hall
 app.post('/delete-hall', async (req, res) => {
     const id = req.query.id;
     Hall.findByIdAndDelete(id,
@@ -149,6 +153,7 @@ app.post('/add-new-screening', async (req, res) => {
     res.json(newScreening._id);
 });
 
+// Delete screening
 app.post('/delete-screening', async (req, res) => {
     const id = req.query.id;
     Screening.findByIdAndDelete(id,

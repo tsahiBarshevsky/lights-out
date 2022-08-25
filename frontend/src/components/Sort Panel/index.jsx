@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import { Modalize } from 'react-native-modalize';
-import { Entypo } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { localhost } from '../../utils/utilities';
-import { background, primary, secondary } from '../../utils/theme';
+import { background, primary } from '../../utils/theme';
 
 const SortPanel = ({ sortPanelRef, genres }) => {
     const [genre, setGenre] = useState('');

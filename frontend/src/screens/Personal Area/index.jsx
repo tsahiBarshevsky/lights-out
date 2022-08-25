@@ -15,7 +15,6 @@ import Vector from '../../../assets/Images/movies.png';
 
 const PersonalAreaScreen = () => {
     const [index, setIndex] = useState(0);
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(authentication.currentUser);
     const user = useSelector(state => state.user);
     const reservations = useSelector(state => state.reservations);

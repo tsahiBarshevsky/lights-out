@@ -3,7 +3,6 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { AntDesign } from '@expo/vector-icons';
-import { primary, secondary } from '../../utils/theme';
 
 const UserBar = () => {
     const user = useSelector(state => state.user);

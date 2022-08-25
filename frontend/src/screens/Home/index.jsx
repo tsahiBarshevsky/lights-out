@@ -3,12 +3,11 @@ import { SafeAreaView, StyleSheet, Dimensions, View, Text, RefreshControl, Scrol
 import Carousel from 'react-native-snap-carousel-v4';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import moment from 'moment';
 import { globalStyles } from '../../utils/globalStyles';
 import { UserBar, MovieCard, SearchBar, SortPanel } from '../../components';
 import { localhost } from '../../utils/utilities';
 import { authentication } from '../../utils/firebase';
-import { background, primary, secondary } from '../../utils/theme';
+import { background, secondary } from '../../utils/theme';
 
 const headerHeight = 110;
 const wait = (timeout) => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity, ToastAndroid, Keyboard } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity, Keyboard } from 'react-native';
 import { EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { localhost } from '../../utils/utilities';

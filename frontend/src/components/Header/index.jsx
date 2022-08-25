@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
-import { background } from '../../utils/theme';
 
 const Hedaer = ({ caption, backFunction }) => {
     return (

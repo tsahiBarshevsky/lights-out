@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
 import { FontAwesome, AntDesign, FontAwesome5, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -313,10 +313,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10
     },
     button: {
-        // position: 'absolute',
-        // bottom: 15,
         marginTop: 15,
-        // marginBottom: 15,
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
