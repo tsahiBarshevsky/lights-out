@@ -30,7 +30,7 @@ const SplashScreen = () => {
                 const genres = [...new Set(movies.map(movie => movie.genre))];
                 dispatch({ type: 'SET_GENRES', genres: genres });
             })
-            .finally(() => setDataLoaded(true));
+        // .finally(() => setDataLoaded(true));
     }, []);
 
     useEffect(() => {
@@ -60,7 +60,8 @@ const SplashScreen = () => {
         <>
             <StatusBar backgroundColor={background} barStyle="light-content" />
             <View style={styles.container}>
-                <SkypeIndicator size={30} color='white' />
+                <Text style={styles.text}> Lights Out </Text>
+                <SkypeIndicator size={35} color='white' style={styles.indicator} />
             </View>
         </>
     )
@@ -73,5 +74,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    text: {
+        fontFamily: 'Satisfy',
+        fontSize: 45,
+        textAlign: 'center',
+        color: 'white',
+        marginBottom: 100
+    },
+    indicator: {
+        flexGrow: 0
     }
 });
