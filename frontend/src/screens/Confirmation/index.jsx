@@ -1,15 +1,28 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, BackHandler } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import moment from 'moment';
 import { Header } from '../../components';
+import { authentication } from '../../utils/firebase';
 import { globalStyles } from '../../utils/globalStyles';
 import { background, primary, secondary } from '../../utils/theme';
 
 const ConfirmationScreen = ({ route }) => {
     const { reservation, movie } = route.params;
     const navigation = useNavigation();
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPressed = () => {
+                navigation.popToTop();
+                return true;
+            };
+            BackHandler.addEventListener('hardwareBackPress', onBackPressed);
+            return () =>
+                BackHandler.removeEventListener('hardwareBackPress', onBackPressed);
+        }, [])
+    );
 
     return (
         <SafeAreaView style={globalStyles.container}>
@@ -41,39 +54,47 @@ const ConfirmationScreen = ({ route }) => {
                 <Text style={styles.text}>
                     You need to show the code in the ticket to the conductor in order to enter the theater.
                 </Text>
-                <View style={[styles.ticketConatiner, styles.ticketUpperContianer]}>
-                    <Image
-                        source={{ uri: `https://image.tmdb.org/t/p/original/${movie.posterPath}` }}
-                        style={styles.poster}
-                        resizeMode="center"
-                    />
-                    <View>
-                        <Text style={styles.title}>{movie.title}</Text>
-                        <Text style={styles.date}>
-                            {moment(reservation.date).format('dddd, MMMM DD | HH:mm')}
-                        </Text>
-                    </View>
-                </View>
-                <View style={styles.dividerContainer}>
-                    <View style={[styles.filler, { left: 0 }]} />
-                    <View style={styles.circle} />
-                    <View style={styles.dividerWrapper}>
-                        <View style={styles.divider} />
-                    </View>
-                    <View style={styles.circle} />
-                    <View style={[styles.filler, { right: 0 }]} />
-                </View>
-                <View style={[styles.ticketConatiner, styles.ticketLowerContianer]}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Ticket', { ticket: reservation })}
-                        style={styles.button}
-                        activeOpacity={1}
-                    >
-                        <Text style={styles.buttonCaption}>
-                            View {reservation.seats.length === 1 ? "Ticket" : "Tickets"}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                {authentication.currentUser ?
+                    <>
+                        <View style={[styles.ticketConatiner, styles.ticketUpperContianer]}>
+                            <Image
+                                source={{ uri: `https://image.tmdb.org/t/p/original/${movie.posterPath}` }}
+                                style={styles.poster}
+                                resizeMode="center"
+                            />
+                            <View>
+                                <Text style={styles.title}>{movie.title}</Text>
+                                <Text style={styles.date}>
+                                    {moment(reservation.date).format('dddd, MMMM DD | HH:mm')}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.dividerContainer}>
+                            <View style={[styles.filler, { left: 0 }]} />
+                            <View style={styles.circle} />
+                            <View style={styles.dividerWrapper}>
+                                <View style={styles.divider} />
+                            </View>
+                            <View style={styles.circle} />
+                            <View style={[styles.filler, { right: 0 }]} />
+                        </View>
+                        <View style={[styles.ticketConatiner, styles.ticketLowerContianer]}>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('Ticket', { ticket: reservation })}
+                                style={styles.button}
+                                activeOpacity={1}
+                            >
+                                <Text style={styles.buttonCaption}>
+                                    View {reservation.seats.length === 1 ? "Ticket" : "Tickets"}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                    :
+                    <Text style={styles.text}>
+                        We have emailed you your tickets inforamtion.
+                    </Text>
+                }
             </ScrollView>
         </SafeAreaView>
     )

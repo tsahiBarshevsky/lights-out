@@ -72,16 +72,16 @@ const HomeScreen = () => {
         });
     }, []);
 
-    const nowShowingFilter = (movie) => {
-        return moment().isAfter(moment(movie.releaseDate));
-    }
-
+    // Return movies that don't have screenings
     const comingSoonFilter = (movie) => {
         const res = screenings.find((screening) => screening.movie.id === movie.tmdbID);
         if (res === undefined)
             return true;
         return false;
     }
+
+    // Return the opposite of coming soon filter 
+    const opposite = f => ((...args) => !f(...args));
 
     useEffect(() => {
         const unsubscribe = authentication.onAuthStateChanged((user) => {
@@ -124,7 +124,7 @@ const HomeScreen = () => {
                     <Text style={styles.title}>Now Showing</Text>
                     <View style={styles.carousel}>
                         <Carousel
-                            data={movies.filter(nowShowingFilter)}
+                            data={movies.filter(opposite(comingSoonFilter))}
                             renderItem={(props) => <MovieCard {...props} />}
                             sliderWidth={Dimensions.get('window').width}
                             itemWidth={270}

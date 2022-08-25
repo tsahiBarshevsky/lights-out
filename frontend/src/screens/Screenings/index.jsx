@@ -208,13 +208,13 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         borderRadius: 10,
         borderWidth: 1.5,
-        borderColor: '#4d4c4c',
-        backgroundColor: '#4d4c4c',
+        backgroundColor: '#2e2e37',
+        borderColor: '#2e2e37',
         elevation: 1
     },
     disabledHourButton: {
-        backgroundColor: '#2e2e37',
-        borderColor: '#2e2e37'
+        borderColor: '#4d4c4c',
+        backgroundColor: '#4d4c4c'
     },
     selectedHour: {
         borderColor: primary

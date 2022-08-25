@@ -102,7 +102,7 @@ const ChockoutScreen = ({ route }) => {
         });
         const newReservation = {
             screeningID: id,
-            uid: authentication.currentUser.uid,
+            uid: authentication.currentUser ? authentication.currentUser.uid : '',
             movie: {
                 id: movie._id,
                 title: movie.title
@@ -273,7 +273,7 @@ const ChockoutScreen = ({ route }) => {
                                                 onBlur={handleBlur('lastName')}
                                                 returnKeyType='next'
                                                 onSubmitEditing={() => {
-                                                    if (user)
+                                                    if (Object.keys(user).length > 0)
                                                         phoneRef.current.focus();
                                                     else
                                                         emailRef.current?.focus();
@@ -304,9 +304,10 @@ const ChockoutScreen = ({ route }) => {
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('email')}
                                                 returnKeyType='next'
+                                                keyboardType="email-address"
                                                 onSubmitEditing={() => phoneRef.current?.focus()}
                                                 style={globalStyles.textInput}
-                                                editable={user ? false : true}
+                                                editable={Object.keys(user).length > 0 ? false : true}
                                             />
                                         </View>
                                         <ErrorMessage

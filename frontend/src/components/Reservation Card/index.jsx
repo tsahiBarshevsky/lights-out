@@ -35,8 +35,8 @@ const ReservationCard = ({ item, index }) => {
                     </Text>
                 </View>
             </View>
-            <View style={styles.buttons}>
-                {item.active && moment(new Date()).isBefore(moment(item.date)) &&
+            {item.active && moment(new Date()).isBefore(moment(item.date)) &&
+                <View style={styles.buttons}>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Cancelation', { reservation: item, location: index })}
                         style={[styles.button, styles.cancel]}
@@ -46,8 +46,6 @@ const ReservationCard = ({ item, index }) => {
                             Cancel Reservation
                         </Text>
                     </TouchableOpacity>
-                }
-                {item.active && moment(new Date()).isBefore(moment(item.date)) &&
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Ticket', { ticket: item })}
                         style={[styles.button, styles.ticket]}
@@ -55,8 +53,8 @@ const ReservationCard = ({ item, index }) => {
                     >
                         <Text style={styles.buttonCaption}>View Tickets</Text>
                     </TouchableOpacity>
-                }
-            </View>
+                </View>
+            }
         </View>
     )
 }
@@ -86,7 +84,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        marginBottom: 15
     },
     poster: {
         width: 55,
@@ -109,12 +106,12 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: 15
     },
     button: {
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: primary,
         width: '48%',
         height: 32,
         borderRadius: 50,

@@ -7,7 +7,7 @@ const format = 'DD/MM/YY HH:mm';
 const initial = { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
 
 const Calendar = (props) => {
-    const { week, date, setDate, selectedSeats, setSelectedSeats, price, setPrice } = props;
+    const { week, date, setDate } = props;
     const [months, setMonths] = useState([]);
     const uniqueMonths = [...new Set(months)];
 
@@ -17,10 +17,6 @@ const Calendar = (props) => {
 
     const onSelectDate = (date) => {
         setDate(date);
-        // if (selectedSeats.length > 0)
-        //     setSelectedSeats([]);
-        // if (price > 0)
-        //     setPrice(0);
     }
 
     useEffect(() => {
@@ -36,11 +32,11 @@ const Calendar = (props) => {
                     uniqueMonths.map((month, index) => {
                         return (
                             <View key={index}>
-                                <Text>{month}</Text>
+                                <Text style={styles.text}>{month}</Text>
                             </View>
                         )
                     }).reduce((acc, elem) => {
-                        return acc === null ? [elem] : [...acc, <Text key={elem}>/</Text>, elem]
+                        return acc === null ? [elem] : [...acc, <Text style={styles.text} key={elem}>/</Text>, elem]
                     }, null)
                     :
                     <Text style={styles.text}>{uniqueMonths[0]}</Text>
