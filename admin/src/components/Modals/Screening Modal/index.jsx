@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { toast } from 'react-toastify';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import moment from 'moment';
 import clsx from 'clsx';
 import { addNewScreening } from '../../../redux/actions/screenings';
 import { modalBackground } from '../../../services/theme';
 import { popper, useStyles } from './style';
+import './styles.sass';
 
 const format = 'DD/MM/YY HH:mm';
 
@@ -109,7 +109,7 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
             onBackgroundClick={handleClose}
             onEscapeKeydown={handleClose}
         >
-            <form onSubmit={onAddNewScreening}>
+            <form onSubmit={onAddNewScreening} id="screening-form">
                 <FormControl className={classes.formControl}>
                     <Typography variant='subtitle1' className={classes.title}>Movie</Typography>
                     <Select
@@ -207,12 +207,13 @@ const ScreeningModal = ({ isOpen, setIsOpen }) => {
                         }}
                     />
                 </FormControl>
-                {/* <Button
+                <Button
                     variant="contained"
                     type="submit"
+                    className="button"
                 >
-                    Add
-                </Button> */}
+                    Add Screening
+                </Button>
             </form>
         </StyledModal>
     )

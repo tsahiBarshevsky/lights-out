@@ -171,7 +171,7 @@ const HallModal = ({ isOpen, setIsOpen }) => {
                     className="button"
                     type="submit"
                 >
-                    Add
+                    Add Hall
                 </Button>
             </form>
         </StyledModal>

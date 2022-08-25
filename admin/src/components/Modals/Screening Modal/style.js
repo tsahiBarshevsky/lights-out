@@ -101,13 +101,15 @@ const useStyles = makeStyles({
     },
     button: {
         '&&': {
+            height: 40,
             fontFamily: `'Poppins', sans-serif`,
-            margin: '0 5px',
-            width: 85,
-            height: 45,
-            fontSize: 17,
-            letterSpacing: 1,
-            zIndex: 1
+            fontWeight: 'bold',
+            textTransform: 'capitalize',
+            marginTop: 15,
+            backgroundColor: primary,
+            color: 'black',
+            borderRadius: 25,
+            alignSelf: 'flex-end'
         }
     },
 });
