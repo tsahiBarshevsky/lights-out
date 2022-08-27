@@ -1,4 +1,4 @@
-const localhost = '10.0.0.15:5000';
+const localhost = '10.0.0.21:5000';
 
 const convertMinutesToHours = (minutes) => {
     const m = minutes % 60;

@@ -80,7 +80,7 @@ const ScreeningsScreen = ({ route }) => {
                             </Text>
                             <FlatList
                                 horizontal
-                                data={movieScreenings[hall]}
+                                data={movieScreenings[hall].sort((a, b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))}
                                 keyExtractor={(item) => item._id}
                                 showsHorizontalScrollIndicator={false}
                                 renderItem={({ item }) => {

@@ -3,9 +3,12 @@
 #form
     display: flex
     flex-direction: column
+    height: 100%
 
     .scrollable
         overflow-y: auto
+        height: 100%
+        padding-right: 5px
 
         .title
             font-family: 'Poppins', sans-serif
@@ -29,14 +32,15 @@
         text-transform: capitalize
         align-self: flex-end
         margin-top: 5px
+        translate: -10px 7px
 
-#form::-webkit-scrollbar
+.scrollable::-webkit-scrollbar
     width: 16px
 
-#form::-webkit-scrollbar-track
+.scrollable::-webkit-scrollbar-track
     background: $modal-background
 
-#form::-webkit-scrollbar-thumb
+.scrollable::-webkit-scrollbar-thumb
     background-color: rgba(white, 0.2)
     border-radius: 15px
     border: 5px solid $modal-background

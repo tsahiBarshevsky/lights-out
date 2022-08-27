@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
         marginBottom: 35
     },
     scrollView: {
-        paddingTop: headerHeight,
+        paddingTop: headerHeight + 10,
         paddingBottom: 20
     }
 });

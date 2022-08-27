@@ -30,7 +30,7 @@ const SplashScreen = () => {
                 const genres = [...new Set(movies.map(movie => movie.genre))];
                 dispatch({ type: 'SET_GENRES', genres: genres });
             })
-        // .finally(() => setDataLoaded(true));
+            .finally(() => setDataLoaded(true));
     }, []);
 
     useEffect(() => {
